@@ -7,11 +7,11 @@ if [ $# -eq 0 ]; then
 fi
 
 if [ "$1" = "init" ]; then
-    if [ -f "/tmp/minitwit.db" ]; then
+    if [ -f "minitwit.db" ]; then
         echo "Database already exists."
         exit 1
     fi
-    echo "Putting a database to /tmp/minitwit.db..."
+    echo "Putting a database to minitwit.db..."
     python3 -c "from minitwit import init_db;init_db()"
 
 elif [ "$1" = "startprod" ]; then
