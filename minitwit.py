@@ -18,10 +18,11 @@ from contextlib import closing
 from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash
 from werkzeug.security import check_password_hash, generate_password_hash
+import os
 
 
 # configuration
-DATABASE = '/tmp/minitwit.db'
+DATABASE = os.path.join(os.path.dirname(__file__), 'minitwit.db')
 PER_PAGE = 30
 DEBUG = True
 SECRET_KEY = 'development key'

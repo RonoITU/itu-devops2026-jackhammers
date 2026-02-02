@@ -1,5 +1,25 @@
-/bin
-/include
-/lib
-/lib64
-pyvenv.cfg
+#/bin
+#/include
+#/lib
+#/lib64
+#pyvenv.cfg
+
+# Virtual Environment (venv)
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local database
+*.db
+
+# Tests
+.pytest_cache/
+.coverage
+
+# Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
