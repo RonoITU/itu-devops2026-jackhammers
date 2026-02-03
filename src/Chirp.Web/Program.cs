@@ -52,46 +52,46 @@ namespace Chirp.Web
                 .AddEntityFrameworkStores<CheepDBContext>();
 
             // Retrieve ClientId and ClientSecret from configuration
-            string? clientId = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTID"];
-            string? clientSecret = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTSECRET"];
+            //string? clientId = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTID"];
+            //string? clientSecret = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTSECRET"];
 
-            if (string.IsNullOrEmpty(clientId) && string.IsNullOrEmpty(clientSecret))
-            {
-                throw new ApplicationException("Failed to retrieve both the Github Client ID and Secret. Make sure that the values are set on the machine.");
-            }
-            if (string.IsNullOrEmpty(clientId))
-            {
-                throw new ApplicationException("Failed to retrieve the Github Client ID. Make sure that the github value is set on the machine.");
-            }
-            if (string.IsNullOrEmpty(clientSecret))
-            {
-                throw new ApplicationException("Failed to retrieve the Github Secret. Make sure that the github value is set on the machine.");
-            }
+            // if (string.IsNullOrEmpty(clientId) && string.IsNullOrEmpty(clientSecret))
+            // {
+            //     throw new ApplicationException("Failed to retrieve both the Github Client ID and Secret. Make sure that the values are set on the machine.");
+            // }
+            // if (string.IsNullOrEmpty(clientId))
+            // {
+            //     throw new ApplicationException("Failed to retrieve the Github Client ID. Make sure that the github value is set on the machine.");
+            // }
+            // if (string.IsNullOrEmpty(clientSecret))
+            // {
+            //     throw new ApplicationException("Failed to retrieve the Github Secret. Make sure that the github value is set on the machine.");
+            // }
             
             // Add GitHub Services
-            builder.Services.AddAuthentication()
-                .AddGitHub(options =>
-                {
-                    options.ClientId = clientId;
-                    options.ClientSecret = clientSecret;
-                    options.CallbackPath = new PathString("/signin-github");
-                    options.Scope.Add("user:email");
-                    options.ClaimActions.MapJsonKey("urn:github:avatar_url", "avatar_url");
-
-
-                    options.Events.OnCreatingTicket = context =>
-                    {
-                        // Retrieve user details from claims
-                        var userName = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-                        var email = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
-
-                        // You can use these values as needed in your application
-                        Console.WriteLine($"GitHub Username: {userName}");
-                        Console.WriteLine($"GitHub Email: {email}");
-
-                        return Task.CompletedTask;
-                    };
-                }); 
+            // builder.Services.AddAuthentication()
+            //     .AddGitHub(options =>
+            //     {
+            //         options.ClientId = clientId;
+            //         options.ClientSecret = clientSecret;
+            //         options.CallbackPath = new PathString("/signin-github");
+            //         options.Scope.Add("user:email");
+            //         options.ClaimActions.MapJsonKey("urn:github:avatar_url", "avatar_url");
+            //
+            //
+            //         options.Events.OnCreatingTicket = context =>
+            //         {
+            //             // Retrieve user details from claims
+            //             var userName = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
+            //             var email = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+            //
+            //             // You can use these values as needed in your application
+            //             Console.WriteLine($"GitHub Username: {userName}");
+            //             Console.WriteLine($"GitHub Email: {email}");
+            //
+            //             return Task.CompletedTask;
+            //         };
+            //     }); 
             
             builder.Services.AddSession();
             
@@ -129,7 +129,6 @@ namespace Chirp.Web
                 // Added connect-src to allow WebSocket connections
                 context.Response.Headers.Append("Content-Security-Policy", 
                     "default-src 'self'; " +                            // Allow resources from the same origin
-                    "script-src 'self' https://bdsagroup07chirprazor.azurewebsites.net/; " +  // Allow scripts from self and Azure
                     "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " + // Allow styles from Font Awesome CDN
                     "style-src 'self' 'unsafe-inline'; " +               // Allow inline styles and styles from self
                     "img-src 'self' data:; " +  // Allow images from self and Base64-encoded images
@@ -139,7 +138,6 @@ namespace Chirp.Web
                     "font-src 'self'; " +                                // Allow fonts from self
                     "frame-src 'self'; " +                               // Allow frames from self
                     "object-src 'none'; " +                              // Disallow object elements
-                    "script-src 'self' 'unsafe-inline' https://bdsagroup07chirprazor.azurewebsites.net/;" + // Allow scripts from self and Azure
                     "worker-src 'self';");                               // Allow workers from self
                 await next();
             });
