@@ -6,7 +6,7 @@ namespace Chirp.Core.Interfaces;
 public interface IAuthorService
 {
     public Task<AuthorDTO?> FindAuthorByName(String name);
-    public Task CreateAuthor(string authorName, string authorEmail, string profilePicture = null);
+    public Task CreateAuthor(string authorName, string authorEmail, string? profilePicture = null);
     public Task DeleteUser(AuthorDTO Author);
     public Task FollowAuthor(string userAuthorName, string followedAuthorName);
     public Task UnfollowAuthor(string userAuthor, string authorToBeRemoved);
