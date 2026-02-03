@@ -1,0 +1,130 @@
+@page "/{cheepId:int}/comments"
+@using Chirp.Core.DTOs
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Chirp.Web.Pages.CheepCommentModel
+@{
+    ViewData["Title"] = "Chirp!";
+    Layout = "Shared/_Layout";
+    
+    var CheepId = HttpContext.GetRouteValue("cheepId");
+    int pageNumber = Model.PageNumber;
+    int totalPages = Model.TotalPageNumber == 0 ? 1 : Model.TotalPageNumber;
+    AuthorDTO? userAuthor = Model.UserAuthor;
+   
+}
+
+<div>
+    <div class="timeline-header">
+        <a class="timeline-button" href="/">
+            <button >Back</button>
+        </a>
+        <h2> Comment section </h2>
+    </div>
+       @if (Model.OriginalCheep != null)
+{
+    <div class="CommentForm">
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <form method="post" style="display: flex; flex-direction: column; align-items: flex-start;">
+                <input type="hidden" name="cheepId" value="@Model.OriginalCheep.CheepId" />
+                <div style="display: flex; align-items: center; width: 100%;">
+                    <input type="text" asp-for="CommentText" placeholder="Answer @Model.OriginalCheep.Author.Name" style="flex: 1; margin-right: 5px;" />
+                    <button id="addCommentButton" type="submit" asp-page-handler="AddCommentToCheep">Add Comment</button>
+                </div>
+                <span asp-validation-for="CommentText" class="text-danger" style="margin-top: 5px;"></span>
+            </form>
+        }
+    </div>
+    
+    <div class="Cheepforcomments">
+        <strong>
+            <a href="/@Model.OriginalCheep.Author.Name">@Model.OriginalCheep.Author.Name</a>
+        </strong>
+        
+        @if (User.Identity != null && User.Identity.IsAuthenticated && Model.OriginalCheep.Author.Name != User.Identity.Name)
+        {
+            <form style="display: inline-block; margin-left: 2px;" method="post">
+                @if (Model.UserAuthor != null && Model.OriginalCheep != null && !Model.UserAuthor.AuthorsFollowed.Contains(Model.OriginalCheep.Author.Name))
+                {
+                    <input type="hidden" name="followedAuthorName" value="@Model.OriginalCheep.Author.Name"/>
+                    <input type="hidden" name="PageNumber" value="@ViewData["pageNumber"]" />
+                    <button id="followButton" type="submit" asp-page-handler="FollowMethod">Follow</button>
+                }
+                else if (Model.UserAuthor != null && Model.OriginalCheep != null)
+                {
+                    <input type="hidden" name="followedAuthor" value="@Model.OriginalCheep.Author.Name"/>
+                    <input type="hidden" name="PageNumber" value="@ViewData["pageNumber"]" />
+                    <button id="unfollowButton" type="submit" asp-page-handler="UnfollowMethod">Unfollow</button>
+                }
+            </form>
+        }
+        <br/>
+        <small>@Model.GetFormattedTimeStamp(Model.OriginalCheep.FormattedTimeStamp)</small>
+        <p>@Html.Raw(Model.ConvertLinksToAnchors(Model.OriginalCheep.Text))</p>
+        <div>
+            @* If image reference is not null then make an image element *@
+            @if (!string.IsNullOrEmpty(Model.OriginalCheep?.ImageReference))
+            {
+            // (R0lGODlh) Is what all base64 encoded GIFs start with
+            string mimeType = Model.OriginalCheep.ImageReference.StartsWith("R0lGODlh") ? "image/gif" : "image/png";
+            <a href="data:@mimeType;base64,@Model.OriginalCheep.ImageReference" style="cursor: pointer;">
+                <img src="data:@mimeType;base64,@Model.OriginalCheep.ImageReference" alt="Cheep Image"/>
+            </a>
+            }
+        </div>
+    </div>
+}
+
+@if (Model.Comments != null && Model.Comments.Any())
+{
+    <ul id="messagelist" class="Comments">
+        @foreach (var comment in Model.Comments)
+        {
+            <li>
+                <div class="cheep-container">
+                    <strong>
+                        <a href="/@comment.Author.Name">@comment.Author.Name</a>
+                    </strong>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated && comment.Author.Name != User.Identity.Name)
+                    {
+                        <form style="display: flex;" method="post">
+                            @if (Model.UserAuthor != null && !Model.UserAuthor.AuthorsFollowed.Contains(comment.Author.Name))
+                            {
+                                <input type="hidden" name="followedAuthorName" value="@comment.Author.Name"/>
+                                <input type="hidden" name="PageNumber" value="@ViewData["pageNumber"]" />
+                                <button id="followButton" type="submit" asp-page-handler="FollowMethod">Follow</button>
+                            }
+                            else if (Model.UserAuthor != null)
+                            {
+                                <input type="hidden" name="followedAuthor" value="@comment.Author.Name"/>
+                                <input type="hidden" name="PageNumber" value="@ViewData["pageNumber"]" />
+                                <button id="unfollowButton" type="submit" asp-page-handler="UnfollowMethod">Unfollow</button>
+                            }
+                        </form>
+                    }
+                    <div class="Delete">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && comment.Author.Name == User.Identity.Name)
+                        {
+                            <form method="post">
+                                <input type="hidden" name="CommentId" value="@comment.CommentId"/>
+                                <button id="deleteButton" type="submit" asp-page-handler="DeleteMethod">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+                <small>@Model.GetFormattedTimeStamp(comment.FormattedTimeStamp)</small>
+                <p>@comment.Text</p>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <em>There are no comments on this cheep so far.</em>
+    <br/>
+}
+    
+</div>

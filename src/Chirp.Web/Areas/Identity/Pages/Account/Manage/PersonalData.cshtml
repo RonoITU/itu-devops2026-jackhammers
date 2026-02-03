@@ -1,0 +1,113 @@
+﻿@page
+@using Chirp.Core.DTOs
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+
+    var authorName = User.Identity!.Name;
+    int pageNumber = Model.PageNumber;
+    int totalPages = Model.TotalPageNumber;
+    AuthorDTO? userAuthor = Model.userAuthor;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
+
+        <form id="download-data" asp-page="DownloadPersonalData" method="post">
+            <button class="btn btn-primary" type="submit">Download my data</button>
+        </form>
+
+        <form id="delete-personal-cheeps" asp-page="DeletePersonalCheeps" method="post">
+            <button class="btn btn-primary" type="submit">Delete my Cheeps</button>
+        </form>
+
+        <form id="delete-personal-data" asp-page="DeletePersonalData" method="post">
+            <button class="btn btn-primary" type="submit">Forget me!</button>
+        </form>
+    </div>
+
+    <div>
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="timeline-header">
+                <h2> @authorName's Data </h2>
+            </div>
+            <div>
+                <ul id="followerlist" class="cheeps">
+                    @foreach (var dataLine in Model.UserData)
+                    {
+                        <li>
+                            <div class="cheep-container">
+                                <strong>
+                                    @dataLine
+                                </strong>
+                            </div>
+                            <br><br>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div>
+                @if (Model.FollowList.Any())
+                {
+                    <h3 class="timeline-header">Users followed:</h3>
+
+                    <ul id="followerlist" class="cheeps">
+                        @foreach (var author in Model.FollowList)
+                        {
+                            <li>
+                                <div class="cheep-container">
+                                    <strong>
+                                        <a href="/@author">@author</a>
+                                    </strong>
+                                </div>
+                                <br><br>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <div>
+                @if (Model.Cheeps.Any())
+                {
+                    <h3 class="timeline-header">Cheeps sent:</h3>
+                    <ul id="messagelist" class="cheeps">
+                        @foreach (var cheep in Model.Cheeps)
+                        {
+                            <li>
+                                <div class="cheep-container">
+                                    <strong>
+                                        <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
+                                    </strong>
+                                </div>
+                                <small>@cheep.FormattedTimeStamp</small>
+                                <br><br>
+                                <p>@cheep.Text</p>
+                                <div>
+                                    @* If image reference is not null then make an image element *@
+                                    @if (cheep.ImageReference != "")
+                                    {
+                                        // (R0lGODlh) Is what all base64 encoded GIFs start with
+                                        string mimeType = cheep.ImageReference.StartsWith("R0lGODlh") ? "image/gif" : "image/png";
+                                        <a href="data:@mimeType;base64,@cheep.ImageReference" style="cursor: pointer;">
+                                            <img src="data:@mimeType;base64,@cheep.ImageReference" alt="Cheep Image"/>
+                                        </a>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
