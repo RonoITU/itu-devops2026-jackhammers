@@ -29,7 +29,7 @@ public class AuthorService : IAuthorService
     /// <param name="authorName"></param>
     /// <param name="authorEmail"></param>
     /// <param name="profilePicture"></param>
-    public async Task CreateAuthor(string authorName, string authorEmail, string profilePicture = null)
+    public async Task CreateAuthor(string authorName, string authorEmail, string? profilePicture = null)
     {
         await _authorRepository.CreateAuthor(authorName, authorEmail, profilePicture);
     }

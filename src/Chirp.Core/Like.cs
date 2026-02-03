@@ -10,10 +10,10 @@ public class Like
 
     [ForeignKey("Cheep")]
     public int CheepId { get; set; } // Foreign key to Cheep
-    public Cheep Cheep { get; set; } // Navigation property for Cheep
+    public Cheep Cheep { get; set; } = null!; // Navigation property for Cheep
 
     [ForeignKey("Author")]
     public int AuthorId { get; set; } // Foreign key to Author
-    public Author Author { get; set; } // Navigation property for Author
+    public Author Author { get; set; } = null!; // Navigation property for Author
 }
 

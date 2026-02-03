@@ -12,7 +12,7 @@
     int totalPages = Model.TotalPageNumber == 0 ? 1 : Model.TotalPageNumber;
     AuthorDTO? userAuthor = Model.UserAuthor;
     int authorKarma = Model.AuthorKarma;
-    AuthorDTO pageAuthor = Model.PageAuthor;
+    AuthorDTO? pageAuthor = Model.PageAuthor;
 }
 
 <div>
@@ -200,7 +200,7 @@
                     <p>@Html.Raw(Model.ConvertLinksToAnchors(cheep.Text))</p>
                     <div>
                         @* If image reference is not null then make an image element *@
-                        @if (cheep.ImageReference != "")
+                        @if (!string.IsNullOrEmpty(cheep.ImageReference))
                         {
                             // (R0lGODlh) Is what all base64 encoded GIFs start with
                             string mimeType = cheep.ImageReference.StartsWith("R0lGODlh") ? "image/gif" : "image/png";

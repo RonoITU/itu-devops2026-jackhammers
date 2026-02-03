@@ -10,12 +10,12 @@ public class Reaction
     
     [ForeignKey("Cheep")]
     public int CheepId { get; set; } // Foreign key to Cheep
-    public Cheep Cheep { get; set; } // Navigation property for Cheep
-    
+    public Cheep Cheep { get; set; } = null!; // Navigation property for Cheep
+
     [ForeignKey("Author")]
     public int AuthorId { get; set; } // Foreign key to Author
-    public Author Author { get; set; } // Navigation property for Author
-    
+    public Author Author { get; set; } = null!; // Navigation property for Author
+
     [Required]
-    public string Emoji { get; set; } // The emoji representing the reaction
+    public string Emoji { get; set; } = null!; // The emoji representing the reaction
 }

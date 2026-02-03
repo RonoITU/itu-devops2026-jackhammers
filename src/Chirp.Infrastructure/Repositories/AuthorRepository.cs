@@ -56,7 +56,7 @@ namespace Chirp.Infrastructure.Repositories
         /// <param name="authorName"></param>
         /// <param name="authorEmail"></param>
         /// <param name="profilePicture"></param>
-        public async Task CreateAuthor(string authorName, string authorEmail, string profilePicture)
+        public async Task CreateAuthor(string authorName, string authorEmail, string? profilePicture)
         {
             string? base64ProfilePicture = null;
             if (profilePicture != null)
@@ -250,7 +250,7 @@ namespace Chirp.Infrastructure.Repositories
         {
             if (image == null || image.Length == 0)
             {
-                return null;
+                return Array.Empty<byte>();
             }
 
             // Step 1: Convert IFormFile to MemoryStream

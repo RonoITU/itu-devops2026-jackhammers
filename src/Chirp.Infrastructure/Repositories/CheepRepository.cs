@@ -722,7 +722,7 @@ namespace Chirp.Infrastructure.Repositories
         {
             if (image == null || image.Length == 0)
             {
-                return null; // Or throw an exception if you want to handle this case
+                return Array.Empty<byte>();
             }
 
             // Step 1: Convert IFormFile to MemoryStream
@@ -847,7 +847,7 @@ namespace Chirp.Infrastructure.Repositories
                 {
                     CommentId = 0,
                     CheepId = cheepDto.CheepId,
-                    Author = await _authorRepository.FindAuthorByName(author),
+                    Author = await _authorRepository.FindAuthorByName(author) ?? throw new InvalidOperationException("Author not found"),
                     Text = text,
                     TimeStamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
                         TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"))
@@ -884,7 +884,7 @@ namespace Chirp.Infrastructure.Repositories
                     Dislikes = a.Dislikes,
                     LikesCount = a.Likes.Count,
                     DislikesCount = a.Dislikes.Count,
-                    ImageReference = a.ImageReference
+                    ImageReference = a.ImageReference ?? ""
                 }).FirstOrDefaultAsync();
 
             return cheep ?? throw new InvalidOperationException();
