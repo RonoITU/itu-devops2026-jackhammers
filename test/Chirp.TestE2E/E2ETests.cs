@@ -38,7 +38,7 @@ public class E2ETests : PageTest
         if (_page == null) throw new InvalidOperationException("Page is not initialized");
     }
     /// <summary>
-    /// One time Setup for setting up the process of running the test enviroment
+    /// One time Setup for setting up the process of running the test environment
     /// </summary>
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
@@ -99,7 +99,7 @@ public class E2ETests : PageTest
     public void OneTimeTearDown()
     {
         // Stop the ASP.NET application
-        if (_appProcess != null && !_appProcess.HasExited)
+        if (_appProcess is { HasExited: false })
         {
             _appProcess.Kill();
             _appProcess.WaitForExit(5000); //closes after specified time
@@ -244,7 +244,7 @@ public class E2ETests : PageTest
     [Category("End2End")]
     public async Task DoesUserTimelinePageSuccessfullyLoad()
     {
-        // Go to Adrians's page
+        // Go to Adrian's page
         await CurrentPage.GotoAsync($"{AppUrl}/Adrian");
         await Expect(CurrentPage.GetByRole(AriaRole.Heading, new() { Name = "Adrian's Timeline" })).ToBeVisibleAsync();
     }
@@ -384,7 +384,7 @@ public class E2ETests : PageTest
     // Successfully registration with valid inputs
     [Test]
     [Category("End2End")]
-    public async Task SuccessfullRegister()
+    public async Task SuccessfulRegister()
     {
         await CurrentPage.GotoAsync($"{AppUrl}/Identity/Account/Register");
 
@@ -947,7 +947,7 @@ public class E2ETests : PageTest
         await RegisterUser("1");
         
         await CurrentPage.Locator("#CheepText").ClickAsync();
-        await CurrentPage.Locator("#CheepText").FillAsync($"HelloWorld!RasmusMathiasNikolajMarcusErTelos!+{DateTime.Now.ToString("HH:mm:ss")}");
+        await CurrentPage.Locator("#CheepText").FillAsync($"HelloWorld!RasmusMathiasNikolajMarcusErTelos!+{DateTime.Now:HH:mm:ss}");
         await CurrentPage.GetByRole(AriaRole.Button, new() { Name = "Share" }).ClickAsync();
 
         await LogoutUser();
@@ -1157,7 +1157,7 @@ public class E2ETests : PageTest
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "icon1.png");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
-        await CurrentPage.Locator("#CheepImage").SetInputFilesAsync(new[] { imagePath });
+        await CurrentPage.Locator("#CheepImage").SetInputFilesAsync([imagePath]);
         await CurrentPage.Locator("#CheepText").ClickAsync();
         await CurrentPage.Locator("#CheepText").FillAsync("Hej");
         await CurrentPage.GetByRole(AriaRole.Button, new() { Name = "Share" }).ClickAsync();
@@ -1177,7 +1177,7 @@ public class E2ETests : PageTest
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "TESTGIF.gif");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
-        await CurrentPage.Locator("#CheepImage").SetInputFilesAsync(new[] { imagePath});
+        await CurrentPage.Locator("#CheepImage").SetInputFilesAsync([imagePath]);
         await CurrentPage.Locator("#CheepText").ClickAsync();
         await CurrentPage.Locator("#CheepText").FillAsync("Hej");
         await CurrentPage.GetByRole(AriaRole.Button, new() { Name = "Share" }).ClickAsync();
