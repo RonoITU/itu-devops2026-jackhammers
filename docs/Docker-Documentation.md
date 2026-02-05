@@ -19,7 +19,7 @@ When the image has been built, you can view it by using `docker image ls`.
 ## Run an image with `Docker run`
 When the image has been created, you can run the image in a container.
 ```
-docker run -d -p <host port>:<internal port> <image>
+docker run --name <container-name> -d -p <host port>:<internal port> <image>
 ```
 Flags:
 - -d: This makes the container is run in **detached** mode, meaning that it will run in the background.
@@ -27,7 +27,7 @@ Flags:
 meaning the app is running on port 8080 on the container. We can then map this port to any port we prefer
 on the host. For simplicity this can be mapped to the same port. Hence we get
 ```
-docker run -p 8080:8080 jackhammers/minitwit
+docker run --name minitwit -p 8080:8080 jackhammers/minitwit
 ```
 
 ## Run an image with `Docker Compose`
