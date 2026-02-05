@@ -22,11 +22,15 @@ public class E2ETests : PageTest
     [SetUp]
     public async Task Setup()
     {
+        // Check if app process is still running
+        if (_appProcess == null || _appProcess.HasExited)
+        {
+            throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
+        }
+
         Console.WriteLine(_startupProjectPath);
         _browser = await Playwright.Chromium.LaunchAsync(_browserTypeLaunchOptions);
-
         _context = await _browser.NewContextAsync();
-
         _page = await _context.NewPageAsync();
 
         if (_page == null) throw new InvalidOperationException("Page is not initialized");
@@ -38,11 +42,8 @@ public class E2ETests : PageTest
     public async Task OneTimeSetUp()
     {
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
-
-        // Construct the path to your project
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
-        // Start the ASP.NET application
         _appProcess = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -56,10 +57,44 @@ public class E2ETests : PageTest
             }
         };
 
-        _appProcess.Start();
+        // Capture output for debugging
+        _appProcess.OutputDataReceived += (sender, e) => Console.WriteLine($"APP OUTPUT: {e.Data}");
+        _appProcess.ErrorDataReceived += (sender, e) => Console.WriteLine($"APP ERROR: {e.Data}");
 
-        // Wait for the application to start 
-        await Task.Delay(5000); // Adjust delay if needed
+        _appProcess.Start();
+        _appProcess.BeginOutputReadLine();
+        _appProcess.BeginErrorReadLine();
+
+        // Wait for app to be ready with retries
+        var maxRetries = 30;
+        var retryDelay = TimeSpan.FromSeconds(1);
+        var isReady = false;
+
+        using var httpClient = new HttpClient();
+        for (int i = 0; i < maxRetries; i++)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync($"{AppUrl}");
+                if (response.IsSuccessStatusCode)
+                {
+                    isReady = true;
+                    Console.WriteLine($"App is ready after {i + 1} attempts");
+                    break;
+                }
+            }
+            catch
+            {
+                // App not ready yet
+            }
+        
+            await Task.Delay(retryDelay);
+        }
+
+        if (!isReady)
+        {
+            throw new Exception("Application failed to start within the expected time");
+        }
     }
 
     [OneTimeTearDown]
