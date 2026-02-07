@@ -1,16 +1,28 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:3fcf6f1e809c0553f9feb222369f58749af314af6f063f389cbd2f913b4ad556 AS build
-WORKDIR /App
+# Using .NET 10 SDK for building
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /app
 
 # Copy everything
 COPY . ./
-# Restore as distinct layers
+
+# Restore dependencies
 RUN dotnet restore
-# Build and publish a release
-RUN dotnet publish -o out
-EXPOSE 5273/tcp
-EXPOSE 5273/udp
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:b4bea3a52a0a77317fa93c5bbdb076623f81e3e2f201078d89914da71318b5d8
-WORKDIR /App
-COPY --from=build /App/out .
-ENTRYPOINT ["dotnet", "DotNet.Docker.dll"]
+
+
+# Build and publish the web project
+RUN dotnet publish src/Chirp.Web/Chirp.Web.csproj -c Release -o out
+
+# Build runtime image using .NET 10 ASP.NET runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+
+# Copy published output from build stage
+COPY --from=build /app/out .
+
+# Expose port
+EXPOSE 8080
+
+# Set environment variable for ASP.NET
+#ENV ASPNETCORE_URLS=http://+:8080
+
+ENTRYPOINT ["dotnet", "Chirp.Web.dll"]

@@ -1,4 +1,4 @@
-namespace Chirp.Test;
+namespace Chirp.TestIntegration;
 
 public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, IDisposable
 {
@@ -33,11 +33,9 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
 
         _client = _factory.CreateClient();
         // Ensures the database was created
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureCreated();
-        }
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
+        dbContext.Database.EnsureCreated();
     }
 
     [Fact]
@@ -46,10 +44,10 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
 
-            var author = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>()};
+            var author = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>()};
         
             var cheep = new Cheep
             {
@@ -80,10 +78,10 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
 
-            var author = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>() };
+            var author = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>() };
     
             var cheep = new Cheep
             {
@@ -119,8 +117,8 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
         }
 
         
@@ -140,11 +138,11 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
         }
         
-        var author = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>() };
+        var author = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = "testPerson", AuthorsFollowed = new List<string>() };
         
         var response = await _client.GetAsync("/" + author.Name +"/follows");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -162,11 +160,11 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
 
-            var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = "testPerson1", AuthorsFollowed = new List<string>() };
-            var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "my2mail", Name = "testPerson2", AuthorsFollowed = new List<string>() };
+            var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = "testPerson1", AuthorsFollowed = new List<string>() };
+            var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "my2mail", Name = "testPerson2", AuthorsFollowed = new List<string>() };
 
             dbContext.Authors.Add(author1);
             dbContext.Authors.Add(author2);
@@ -193,11 +191,11 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
         using (var scope = _factory.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            dbContext.Database.EnsureDeleted(); // Clear previous data
-            dbContext.Database.EnsureCreated(); // Recreate the database
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
 
-            var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = "testPerson1", AuthorsFollowed = new List<string>() };
-            var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "my2mail", Name = "testPerson2", AuthorsFollowed = new List<string>() };
+            var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = "testPerson1", AuthorsFollowed = new List<string>() };
+            var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "my2mail", Name = "testPerson2", AuthorsFollowed = new List<string>() };
 
             dbContext.Authors.Add(author1);
             dbContext.Authors.Add(author2);
@@ -222,7 +220,7 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>, I
     // Is called after all tests finish
     public void Dispose()
     {
-        _connection?.Close();   // Closes the connection.
-        _connection?.Dispose(); // Disposes the connection object.
+        _connection.Close();   // Closes the connection.
+        _connection.Dispose(); // Disposes the connection object.
     }
 }
