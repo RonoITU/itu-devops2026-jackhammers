@@ -15,7 +15,6 @@ public class E2ETests : PageTest
     private const string TestUsername = "Tester";
     private const string TestUserEmail = "testuser@gmail.com";
     private const string TestUserPassword = "Test@12345";
-    private bool _isExternalServer = false;
 
     readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new()
     {
@@ -25,13 +24,10 @@ public class E2ETests : PageTest
     [SetUp]
     public async Task Setup()
     {
-        // Only require a local process when we started it ourselves
-        if (!_isExternalServer)
+        // Require a local app process to be available (we always start it in OneTimeSetUp)
+        if (_appProcess == null || _appProcess.HasExited)
         {
-            if (_appProcess == null || _appProcess.HasExited)
-            {
-                throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
-            }
+            throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
         }
 
         Console.WriteLine(_startupProjectPath);
@@ -50,23 +46,7 @@ public class E2ETests : PageTest
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
-        // If an external server is already running (e.g. GitHub Actions started it), use that.
-        using var probeClient = new HttpClient { Timeout = TimeSpan.FromSeconds(1) };
-        try
-        {
-            var probeResponse = await probeClient.GetAsync(AppUrl);
-            if (probeResponse.IsSuccessStatusCode)
-            {
-                _isExternalServer = true;
-                Console.WriteLine($"Detected external server at {AppUrl}, skipping local startup.");
-                return;
-            }
-        }
-        catch
-        {
-            // Not reachable => start locally
-        }
-
+        // Always start the web application locally for the E2E tests
         _appProcess = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -97,7 +77,7 @@ public class E2ETests : PageTest
         {
             try
             {
-                var response = await httpClient.GetAsync($"{AppUrl}");
+                var response = await httpClient.GetAsync(AppUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     isReady = true;
@@ -139,8 +119,8 @@ public class E2ETests : PageTest
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        // Stop the ASP.NET application only if we started it
-        if (!_isExternalServer && _appProcess is { HasExited: false })
+        // Stop the ASP.NET application that we started
+        if (_appProcess is { HasExited: false })
         {
             try
             {
