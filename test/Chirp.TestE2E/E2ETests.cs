@@ -119,6 +119,22 @@ public class E2ETests : PageTest
             throw new Exception($"Application failed to start within the expected time.{exitInfo}");
         }
     }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        if (_page != null)
+        {
+            await _page.CloseAsync();
+            _page = null;
+        }
+    
+        if (_context != null)
+        {
+            await _context.CloseAsync();
+            _context = null;
+        }
+    }
 
     [OneTimeTearDown]
     public void OneTimeTearDown()
@@ -126,9 +142,27 @@ public class E2ETests : PageTest
         // Stop the ASP.NET application only if we started it
         if (!_isExternalServer && _appProcess is { HasExited: false })
         {
-            _appProcess.Kill();
-            _appProcess.WaitForExit(5000); // closes after specified time
-            _appProcess.Dispose();
+            try
+            {
+                // Try graceful shutdown first (SIGTERM on Linux, close on Windows)
+                _appProcess.CloseMainWindow();
+            
+                // Wait for graceful shutdown
+                if (!_appProcess.WaitForExit(5000))
+                {
+                    // If it didn't exit gracefully, force kill
+                    _appProcess.Kill(entireProcessTree: true);
+                    _appProcess.WaitForExit(2000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping process: {ex.Message}");
+            }
+            finally
+            {
+                _appProcess.Dispose();
+            }
         }
 
         // Dispose of the browser context
@@ -137,7 +171,7 @@ public class E2ETests : PageTest
         // Dispose of the browser
         _browser?.DisposeAsync().GetAwaiter().GetResult();
 
-        // Delete the test database file (same cleanup as before)
+        // Delete the test database file
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var testDbFilePath = Path.Combine(solutionDirectory, "src", "Chirp.Infrastructure", "Data", "CheepTest.db");
         string walFilePath = testDbFilePath + "-wal";
