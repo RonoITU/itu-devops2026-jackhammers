@@ -47,7 +47,7 @@ public class E2ETests : PageTest
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
         // If an external server is already running (e.g. GitHub Actions started it), use that.
@@ -138,7 +138,7 @@ public class E2ETests : PageTest
         _browser?.DisposeAsync().GetAwaiter().GetResult();
 
         // Delete the test database file (same cleanup as before)
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var testDbFilePath = Path.Combine(solutionDirectory, "src", "Chirp.Infrastructure", "Data", "CheepTest.db");
         string walFilePath = testDbFilePath + "-wal";
         string shmFilePath = testDbFilePath + "-shm";
@@ -1166,7 +1166,7 @@ public class E2ETests : PageTest
     {
         await RegisterUser();
         
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "icon1.png");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
@@ -1186,7 +1186,7 @@ public class E2ETests : PageTest
     {
         await RegisterUser();
         
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "TESTGIF.gif");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
