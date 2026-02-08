@@ -71,11 +71,11 @@ jobs:
       - name: Build End To End Tests
         run: dotnet build test/Chirp.TestE2E/Chirp.TestE2E.csproj --no-restore
 
-#      - name: Run Web Application
-#        run: dotnet run --project src/Chirp.Web/Chirp.Web.csproj --urls "http://localhost:5273" &
-#
-#      - name: Wait for Web Application to Start
-#        run: sleep 10
+      - name: Run Web Application
+        run: dotnet run --project src/Chirp.Web/Chirp.Web.csproj --urls "http://localhost:5273" &
+
+      - name: Wait for Web Application to Start
+        run: sleep 10
 
       - name: Install Playwright
         run: pwsh test/Chirp.TestE2E/bin/Debug/net10.0/playwright.ps1 install

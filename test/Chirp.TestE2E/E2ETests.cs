@@ -15,6 +15,7 @@ public class E2ETests : PageTest
     private const string TestUsername = "Tester";
     private const string TestUserEmail = "testuser@gmail.com";
     private const string TestUserPassword = "Test@12345";
+    private bool _isExternalServer = false;
 
     readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new BrowserTypeLaunchOptions
     {
@@ -24,10 +25,13 @@ public class E2ETests : PageTest
     [SetUp]
     public async Task Setup()
     {
-        // Check if app process is still running
-        if (_appProcess == null || _appProcess.HasExited)
+        // Only require a local process when we started it ourselves
+        if (!_isExternalServer)
         {
-            throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
+            if (_appProcess == null || _appProcess.HasExited)
+            {
+                throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
+            }
         }
 
         Console.WriteLine(_startupProjectPath);
@@ -46,18 +50,38 @@ public class E2ETests : PageTest
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
+        // If an external server is already running (e.g. GitHub Actions started it), use that.
+        using var probeClient = new HttpClient { Timeout = TimeSpan.FromSeconds(1) };
+        try
+        {
+            var probeResponse = await probeClient.GetAsync(AppUrl);
+            if (probeResponse.IsSuccessStatusCode)
+            {
+                _isExternalServer = true;
+                Console.WriteLine($"Detected external server at {AppUrl}, skipping local startup.");
+                return;
+            }
+        }
+        catch
+        {
+            // Not reachable => start locally
+        }
+
         _appProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"run --project \"{_startupProjectPath}\" test",
+                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
             }
         };
+
+        _appProcess.OutputDataReceived += (_, e) => { if (e?.Data != null) Console.WriteLine(e.Data); };
+        _appProcess.ErrorDataReceived += (_, e) => { if (e?.Data != null) Console.Error.WriteLine(e.Data); };
 
         _appProcess.Start();
         _appProcess.BeginOutputReadLine();
@@ -85,54 +109,43 @@ public class E2ETests : PageTest
             {
                 // App not ready yet
             }
-        
+
             await Task.Delay(retryDelay);
         }
 
         if (!isReady)
         {
-            throw new Exception("Application failed to start within the expected time");
+            var exitInfo = _appProcess != null && _appProcess.HasExited ? $" ExitCode: {_appProcess.ExitCode}" : string.Empty;
+            throw new Exception($"Application failed to start within the expected time.{exitInfo}");
         }
     }
 
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        // Stop the ASP.NET application
-        if (_appProcess is { HasExited: false })
+        // Stop the ASP.NET application only if we started it
+        if (!_isExternalServer && _appProcess is { HasExited: false })
         {
             _appProcess.Kill();
-            _appProcess.WaitForExit(5000); //closes after specified time
+            _appProcess.WaitForExit(5000); // closes after specified time
             _appProcess.Dispose();
         }
-        
+
         // Dispose of the browser context
         _context?.DisposeAsync().GetAwaiter().GetResult();
 
         // Dispose of the browser
         _browser?.DisposeAsync().GetAwaiter().GetResult();
-        
-        // Delete the test database file
+
+        // Delete the test database file (same cleanup as before)
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
         var testDbFilePath = Path.Combine(solutionDirectory, "src", "Chirp.Infrastructure", "Data", "CheepTest.db");
         string walFilePath = testDbFilePath + "-wal";
         string shmFilePath = testDbFilePath + "-shm";
-        
-        // Check if the database file exists and delete it
-        if (File.Exists(testDbFilePath))
-        {
-            File.Delete(testDbFilePath);
-        }
-        // Check if the WAL file exists and delete it
-        if (File.Exists(walFilePath))
-        {
-            File.Delete(walFilePath);
-        }
-        // Check if the SHM file exists and delete it
-        if (File.Exists(shmFilePath))
-        {
-            File.Delete(shmFilePath);
-        }
+
+        if (File.Exists(testDbFilePath)) File.Delete(testDbFilePath);
+        if (File.Exists(walFilePath)) File.Delete(walFilePath);
+        if (File.Exists(shmFilePath)) File.Delete(shmFilePath);
     }
     
     //---------------------------------- HELPER METHODS ----------------------------------
