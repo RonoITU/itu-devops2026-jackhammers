@@ -72,7 +72,7 @@ jobs:
         run: dotnet build test/Chirp.TestE2E/Chirp.TestE2E.csproj --no-restore
 
       - name: Run Web Application
-        run: dotnet run --project src/Chirp.Web/Chirp.Web.csproj --urls "http://localhost:5273"
+        run: dotnet run --project src/Chirp.Web/Chirp.Web.csproj --urls "http://localhost:5273" &
 
       - name: Wait for Web Application to Start
         run: sleep 10
