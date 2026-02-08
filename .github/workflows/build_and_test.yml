@@ -55,7 +55,6 @@ jobs:
         run: dotnet restore test/Chirp.TestIntegration/Chirp.TestIntegration.csproj
 
       - name: Run Integration Tests
-        env:
         run: dotnet test test/Chirp.TestIntegration/Chirp.TestIntegration.csproj --verbosity normal
 
   e2e_test:
