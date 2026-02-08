@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: devops
+      POSTGRES_DB: postgres
     ports:
       - "5433:5432"
     volumes:
@@ -17,6 +17,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  cheep:
+    image: ituminitwit:latest
+    container_name: cheep
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:
