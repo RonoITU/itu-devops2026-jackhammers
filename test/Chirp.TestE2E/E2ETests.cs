@@ -17,7 +17,7 @@ public class E2ETests : PageTest
     private const string TestUserPassword = "Test@12345";
     private bool _isExternalServer = false;
 
-    readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new BrowserTypeLaunchOptions
+    readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new()
     {
         Headless = true
     };
@@ -72,7 +72,7 @@ public class E2ETests : PageTest
             StartInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\"",
+                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\" -- test",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
