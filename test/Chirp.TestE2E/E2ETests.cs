@@ -16,7 +16,7 @@ public class E2ETests : PageTest
     private const string TestUserEmail = "testuser@gmail.com";
     private const string TestUserPassword = "Test@12345";
 
-    readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new BrowserTypeLaunchOptions
+    readonly BrowserTypeLaunchOptions _browserTypeLaunchOptions = new()
     {
         Headless = true
     };
@@ -24,7 +24,7 @@ public class E2ETests : PageTest
     [SetUp]
     public async Task Setup()
     {
-        // Check if app process is still running
+        // Require a local app process to be available (we always start it in OneTimeSetUp)
         if (_appProcess == null || _appProcess.HasExited)
         {
             throw new Exception($"Application process has exited. Exit code: {_appProcess?.ExitCode}");
@@ -43,21 +43,25 @@ public class E2ETests : PageTest
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
+        // Always start the web application locally for the E2E tests
         _appProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"run --project \"{_startupProjectPath}\" test",
+                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\" -- test",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
             }
         };
+
+        _appProcess.OutputDataReceived += (_, e) => { if (e?.Data != null) Console.WriteLine(e.Data); };
+        _appProcess.ErrorDataReceived += (_, e) => { if (e?.Data != null) Console.Error.WriteLine(e.Data); };
 
         _appProcess.Start();
         _appProcess.BeginOutputReadLine();
@@ -73,7 +77,7 @@ public class E2ETests : PageTest
         {
             try
             {
-                var response = await httpClient.GetAsync($"{AppUrl}");
+                var response = await httpClient.GetAsync(AppUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     isReady = true;
@@ -85,54 +89,77 @@ public class E2ETests : PageTest
             {
                 // App not ready yet
             }
-        
+
             await Task.Delay(retryDelay);
         }
 
         if (!isReady)
         {
-            throw new Exception("Application failed to start within the expected time");
+            var exitInfo = _appProcess != null && _appProcess.HasExited ? $" ExitCode: {_appProcess.ExitCode}" : string.Empty;
+            throw new Exception($"Application failed to start within the expected time.{exitInfo}");
+        }
+    }
+    
+    [TearDown]
+    public async Task TearDown()
+    {
+        if (_page != null)
+        {
+            await _page.CloseAsync();
+            _page = null;
+        }
+    
+        if (_context != null)
+        {
+            await _context.CloseAsync();
+            _context = null;
         }
     }
 
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        // Stop the ASP.NET application
+        // Stop the ASP.NET application that we started
         if (_appProcess is { HasExited: false })
         {
-            _appProcess.Kill();
-            _appProcess.WaitForExit(5000); //closes after specified time
-            _appProcess.Dispose();
+            try
+            {
+                // Try graceful shutdown first (SIGTERM on Linux, close on Windows)
+                _appProcess.CloseMainWindow();
+            
+                // Wait for graceful shutdown
+                if (!_appProcess.WaitForExit(5000))
+                {
+                    // If it didn't exit gracefully, force kill
+                    _appProcess.Kill(entireProcessTree: true);
+                    _appProcess.WaitForExit(2000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping process: {ex.Message}");
+            }
+            finally
+            {
+                _appProcess.Dispose();
+            }
         }
-        
+
         // Dispose of the browser context
         _context?.DisposeAsync().GetAwaiter().GetResult();
 
         // Dispose of the browser
         _browser?.DisposeAsync().GetAwaiter().GetResult();
-        
+
         // Delete the test database file
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var testDbFilePath = Path.Combine(solutionDirectory, "src", "Chirp.Infrastructure", "Data", "CheepTest.db");
         string walFilePath = testDbFilePath + "-wal";
         string shmFilePath = testDbFilePath + "-shm";
-        
-        // Check if the database file exists and delete it
-        if (File.Exists(testDbFilePath))
-        {
-            File.Delete(testDbFilePath);
-        }
-        // Check if the WAL file exists and delete it
-        if (File.Exists(walFilePath))
-        {
-            File.Delete(walFilePath);
-        }
-        // Check if the SHM file exists and delete it
-        if (File.Exists(shmFilePath))
-        {
-            File.Delete(shmFilePath);
-        }
+
+        if (File.Exists(testDbFilePath)) File.Delete(testDbFilePath);
+        if (File.Exists(walFilePath)) File.Delete(walFilePath);
+        if (File.Exists(shmFilePath)) File.Delete(shmFilePath);
     }
     
     //---------------------------------- HELPER METHODS ----------------------------------
@@ -1153,7 +1180,7 @@ public class E2ETests : PageTest
     {
         await RegisterUser();
         
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "icon1.png");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
@@ -1173,7 +1200,7 @@ public class E2ETests : PageTest
     {
         await RegisterUser();
         
-        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\..\.."));
+        var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "TESTGIF.gif");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
