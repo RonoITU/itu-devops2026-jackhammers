@@ -290,8 +290,7 @@ namespace Chirp.Infrastructure.Repositories
                     Text = cheepDTO.Text,
                     Author = author,
                     ImageReference = cheepDTO.ImageReference,
-                    TimeStamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-                        TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"))
+                    TimeStamp = DateTime.UtcNow
                 };
 
                 // Add the new Cheep to the DbContext
@@ -849,8 +848,7 @@ namespace Chirp.Infrastructure.Repositories
                     CheepId = cheepDto.CheepId,
                     Author = await _authorRepository.FindAuthorByName(author) ?? throw new InvalidOperationException("Author not found"),
                     Text = text,
-                    TimeStamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-                        TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"))
+                    TimeStamp = DateTime.UtcNow
                     
                 };
             
