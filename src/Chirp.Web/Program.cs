@@ -34,16 +34,26 @@ namespace Chirp.Web
             // Once you are sure everything works, you might want to increase this value to up to 1 or 2 years
             builder.Services.AddHsts(options => options.MaxAge = TimeSpan.FromDays(700));
             
-            // Determine if we are running tests
-            var isTesting = args.Contains("test");
             
-            // Load the appropriate connection string
-            string? connectionString = isTesting
-                ? builder.Configuration.GetConnectionString("TestConnection")
-                : builder.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            // Register DbContext with conditional provider configuration
+            builder.Services.AddDbContext<CheepDBContext>(options =>
+            {
+                if (connectionString?.Contains("Host=") == true)
+                {
+                    // PostgreSQL
+                    options.UseNpgsql(connectionString);
+                }
+                else
+                {
+                    // SQLite
+                    options.UseSqlite(connectionString);
+                }
+            });
 
             // Add the DbContext first
-            builder.Services.AddDbContext<CheepDBContext>(options => options.UseNpgsql(connectionString));
+            //builder.Services.AddDbContext<CheepDBContext>(options => options.UseNpgsql(connectionString));
             
             // Then add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>

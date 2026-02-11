@@ -52,7 +52,7 @@ public class E2ETests : PageTest
             StartInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\" -- test",
+                Arguments = $"run --project \"{_startupProjectPath}\" --urls \"{AppUrl}\" --environment Test",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
