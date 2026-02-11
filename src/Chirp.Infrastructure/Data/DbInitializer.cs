@@ -1,6 +1,7 @@
 ﻿using Chirp.Core;
 using Chirp.Infrastructure;
 using Chirp.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 public static class DbInitializer
@@ -3149,6 +3150,43 @@ public static class DbInitializer
             
             chirpContext.Likes.AddRange(likes);
             chirpContext.SaveChanges();
+            
+            if (chirpContext.Database.IsNpgsql())
+            {
+                ResetPostgresSequences(chirpContext);
+            }
         }
+    }
+    
+    private static void ResetPostgresSequences(CheepDBContext context)
+    {
+        // Reset sequence for Cheeps table to continue from the max ID
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Cheeps""', 'CheepId'), 
+              COALESCE((SELECT MAX(""CheepId"") FROM ""Cheeps""), 1), true)");
+        
+        // Reset sequence for Authors table
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Authors""', 'AuthorId'), 
+              COALESCE((SELECT MAX(""AuthorId"") FROM ""Authors""), 1), true)");
+        
+        // Reset sequence for Comments if it has auto-increment ID
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Comment""', 'CommentId'), 
+              COALESCE((SELECT MAX(""CommentId"") FROM ""Comment""), 1), true)");
+        
+        // Reset sequence for Likes if it has auto-increment ID
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Likes""', 'LikeId'), 
+              COALESCE((SELECT MAX(""LikeId"") FROM ""Likes""), 1), true)");
+        
+        // Add similar lines for Dislikes and Reactions if they have auto-increment IDs
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Dislikes""', 'DislikeId'), 
+              COALESCE((SELECT MAX(""DislikeId"") FROM ""Dislikes""), 1), true)");
+        
+        context.Database.ExecuteSqlRaw(
+            @"SELECT setval(pg_get_serial_sequence('""Reaction""', 'ReactionId'), 
+              COALESCE((SELECT MAX(""ReactionId"") FROM ""Reaction""), 1), true)");
     }
 }

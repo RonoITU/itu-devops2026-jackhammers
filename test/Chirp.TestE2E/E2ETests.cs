@@ -1,3 +1,5 @@
+using Testcontainers.PostgreSql;
+
 namespace Chirp.TestE2E;
 
 [Parallelizable(ParallelScope.Self)]
@@ -10,8 +12,9 @@ public class E2ETests : PageTest
     private IBrowser? _browser;
     private IBrowserContext? _context;
     private IPage? _page;
+    private PostgreSqlContainer? _postgresContainer;
     // Provide a non-nullable accessor without hiding PageTest.Page
-    private IPage CurrentPage => _page ?? throw new InvalidOperationException("Page has not been initialized. Ensure SetUp has run and page creation succeeded.");
+    private IPage CurrentPage => _page ?? throw new InvalidOperationException("Page has not been initialized.");
     private const string TestUsername = "Tester";
     private const string TestUserEmail = "testuser@gmail.com";
     private const string TestUserPassword = "Test@12345";
@@ -43,6 +46,18 @@ public class E2ETests : PageTest
     [OneTimeSetUp]
     public async Task OneTimeSetUp()
     {
+        // Start PostgreSQL container first with the new constructor
+        _postgresContainer = new PostgreSqlBuilder()
+            .WithImage("postgres:15-alpine") // Specify the PostgreSQL image
+            .WithDatabase("testdb")
+            .WithUsername("postgres")
+            .WithPassword("postgres")
+            .WithCleanUp(true)
+            .Build();
+
+        await _postgresContainer.StartAsync();
+        var connectionString = _postgresContainer.GetConnectionString();
+        
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         _startupProjectPath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "Chirp.Web.csproj");
 
@@ -60,6 +75,7 @@ public class E2ETests : PageTest
             }
         };
 
+        _appProcess.StartInfo.Environment["ConnectionStrings__DefaultConnection"] = connectionString;
         _appProcess.OutputDataReceived += (_, e) => { if (e?.Data != null) Console.WriteLine(e.Data); };
         _appProcess.ErrorDataReceived += (_, e) => { if (e?.Data != null) Console.Error.WriteLine(e.Data); };
 
@@ -117,20 +133,17 @@ public class E2ETests : PageTest
     }
 
     [OneTimeTearDown]
-    public void OneTimeTearDown()
+    public async Task OneTimeTearDown() // Changed to async Task
     {
         // Stop the ASP.NET application that we started
         if (_appProcess is { HasExited: false })
         {
             try
             {
-                // Try graceful shutdown first (SIGTERM on Linux, close on Windows)
                 _appProcess.CloseMainWindow();
-            
-                // Wait for graceful shutdown
+        
                 if (!_appProcess.WaitForExit(5000))
                 {
-                    // If it didn't exit gracefully, force kill
                     _appProcess.Kill(entireProcessTree: true);
                     _appProcess.WaitForExit(2000);
                 }
@@ -146,12 +159,25 @@ public class E2ETests : PageTest
         }
 
         // Dispose of the browser context
-        _context?.DisposeAsync().GetAwaiter().GetResult();
+        if (_context != null)
+        {
+            await _context.DisposeAsync();
+        }
 
         // Dispose of the browser
-        _browser?.DisposeAsync().GetAwaiter().GetResult();
+        if (_browser != null)
+        {
+            await _browser.DisposeAsync();
+        }
 
-        // Delete the test database file
+        // Stop and dispose the PostgreSQL container
+        if (_postgresContainer != null)
+        {
+            await _postgresContainer.StopAsync();
+            await _postgresContainer.DisposeAsync();
+        }
+
+        // Delete the test database file (if still needed)
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var testDbFilePath = Path.Combine(solutionDirectory, "src", "Chirp.Infrastructure", "Data", "CheepTest.db");
         string walFilePath = testDbFilePath + "-wal";
