@@ -12,7 +12,7 @@ public class E2ETests : PageTest
     private IBrowser? _browser;
     private IBrowserContext? _context;
     private IPage? _page;
-    private PostgreSqlContainer? _postgresContainer;
+    private PostgreSqlContainer _postgresContainer;
     // Provide a non-nullable accessor without hiding PageTest.Page
     private IPage CurrentPage => _page ?? throw new InvalidOperationException("Page has not been initialized.");
     private const string TestUsername = "Tester";
@@ -47,8 +47,7 @@ public class E2ETests : PageTest
     public async Task OneTimeSetUp()
     {
         // Start PostgreSQL container first with the new constructor
-        _postgresContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:15-alpine") // Specify the PostgreSQL image
+        _postgresContainer = new PostgreSqlBuilder("postgres:15-alpine")
             .WithDatabase("testdb")
             .WithUsername("postgres")
             .WithPassword("postgres")
@@ -173,11 +172,8 @@ public class E2ETests : PageTest
         }
 
         // Stop and dispose the PostgreSQL container
-        if (_postgresContainer != null)
-        {
-            await _postgresContainer.StopAsync();
-            await _postgresContainer.DisposeAsync();
-        }
+        await _postgresContainer.StopAsync();
+        await _postgresContainer.DisposeAsync();
 
         // Delete the test database file (if still needed)
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
