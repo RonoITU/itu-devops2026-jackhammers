@@ -37,23 +37,9 @@ namespace Chirp.Web
             
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            // Register DbContext with conditional provider configuration
+            // Use PostgreSQL as the database provider
             builder.Services.AddDbContext<CheepDBContext>(options =>
-            {
-                if (connectionString?.Contains("Host=") == true)
-                {
-                    // PostgreSQL
-                    options.UseNpgsql(connectionString);
-                }
-                else
-                {
-                    // SQLite
-                    options.UseSqlite(connectionString);
-                }
-            });
-
-            // Add the DbContext first
-            //builder.Services.AddDbContext<CheepDBContext>(options => options.UseNpgsql(connectionString));
+                options.UseNpgsql(connectionString));
             
             // Then add Identity services
             builder.Services.AddDefaultIdentity<ApplicationUser>(options =>

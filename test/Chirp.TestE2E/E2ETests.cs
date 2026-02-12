@@ -74,8 +74,10 @@ public class E2ETests : PageTest
                 CreateNoWindow = true,
             }
         };
-
+        
+        // Set the connection string inline to the e2e postgres db container 
         _appProcess.StartInfo.Environment["ConnectionStrings__DefaultConnection"] = connectionString;
+        
         _appProcess.OutputDataReceived += (_, e) => { if (e?.Data != null) Console.WriteLine(e.Data); };
         _appProcess.ErrorDataReceived += (_, e) => { if (e?.Data != null) Console.Error.WriteLine(e.Data); };
 
