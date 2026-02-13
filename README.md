@@ -48,11 +48,13 @@ cd .\src\Chirp.Web\
 dotnet watch
 ```
 
-## **Authors & Contributors**
-- [@DragonFlyersx](https://github.com/DragonFlyersx)
-- [@niko391a](https://github.com/niko391a)  
-- [@Nikolaj787](https://github.com/Nikolaj787)  
-- [@RasmusAChr](https://github.com/RasmusAChr)
-- [@Tipskind](https://github.com/Tipskind)
+---
 
+# DOCKER COMMANDS (DEVELOPING)
+```
+// Build image from Dockerfile
+docker build -t jackhammer/aspnetapp .
 
+// See images
+docker images 
+```

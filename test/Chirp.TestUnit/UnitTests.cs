@@ -1,32 +1,25 @@
 using Chirp.Core.DTOs;
 using Xunit.Abstractions;
 
-namespace Chirp.Test;
+namespace Chirp.TestUnit;
 
-public class UnitTests
+public class UnitTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public UnitTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
-
     [Theory]
     [InlineData("Helge", "Hello, BDSA students!", 1690892208)]
     //[InlineData("Adrian", "Hej, velkommen til kurset.", 1690895308)]
-    public async void TestReadForAuthor (string authorName, string messageData, long unixTimestamp) 
+    public async Task TestReadForAuthor (string authorName, string messageData, long unixTimestamp) 
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();               
         
         // Seed the database with a test entry
-        var author = new Author() { AuthorId = 1, Cheeps = null, Email = "mymail", Name = authorName, AuthorsFollowed = new List<string>()};
+        var author = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "mymail", Name = authorName, AuthorsFollowed = new List<string>()};
         
         var cheep = new Cheep
         {
@@ -55,19 +48,19 @@ public class UnitTests
     }
     
      [Fact]
-     public async void TestReadallcheeps()
+     public async Task TestReadallcheeps()
      {
          // Arrange
-         using var connection = new SqliteConnection("Filename=:memory:");
+         await using var connection = new SqliteConnection("Filename=:memory:");
          await connection.OpenAsync();                              
          var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-         using var context = new CheepDBContext(builder.Options);   
+
+         await using var context = new CheepDBContext(builder.Options);   
          await context.Database.EnsureCreatedAsync();               
         
          // Seed the database with a test entry
-         var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-         var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>()};
+         var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+         var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>()};
         
          var cheep1 = new Cheep
          {
@@ -123,19 +116,19 @@ public class UnitTests
      }
 
      [Fact]
-     public async void DeleteCheepsByAuthor()
+     public async Task DeleteCheepsByAuthor()
      {
          // Arrange
-         using var connection = new SqliteConnection("Filename=:memory:");
+         await using var connection = new SqliteConnection("Filename=:memory:");
          await connection.OpenAsync();                              
          var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-         using var context = new CheepDBContext(builder.Options);   
+
+         await using var context = new CheepDBContext(builder.Options);   
          await context.Database.EnsureCreatedAsync();               
         
          // Seed the database with a test entry
-         var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-         var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>()};
+         var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+         var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>()};
          
          var cheep1 = new Cheep
          {
@@ -182,32 +175,31 @@ public class UnitTests
          ICheepRepository repository = new CheepRepository(context, new AuthorRepository(context));
          
             // Act
-            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Helge", Email = "helge@hotmail", AuthorsFollowed = null});
-            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Adrian", Email = "", AuthorsFollowed = null });
+            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Helge", Email = "helge@hotmail", AuthorsFollowed = new List<string>()});
+            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Adrian", Email = "", AuthorsFollowed = new List<string>() });
             
             var cheepList = await repository.ReadAllCheeps(0);
          
      
         
             // Assert
-            Assert.True(cheepList.Count() == 0);
+            Assert.True(!cheepList.Any());
      }
 
      [Fact]
-     public async void DeleteCheepsById()
+     public async Task DeleteCheepsById()
      {
          // Arrange
-         using var connection = new SqliteConnection("Filename=:memory:");
+         await using var connection = new SqliteConnection("Filename=:memory:");
          await connection.OpenAsync();
          var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
 
-         using var context = new CheepDBContext(builder.Options);
+         await using var context = new CheepDBContext(builder.Options);
          await context.Database.EnsureCreatedAsync();
 
          // Seed the database with a test entry
-         var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-         var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>()};
-
+         var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+         
          var cheep1 = new Cheep
          {
              CheepId = 1,
@@ -226,24 +218,24 @@ public class UnitTests
          
          
          // Assert
-         Assert.True(cheepList.Count() == 0);
+         Assert.True(!cheepList.Any());
      }
      
      
      [Fact]
-     public async void DeleteCheepsByAuthorWith2Authors()
+     public async Task DeleteCheepsByAuthorWith2Authors()
      {
          // Arrange
-         using var connection = new SqliteConnection("Filename=:memory:");
+         await using var connection = new SqliteConnection("Filename=:memory:");
          await connection.OpenAsync();                              
          var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-         using var context = new CheepDBContext(builder.Options);   
+
+         await using var context = new CheepDBContext(builder.Options);   
          await context.Database.EnsureCreatedAsync();               
         
          // Seed the database with a test entry
-         var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>() };
-         var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+         var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>() };
+         var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
          
          var cheep1 = new Cheep
          {
@@ -290,7 +282,7 @@ public class UnitTests
          ICheepRepository repository = new CheepRepository(context, new AuthorRepository(context));
          
             // Act
-            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Helge", Email = "helge@hotmail", AuthorsFollowed = null });
+            await repository.DeleteUserCheeps(new AuthorDTO { Name = "Helge", Email = "helge@hotmail", AuthorsFollowed = new List<string>() });
             
             
             var cheepList = await repository.ReadAllCheeps(0);
@@ -302,19 +294,19 @@ public class UnitTests
             // chek if the cheep with author helge is deleted
      }
       [Fact]
-     public async void DeleteCheepsByIdMultipleCheepsr()
+     public async Task DeleteCheepsByIdMultipleCheepsr()
      {
          // Arrange
-         using var connection = new SqliteConnection("Filename=:memory:");
+         await using var connection = new SqliteConnection("Filename=:memory:");
          await connection.OpenAsync();                              
          var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-         using var context = new CheepDBContext(builder.Options);   
+
+         await using var context = new CheepDBContext(builder.Options);   
          await context.Database.EnsureCreatedAsync();               
         
          // Seed the database with a test entry
-         var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-         var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+         var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+         var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
          
          var cheep1 = new Cheep
          {
@@ -380,19 +372,19 @@ public class UnitTests
     }
 
     [Fact]
-    public async void AddFollowersToList()
+    public async Task AddFollowersToList()
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();   
         
         // Seed the database with a test entry
-        var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-        var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
         
         var cheep1 = new Cheep
         {
@@ -413,25 +405,25 @@ public class UnitTests
         
         await repository.FollowAuthor(author2.Name, cheep1.Author.Name);
         
-        _testOutputHelper.WriteLine(author2.AuthorsFollowed.ToString());
+        testOutputHelper.WriteLine(author2.AuthorsFollowed.ToString());
 
         Assert.True(author2.AuthorsFollowed.Count != 0);
         Assert.True(author2.AuthorsFollowed.Contains(author1.Name));
     }
 
     [Fact]
-    public async void DoesAuthorLike()
+    public async Task DoesAuthorLike()
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();  
         
-        var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-        var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
         
         context.Authors.Add(author1);
         context.Authors.Add(author2);
@@ -459,18 +451,18 @@ public class UnitTests
     }
 
     [Fact]
-    public async void DoesAuthorUnlike()
+    public async Task DoesAuthorUnlike()
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();  
         
-        var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-        var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
         
         context.Authors.Add(author1);
         context.Authors.Add(author2);
@@ -498,18 +490,18 @@ public class UnitTests
     }
 
     [Fact]
-    public async void DoesAuthorDislike()
+    public async Task DoesAuthorDislike()
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();  
         
-        var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-        var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
         
         context.Authors.Add(author1);
         context.Authors.Add(author2);
@@ -537,18 +529,18 @@ public class UnitTests
     }
 
     [Fact]
-    public async void DoesAuthorUndislike()
+    public async Task DoesAuthorUndislike()
     {
         // Arrange
-        using var connection = new SqliteConnection("Filename=:memory:");
+        await using var connection = new SqliteConnection("Filename=:memory:");
         await connection.OpenAsync();                              
         var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-                                                           
-        using var context = new CheepDBContext(builder.Options);   
+
+        await using var context = new CheepDBContext(builder.Options);   
         await context.Database.EnsureCreatedAsync();  
         
-        var author1 = new Author() { AuthorId = 1, Cheeps = null, Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
-        var author2 = new Author() { AuthorId = 2, Cheeps = null, Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
+        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>()};
+        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "", Name = "Adrian", AuthorsFollowed = new List<string>() };
         
         context.Authors.Add(author1);
         context.Authors.Add(author2);

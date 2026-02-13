@@ -34,6 +34,9 @@ namespace Chirp.Infrastructure.Repositories
         /// <returns>A list of CheepDTO objects.</returns>
         public async Task<List<CheepDTO>> ReadCheepsFromAuthor(string userName, int page)
         {
+            // Ensure page is at least 1
+            if (page < 1) page = 1;
+            
             var query = _dbContext.Cheeps
                 .Include(c => c.Author)
                 .Where(cheep => cheep.Author.Name == userName)
@@ -290,8 +293,7 @@ namespace Chirp.Infrastructure.Repositories
                     Text = cheepDTO.Text,
                     Author = author,
                     ImageReference = cheepDTO.ImageReference,
-                    TimeStamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-                        TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"))
+                    TimeStamp = DateTime.UtcNow
                 };
 
                 // Add the new Cheep to the DbContext
@@ -849,8 +851,7 @@ namespace Chirp.Infrastructure.Repositories
                     CheepId = cheepDto.CheepId,
                     Author = await _authorRepository.FindAuthorByName(author) ?? throw new InvalidOperationException("Author not found"),
                     Text = text,
-                    TimeStamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-                        TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"))
+                    TimeStamp = DateTime.UtcNow
                     
                 };
             

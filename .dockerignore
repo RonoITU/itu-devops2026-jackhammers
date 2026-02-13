@@ -1,0 +1,16 @@
+﻿# Python
+venv/
+__pycache__/
+
+# .NET
+bin/
+obj/
+
+# Git
+.git
+.gitignore
+
+# OS / IDE
+.vscode/
+.idea/
+*.log
