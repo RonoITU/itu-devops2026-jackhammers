@@ -14,6 +14,7 @@ public class CheepDBContext(DbContextOptions<CheepDBContext> options) : Identity
     public DbSet<Like> Likes { get; set; }
     public DbSet<Dislike> Dislikes { get; set; }
     public DbSet<Reaction> Reaction { get; set; }
+    public DbSet<SystemConfig> SystemConfig { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

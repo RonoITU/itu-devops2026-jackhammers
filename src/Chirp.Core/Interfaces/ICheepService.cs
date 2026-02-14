@@ -23,4 +23,6 @@ public interface ICheepService
     public Task<List<CheepDTO>> GetPopularCheeps(int page);
     public Task<int> GetTotalPageNumberForPopular();
     public Task<string> HandleImageUpload(IFormFile image);
+    
+    Task<List<CheepDTO>> GetMessagesForSimulator(string? username = null, int count = 100);
 }

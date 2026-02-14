@@ -5,8 +5,9 @@ using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-
+using Microsoft.AspNetCore.Mvc;
+using Chirp.Core.DTOs;
+using Microsoft.AspNetCore.OpenApi;
 
 namespace Chirp.Web
 {
@@ -94,8 +95,10 @@ namespace Chirp.Web
             // Register your repositories and services
             builder.Services.AddScoped<CheepRepository>();
             builder.Services.AddScoped<AuthorRepository>();
+            builder.Services.AddScoped<LatestRepository>();
             builder.Services.AddScoped<CheepService>();
             builder.Services.AddScoped<AuthorService>();
+            builder.Services.AddScoped<LatestService>();
 
             // Build the application
             var app = builder.Build();
@@ -152,7 +155,7 @@ namespace Chirp.Web
             app.UseAuthorization();
 
             // Map Razor Pages
-            app.MapRazorPages();
+            app.MapRazorPages();    
             
             app.MapGet("/cheeps", async (CheepService cheepService) =>
             {
@@ -165,6 +168,227 @@ namespace Chirp.Web
                 var followedAuthors = await authorService.GetFollowedAuthors(userName);
                 return Results.Ok(followedAuthors);
             });
+            
+            // Simulator API endpoints
+            var simulatorApi = app.MapGroup("/")
+                .WithOpenApi();
+
+            // GET /latest - Now async
+            simulatorApi.MapGet("/latest", async (LatestService latestService) =>
+            {
+                var latest = await latestService.GetLatestAsync();
+                return Results.Ok(new LatestResponse { Latest = latest });
+            });
+
+            // POST /register - Update to use async
+            simulatorApi.MapPost("/register", async (
+                [FromBody] RegisterRequest request,
+                [FromQuery] int? latest,
+                AuthorService authorService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    var existingAuthor = await authorService.FindAuthorByName(request.Username);
+                    if (existingAuthor != null)
+                    {
+                        return Results.BadRequest(new { error = "User already exists" });
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(request.Username))
+                    {
+                        return Results.BadRequest(new { error = "Username is required" });
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(request.Email))
+                    {
+                        return Results.BadRequest(new { error = "Email is required" });
+                    }
+                    
+                    await authorService.CreateAuthor(request.Username, request.Email, null);
+                    
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // POST /msgs/{username} - Update to use async
+            simulatorApi.MapPost("/msgs/{username}", async (
+                string username,
+                [FromBody] MessageRequest request,
+                [FromQuery] int? latest,
+                AuthorService authorService,
+                CheepService cheepService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    var author = await authorService.FindAuthorByName(username);
+                    if (author == null)
+                    {
+                        return Results.NotFound(new { error = "User not found" });
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(request.Content))
+                    {
+                        return Results.BadRequest(new { error = "Message content is required" });
+                    }
+                    
+                    if (request.Content.Length > 160)
+                    {
+                        return Results.BadRequest(new { error = "Message content must be 160 characters or less" });
+                    }
+                    
+                    var cheepDto = new CheepDTO
+                    {
+                        Author = author,
+                        Text = request.Content,
+                        ImageReference = null,
+                        FormattedTimeStamp = DateTime.UtcNow.ToString()
+                    };
+                    
+                    await cheepService.CreateCheep(cheepDto);
+                    
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // GET /msgs/{username} - Update to use async
+            simulatorApi.MapGet("/msgs/{username}", async (
+                string username,
+                [FromQuery] int? no,
+                [FromQuery] int? latest,
+                CheepService cheepService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    int count = no ?? 100;
+                    
+                    var cheeps = await cheepService.GetMessagesForSimulator(username, count);
+                    
+                    var messages = cheeps.Select(c => new MessageResponse
+                    {
+                        Content = c.Text,
+                        Pub_date = c.FormattedTimeStamp,
+                        User = c.Author.Name
+                    }).ToList();
+                    
+                    return Results.Ok(messages);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // GET /msgs - Update to use async
+            simulatorApi.MapGet("/msgs", async (
+                [FromQuery] int? no,
+                [FromQuery] int? latest,
+                CheepService cheepService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    int count = no ?? 100;
+                    
+                    var cheeps = await cheepService.GetMessagesForSimulator(null, count);
+                    
+                    var messages = cheeps.Select(c => new MessageResponse
+                    {
+                        Content = c.Text,
+                        Pub_date = c.FormattedTimeStamp,
+                        User = c.Author.Name
+                    }).ToList();
+                    
+                    return Results.Ok(messages);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // POST /fllws/{username} - Update to use async
+            simulatorApi.MapPost("/fllws/{username}", async (
+                string username,
+                [FromBody] FollowRequest request,
+                [FromQuery] int? latest,
+                AuthorService authorService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    var author = await authorService.FindAuthorByName(username);
+                    if (author == null)
+                    {
+                        return Results.NotFound(new { error = "User not found" });
+                    }
+                    
+                    if (!string.IsNullOrEmpty(request.Follow))
+                    {
+                        var followAuthor = await authorService.FindAuthorByName(request.Follow);
+                        if (followAuthor == null)
+                        {
+                            return Results.NotFound(new { error = "User to follow not found" });
+                        }
+                        
+                        await authorService.FollowAuthor(username, request.Follow);
+                    }
+                    
+                    if (!string.IsNullOrEmpty(request.Unfollow))
+                    {
+                        await authorService.UnfollowAuthor(username, request.Unfollow);
+                    }
+                    
+                    return Results.NoContent();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // GET /fllws/{username} - Update to use async
+            simulatorApi.MapGet("/fllws/{username}", async (
+                string username,
+                [FromQuery] int? no,
+                [FromQuery] int? latest,
+                AuthorService authorService,
+                LatestService latestService) =>
+            {
+                await latestService.UpdateLatestAsync(latest);
+                
+                try
+                {
+                    var followedAuthors = await authorService.GetFollowedAuthors(username);
+                    
+                    return Results.Ok(new FollowsResponse { Follows = followedAuthors });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
             
             // Run the application
             app.Run();
