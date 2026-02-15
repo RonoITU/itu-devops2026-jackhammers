@@ -1,4 +1,5 @@
 using Chirp.Infrastructure.Repositories;
+using Chirp.Core.Interfaces;
 
 namespace Chirp.Infrastructure.Services;
 
@@ -6,11 +7,11 @@ namespace Chirp.Infrastructure.Services;
 /// Service for tracking the latest command ID from the simulator.
 /// Provides business logic layer over LatestRepository.
 /// </summary>
-public class LatestService
+public class LatestService : ILatestService
 {
-    private readonly LatestRepository _latestRepository;
+    private readonly ILatestRepository _latestRepository;
     
-    public LatestService(LatestRepository latestRepository)
+    public LatestService(ILatestRepository latestRepository)
     {
         _latestRepository = latestRepository;
     }

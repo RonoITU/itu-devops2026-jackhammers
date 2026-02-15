@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Core;
+using Chirp.Core.Interfaces;
 
 namespace Chirp.Infrastructure.Repositories;
 
@@ -7,7 +8,7 @@ namespace Chirp.Infrastructure.Repositories;
 /// Repository for managing system configuration values in the database.
 /// Handles data access for the SystemConfig entity.
 /// </summary>
-public class LatestRepository
+public class LatestRepository : ILatestRepository
 {
     private readonly CheepDBContext _dbContext;
     

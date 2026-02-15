@@ -1,3 +1,4 @@
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Repositories;
 using Chirp.Infrastructure.Services;
@@ -53,10 +54,10 @@ namespace Chirp.Web
             // Register your repositories and services
             builder.Services.AddScoped<CheepRepository>();
             builder.Services.AddScoped<AuthorRepository>();
-            builder.Services.AddScoped<LatestRepository>();
+            builder.Services.AddScoped<ILatestRepository, LatestRepository>();
             builder.Services.AddScoped<CheepService>();
             builder.Services.AddScoped<AuthorService>();
-            builder.Services.AddScoped<LatestService>();
+            builder.Services.AddScoped<ILatestService, LatestService>();
 
             // Build the application
             var app = builder.Build();

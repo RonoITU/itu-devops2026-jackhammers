@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +15,14 @@ namespace Chirp.Web.Controllers;
 [Route("")]
 public class SimulatorController : ControllerBase
 {
-    private readonly LatestService _latestService;
-    private readonly AuthorService _authorService;
-    private readonly CheepService _cheepService;
+    private readonly ILatestService _latestService;
+    private readonly IAuthorService _authorService;
+    private readonly ICheepService _cheepService;
     
     public SimulatorController(
-        LatestService latestService,
-        AuthorService authorService,
-        CheepService cheepService)
+        ILatestService latestService,
+        IAuthorService authorService,
+        ICheepService cheepService)
     {
         _latestService = latestService;
         _authorService = authorService;
