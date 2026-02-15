@@ -8,6 +8,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Chirp.Core;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -20,20 +21,17 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly CheepService _cheepService;
-        private readonly AuthorService _authorService;
+        private readonly IAuthorService _authorService;
         
         public AuthorDTO UserAuthor { get; set; }
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            CheepService cheepService,
-            AuthorService authorService)
+            IAuthorService authorService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _cheepService = cheepService;
             _authorService = authorService;
         }
 

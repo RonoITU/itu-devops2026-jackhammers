@@ -21,8 +21,8 @@ public class SimulatorController : ControllerBase
     
     public SimulatorController(
         ILatestService latestService,
-        AuthorService authorService,
-        CheepService cheepService)
+        IAuthorService authorService,
+        ICheepService cheepService)
     {
         _latestService = latestService;
         _authorService = authorService;
@@ -106,7 +106,7 @@ public class SimulatorController : ControllerBase
             }
             
             // Create the author
-            await _authorService.CreateAuthor(request.Username, request.Email);
+            await _authorService.CreateAuthor(request.Username, request.Email, null);
             
             return NoContent();
         }

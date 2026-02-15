@@ -18,9 +18,9 @@ namespace Chirp.Infrastructure.Repositories
     public class CheepRepository : ICheepRepository
     {
         private readonly CheepDBContext _dbContext;
-        private readonly AuthorRepository _authorRepository;
+        private readonly IAuthorRepository _authorRepository;
 
-        public CheepRepository(CheepDBContext dbContext, AuthorRepository authorRepository)
+        public CheepRepository(CheepDBContext dbContext, IAuthorRepository authorRepository)
         {
             _dbContext = dbContext;
             _authorRepository = authorRepository;

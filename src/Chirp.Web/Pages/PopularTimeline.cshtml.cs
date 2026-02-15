@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Services;
 using Chirp.Web.Pages.Views;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,8 @@ namespace Chirp.Web.Pages;
 
 public class PopularTimelineModel : PageModel
 {
-    private readonly CheepService _cheepService;
-    private readonly AuthorService _authorService;
+    private readonly ICheepService _cheepService;
+    private readonly IAuthorService _authorService;
     public int PageNumber { get; set; }
     public int TotalPageNumber { get; set; }
     public AuthorDTO? UserAuthor { get; set; }
@@ -23,7 +24,7 @@ public class PopularTimelineModel : PageModel
 
     public SharedChirpViewModel SharedChirpView { get; set; } = new SharedChirpViewModel();
 
-    public PopularTimelineModel(CheepService cheepService, AuthorService authorService)
+    public PopularTimelineModel(ICheepService cheepService, IAuthorService authorService)
     {
         _cheepService = cheepService;
         _authorService = authorService;

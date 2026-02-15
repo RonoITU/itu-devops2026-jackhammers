@@ -52,11 +52,11 @@ namespace Chirp.Web
             builder.Services.AddSession();
             
             // Register your repositories and services
-            builder.Services.AddScoped<CheepRepository>();
-            builder.Services.AddScoped<AuthorRepository>();
+            builder.Services.AddScoped<ICheepRepository, CheepRepository>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services.AddScoped<ILatestRepository, LatestRepository>();
-            builder.Services.AddScoped<CheepService>();
-            builder.Services.AddScoped<AuthorService>();
+            builder.Services.AddScoped<ICheepService, CheepService>();
+            builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<ILatestService, LatestService>();
 
             // Build the application
@@ -123,13 +123,13 @@ namespace Chirp.Web
             // Map Controllers (Used for Simulator API endpoints)
             app.MapControllers();
             
-            app.MapGet("/cheeps", async (CheepService cheepService) =>
+            app.MapGet("/cheeps", async (ICheepService cheepService) =>
             {
                 var cheeps = await cheepService.RetrieveAllCheeps();
                 return Results.Ok(cheeps);
             });
             
-            app.MapGet("/{userName}/follows", async (string userName, AuthorService authorService) =>
+            app.MapGet("/{userName}/follows", async (string userName, IAuthorService authorService) =>
             {
                 var followedAuthors = await authorService.GetFollowedAuthors(userName);
                 return Results.Ok(followedAuthors);

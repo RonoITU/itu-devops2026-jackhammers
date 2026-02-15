@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Services;
 using Chirp.Web.Pages.Views;
@@ -18,8 +19,8 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
-        private readonly CheepService _cheepService;
-        private readonly AuthorService _authorService;
+        private readonly ICheepService _cheepService;
+        private readonly IAuthorService _authorService;
         public int PageNumber { get; set; }
         public int TotalPageNumber { get; set; }
         public SharedChirpViewModel SharedViewModel { get; set; } = new SharedChirpViewModel();
@@ -32,8 +33,8 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
         public PersonalDataModel(
             UserManager<ApplicationUser> userManager,
             ILogger<PersonalDataModel> logger, 
-            CheepService cheepService,
-            AuthorService authorService)
+            ICheepService cheepService,
+            IAuthorService authorService)
         {
             _userManager = userManager;
             _logger = logger;
