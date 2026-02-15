@@ -17,6 +17,4 @@ public class SystemConfig
     public required string Key { get; set; }
     
     public int? IntValue { get; set; }
-    public string? StringValue { get; set; }
-    public DateTime? DateTimeValue { get; set; }
 }

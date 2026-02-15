@@ -1,4 +1,5 @@
-﻿using Chirp.Core.DTOs;
+﻿using System.Globalization;
+using Chirp.Core.DTOs;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +41,7 @@ public class SimulatorController : ControllerBase
             var latest = await _latestService.GetLatestAsync();
             return Ok(new LatestResponse { Latest = latest });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -104,11 +105,11 @@ public class SimulatorController : ControllerBase
             }
             
             // Create the author
-            await _authorService.CreateAuthor(request.Username, request.Email, null);
+            await _authorService.CreateAuthor(request.Username, request.Email);
             
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -166,14 +167,14 @@ public class SimulatorController : ControllerBase
                 Author = author,
                 Text = request.Content,
                 ImageReference = null,
-                FormattedTimeStamp = DateTime.UtcNow.ToString()
+                FormattedTimeStamp = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             };
             
             await _cheepService.CreateCheep(cheepDto);
             
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -212,7 +213,7 @@ public class SimulatorController : ControllerBase
             
             return Ok(messages);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -249,7 +250,7 @@ public class SimulatorController : ControllerBase
             
             return Ok(messages);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -302,7 +303,7 @@ public class SimulatorController : ControllerBase
             
             return NoContent();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 
@@ -332,7 +333,7 @@ public class SimulatorController : ControllerBase
             
             return Ok(new FollowsResponse { Follows = followedAuthors });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new ErrorResponse 
             { 

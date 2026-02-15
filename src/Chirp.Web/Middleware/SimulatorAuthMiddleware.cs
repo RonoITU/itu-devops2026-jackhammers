@@ -4,11 +4,11 @@ namespace Chirp.Web.Middleware;
 
 /// <summary>
 /// Middleware to authenticate simulator requests using Basic Authentication.
-/// Applies to /register, /msgs, /fllws, and /latest endpoints.
 /// Regular user endpoints are unaffected.
 /// </summary>
 public class SimulatorAuthMiddleware(RequestDelegate next)
 {
+    // Hardcoded credentials for the simulator
     private const string SimulatorUsername = "simulator";
     private const string SimulatorPassword = "super_safe!";
 
@@ -26,6 +26,7 @@ public class SimulatorAuthMiddleware(RequestDelegate next)
             context.Request.Path.StartsWithSegments("/msgs") ||
             context.Request.Path.StartsWithSegments("/fllws"))
         {
+            // If not authorized, return 403 with JSON error message
             if (!IsAuthorized(context.Request))
             {
                 context.Response.StatusCode = 403;
@@ -41,6 +42,11 @@ public class SimulatorAuthMiddleware(RequestDelegate next)
         await next(context);
     }
     
+    /// <summary>
+    /// Checks if the request contains valid Basic Authentication credentials for the simulator.
+    /// </summary>
+    /// <param name="request">The incoming HTTP request.</param>
+    /// <returns>True if authorized, false otherwise.</returns>
     private bool IsAuthorized(HttpRequest request)
     {
         // Check for Authorization header
@@ -49,6 +55,7 @@ public class SimulatorAuthMiddleware(RequestDelegate next)
             return false;
         }
         
+        // Get the header value as a string
         var authHeaderValue = authHeader.ToString();
         
         // Check if it's Basic authentication
