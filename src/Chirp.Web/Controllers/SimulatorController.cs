@@ -21,8 +21,8 @@ public class SimulatorController : ControllerBase
     
     public SimulatorController(
         ILatestService latestService,
-        IAuthorService authorService,
-        ICheepService cheepService)
+        AuthorService authorService,
+        CheepService cheepService)
     {
         _latestService = latestService;
         _authorService = authorService;
