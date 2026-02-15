@@ -1,12 +1,10 @@
-using System.Security.Claims;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Repositories;
 using Chirp.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-
+using Chirp.Web.Middleware;
 
 namespace Chirp.Web
 {
@@ -31,6 +29,9 @@ namespace Chirp.Web
             // Add services to the container
             builder.Services.AddRazorPages();
             
+            // Add Controllers (for API endpoints - primary for the simulator)
+            builder.Services.AddControllers();
+            
             // Once you are sure everything works, you might want to increase this value to up to 1 or 2 years
             builder.Services.AddHsts(options => options.MaxAge = TimeSpan.FromDays(700));
             
@@ -46,56 +47,17 @@ namespace Chirp.Web
                     options.SignIn.RequireConfirmedAccount = true)
                 .AddSignInManager<SignInManager<ApplicationUser>>()
                 .AddEntityFrameworkStores<CheepDBContext>();
-
-            // Retrieve ClientId and ClientSecret from configuration
-            //string? clientId = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTID"];
-            //string? clientSecret = builder.Configuration["AUTHENTICATION_GITHUB_CLIENTSECRET"];
-
-            // if (string.IsNullOrEmpty(clientId) && string.IsNullOrEmpty(clientSecret))
-            // {
-            //     throw new ApplicationException("Failed to retrieve both the Github Client ID and Secret. Make sure that the values are set on the machine.");
-            // }
-            // if (string.IsNullOrEmpty(clientId))
-            // {
-            //     throw new ApplicationException("Failed to retrieve the Github Client ID. Make sure that the github value is set on the machine.");
-            // }
-            // if (string.IsNullOrEmpty(clientSecret))
-            // {
-            //     throw new ApplicationException("Failed to retrieve the Github Secret. Make sure that the github value is set on the machine.");
-            // }
             
-            // Add GitHub Services
-            // builder.Services.AddAuthentication()
-            //     .AddGitHub(options =>
-            //     {
-            //         options.ClientId = clientId;
-            //         options.ClientSecret = clientSecret;
-            //         options.CallbackPath = new PathString("/signin-github");
-            //         options.Scope.Add("user:email");
-            //         options.ClaimActions.MapJsonKey("urn:github:avatar_url", "avatar_url");
-            //
-            //
-            //         options.Events.OnCreatingTicket = context =>
-            //         {
-            //             // Retrieve user details from claims
-            //             var userName = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
-            //             var email = context.Identity?.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
-            //
-            //             // You can use these values as needed in your application
-            //             Console.WriteLine($"GitHub Username: {userName}");
-            //             Console.WriteLine($"GitHub Email: {email}");
-            //
-            //             return Task.CompletedTask;
-            //         };
-            //     }); 
-            
+            // Add session support
             builder.Services.AddSession();
             
             // Register your repositories and services
             builder.Services.AddScoped<CheepRepository>();
             builder.Services.AddScoped<AuthorRepository>();
+            builder.Services.AddScoped<ILatestRepository, LatestRepository>();
             builder.Services.AddScoped<CheepService>();
             builder.Services.AddScoped<AuthorService>();
+            builder.Services.AddScoped<ILatestService, LatestService>();
 
             // Build the application
             var app = builder.Build();
@@ -148,11 +110,18 @@ namespace Chirp.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
+            
+            // Custom middleware to handle authentication for simulator API endpoints
+            app.UseMiddleware<SimulatorAuthMiddleware>(); 
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
             // Map Razor Pages
-            app.MapRazorPages();
+            app.MapRazorPages(); 
+            
+            // Map Controllers (Used for Simulator API endpoints)
+            app.MapControllers();
             
             app.MapGet("/cheeps", async (CheepService cheepService) =>
             {

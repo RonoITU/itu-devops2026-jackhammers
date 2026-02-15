@@ -904,5 +904,46 @@ namespace Chirp.Infrastructure.Repositories
                 await _dbContext.SaveChangesAsync();
             }
         }
+        
+        /// <summary>
+        /// Retrieves messages for the simulator API
+        /// </summary>
+        public async Task<List<CheepDTO>> GetMessagesForSimulator(string? username = null, int count = 100)
+        {
+            var query = _dbContext.Cheeps
+                .Include(c => c.Author)
+                .AsQueryable();
+    
+            if (!string.IsNullOrEmpty(username))
+            {
+                query = query.Where(c => c.Author.Name == username);
+            }
+    
+            var cheeps = await query
+                .OrderByDescending(cheep => cheep.TimeStamp)
+                .Take(count)
+                .Select(cheep => new CheepDTO
+                {
+                    CheepId = cheep.CheepId,
+                    Author = new AuthorDTO
+                    {
+                        Name = cheep.Author.Name,
+                        Email = cheep.Author.Email,
+                        AuthorsFollowed = cheep.Author.AuthorsFollowed,
+                        ProfilePicture = cheep.Author.ProfilePicture
+                    },
+                    Text = cheep.Text,
+                    ImageReference = cheep.ImageReference ?? "",
+                    FormattedTimeStamp = new DateTimeOffset(cheep.TimeStamp).ToUnixTimeSeconds().ToString(),
+                    Likes = cheep.Likes,
+                    Dislikes = cheep.Dislikes,
+                    LikesCount = cheep.Likes.Count,
+                    DislikesCount = cheep.Dislikes.Count,
+                    CommentsCount = cheep.Comments.Count
+                })
+                .ToListAsync();
+    
+            return cheeps;
+        }
     }
 }

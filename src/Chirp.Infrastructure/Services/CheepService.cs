@@ -214,4 +214,12 @@ public class CheepService : ICheepService
     {
         return await _cheepRepository.RetriveAllCommentsFromAnAuthor(authorName);
     }
+    
+    /// <summary>
+    /// Gets messages for simulator API with pagination
+    /// </summary>
+    public async Task<List<CheepDTO>> GetMessagesForSimulator(string? username = null, int count = 100)
+    {
+        return await _cheepRepository.GetMessagesForSimulator(username, count);
+    }
 }
