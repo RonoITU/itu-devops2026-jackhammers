@@ -8,9 +8,9 @@ namespace Chirp.Infrastructure.Services;
 public class AuthorService : IAuthorService
 {
     
-    private readonly AuthorRepository _authorRepository;
+    private readonly IAuthorRepository _authorRepository;
     
-    public AuthorService(AuthorRepository authorRepository)
+    public AuthorService(IAuthorRepository authorRepository)
     {
         _authorRepository = authorRepository;
     }

@@ -6,6 +6,7 @@
 
 using System.IO.Compression;
 using System.Text;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -20,14 +21,14 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<DownloadPersonalDataModel> _logger;
-        private readonly CheepService _cheepService;
-        private readonly AuthorService _authorService;
+        private readonly ICheepService _cheepService;
+        private readonly IAuthorService _authorService;
 
         public DownloadPersonalDataModel(
             UserManager<ApplicationUser> userManager,
             ILogger<DownloadPersonalDataModel> logger,
-            CheepService cheepService,
-            AuthorService authorService)
+            ICheepService cheepService,
+            IAuthorService authorService)
         {
             _userManager = userManager;
             _logger = logger;

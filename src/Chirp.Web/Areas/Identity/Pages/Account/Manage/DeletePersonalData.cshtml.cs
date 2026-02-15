@@ -4,6 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
@@ -17,16 +18,16 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
-        private readonly CheepService _cheepService;
-        private readonly AuthorService _authorService;
+        private readonly ICheepService _cheepService;
+        private readonly IAuthorService _authorService;
         
 
         public DeletePersonalDataModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<DeletePersonalDataModel> logger,
-            CheepService cheepService,
-            AuthorService authorService)
+            ICheepService cheepService,
+            IAuthorService authorService)
         {
             _userManager = userManager;
             _signInManager = signInManager;

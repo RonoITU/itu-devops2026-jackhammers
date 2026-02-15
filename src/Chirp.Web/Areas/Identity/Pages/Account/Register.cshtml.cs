@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 using System.ComponentModel.DataAnnotations;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Data;
 using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -19,14 +20,14 @@ namespace Chirp.Web.Areas.Identity.Pages.Account
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly AuthorService _authorService;
+        private readonly IAuthorService _authorService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            AuthorService authorService)
+            IAuthorService authorService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -128,7 +129,7 @@ namespace Chirp.Web.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
                         
-                    await _authorService.CreateAuthor(Input.UserName, Input.Email);
+                    await _authorService.CreateAuthor(Input.UserName, Input.Email, null);
                     
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
