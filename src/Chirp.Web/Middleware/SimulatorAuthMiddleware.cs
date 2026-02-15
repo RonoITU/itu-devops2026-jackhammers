@@ -4,33 +4,31 @@ namespace Chirp.Web.Middleware;
 
 /// <summary>
 /// Middleware to authenticate simulator requests using Basic Authentication.
-/// Only applies to /api/simulator/* endpoints.
+/// Applies to /register, /msgs, /fllws, and /latest endpoints.
 /// Regular user endpoints are unaffected.
 /// </summary>
-public class SimulatorAuthMiddleware
+public class SimulatorAuthMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
     private const string SimulatorUsername = "simulator";
     private const string SimulatorPassword = "super_safe!";
-    
-    public SimulatorAuthMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-    
+
     public async Task InvokeAsync(HttpContext context)
     {
-        // Only check auth for simulator API endpoints
-        // This leaves regular user endpoints unaffected
+        // /latest is public - no auth required
+        if (context.Request.Path.StartsWithSegments("/latest"))
+        {
+            await next(context);
+            return;
+        }
+        
+        // Check auth for simulator API endpoints
         if (context.Request.Path.StartsWithSegments("/register") ||
             context.Request.Path.StartsWithSegments("/msgs") ||
-            context.Request.Path.StartsWithSegments("/fllws") ||
-            context.Request.Path.StartsWithSegments("/latest"))
+            context.Request.Path.StartsWithSegments("/fllws"))
         {
             if (!IsAuthorized(context.Request))
             {
                 context.Response.StatusCode = 403;
-                context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(new 
                 { 
                     status = 403, 
@@ -40,7 +38,7 @@ public class SimulatorAuthMiddleware
             }
         }
         
-        await _next(context);
+        await next(context);
     }
     
     private bool IsAuthorized(HttpRequest request)
