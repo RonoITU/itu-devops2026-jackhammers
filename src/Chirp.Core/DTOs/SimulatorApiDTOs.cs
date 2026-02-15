@@ -36,3 +36,12 @@ public class FollowsResponse
 {
     public List<string> Follows { get; set; } = new();
 }
+
+/// <summary>
+/// Error response following the OpenAPI specification
+/// </summary>
+public class ErrorResponse
+{
+    public int Status { get; set; }
+    public string ErrorMsg { get; set; } = string.Empty;
+}
