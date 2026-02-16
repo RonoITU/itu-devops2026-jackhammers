@@ -12,7 +12,7 @@ namespace Chirp.Web.Controllers;
 /// These endpoints are separate from the regular user-facing UI.
 /// </summary>
 [ApiController]
-[Route("")]
+[Route("api")]
 public class SimulatorController : ControllerBase
 {
     private readonly ILatestService _latestService;
