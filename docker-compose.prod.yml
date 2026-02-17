@@ -21,7 +21,13 @@ services:
     container_name: cheep
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://*:8081;http://*:8080
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/cert/live/windysquirrels.dk/fullchain.pem
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/cert/live/windysquirrels.dk/privkey.pem
+    volumes:
+      - /etc/letsencrypt:/cert
     ports:
+      - "443:8081"
       - "80:8080"
     depends_on:
       db:
