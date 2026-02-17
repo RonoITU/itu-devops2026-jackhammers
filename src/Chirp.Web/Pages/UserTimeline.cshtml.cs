@@ -3,6 +3,7 @@ using Chirp.Core;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Chirp.Core.DTOs;
+using Chirp.Core.Interfaces;
 using Chirp.Infrastructure.Services;
 using Chirp.Web.Pages.Views;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,8 @@ namespace Chirp.Web.Pages;
 
 public class UserTimelineModel : PageModel
 {
-    private readonly CheepService _cheepService;
-    private readonly AuthorService _authorService;
+    private readonly ICheepService _cheepService;
+    private readonly IAuthorService _authorService;
     public int PageNumber { get; set; }
     public int TotalPageNumber { get; set; }
     public int AuthorKarma { get; set; }
@@ -28,7 +29,7 @@ public class UserTimelineModel : PageModel
     public AuthorDTO? PageAuthor { get; set; }
     public AuthorDTO? UserAuthor { get; set; }
 
-    public UserTimelineModel(CheepService cheepService, AuthorService authorService)
+    public UserTimelineModel(ICheepService cheepService, IAuthorService authorService)
     {
         _cheepService = cheepService;
         _authorService = authorService;
