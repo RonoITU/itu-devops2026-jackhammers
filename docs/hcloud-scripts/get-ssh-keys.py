@@ -4,10 +4,10 @@ from hcloud import Client
 from hcloud.images import Image
 from hcloud.server_types import ServerType
 
-# This script displays the reference names of Hetzner data centres.
+# This script displays the public SSH keys stored in the project.
 def main():
     parser = argparse.ArgumentParser(
-        description="# This script displays the reference names of Hetzner data centres."
+        description="This script displays the public SSH keys stored in the project."
     )
 
     parser.add_argument(
@@ -19,18 +19,16 @@ def main():
 
     args = parser.parse_args()
 
-    # Closely follows the example found at:
-    # https://github.com/hetznercloud/hcloud-python
     client = Client(
         token=args.apikey,
-        application_name="get-locations.py",
+        application_name="get-ssh-keys.py",
         application_version="v1.0.0"
     )
 
-    locationResponse = client.locations.get_all()
-    print("*** Locations:")
-    for l in locationResponse:
-        print(l.name)
+    ssh_keys = client.ssh_keys.get_all()
+    print("*** SSH Public Keys:")
+    for key in ssh_keys:
+        print(f"{key.public_key} {key.name}")
 
 if __name__ == "__main__":
     main()
