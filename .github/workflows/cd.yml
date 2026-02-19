@@ -1,0 +1,98 @@
+﻿name: CD - Deploy and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  # IF WE WANT TO RUN CI AS PART OF THIS WORKFLOW THEN...
+  # Uncomment the block below to add an explicit CI job that runs before deployment.
+  # This calls the CI workflow to ensure that all tests and checks pass before we attempt to deploy.
+  # However this is redundant, since we already run CI on every pr to main.
+  # 
+  # run_ci:
+  #  uses: ./.github/workflows/ci.yml
+
+  publish:
+    # Uncomment the line below to make this job depend on the CI job, ensuring it only runs if CI passes.
+    # needs: run_ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Publish Web App
+        run: dotnet publish src/Chirp.Web/Chirp.Web.csproj --configuration Release --output ./publish
+
+      # Upload the published output as an artifact so the deploy job can use it
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp
+          path: ./publish
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    environment: production  # Enables GitHub environment protection rules and approval gates
+    steps:
+      - name: Download publish artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp
+          path: ./publish
+
+      # --------------------------------------------
+      # DEPLOYMENT STEP TO HETZNER
+      #
+      # SSH to a VPS / bare metal server:
+      #   uses: appleboy/ssh-action@v1
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     script: |
+      #       systemctl stop chirp
+      #       rsync -r ./publish/ /var/www/chirp/
+      #       systemctl start chirp
+      # --------------------------------------------
+      - name: Deploy to production
+        run: echo "TODO: add your deploy step here" # Of course remove this when we add the real deploy step
+
+  # This job creates a GitHub Release. It generates a tag and changelog based on merged PRs since the last release.
+  release:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Is needed to generate changelog from full git history
+
+      - name: Read version
+          id: version
+          run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+      # Automatically generates a tag (v1.0.0, v1.0.1, etc.) based on commits, and creates 
+      # a GitHub Release with a changelog.
+      # If we don't use commits, we can probably hardcode a version in a 
+      # VERSION file and read it with: tag_name: v$(cat VERSION)
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.VERSION }}
+          name: Release v${{ steps.version.outputs.VERSION }}
+          generate_release_notes: true           # Auto-generates changelog from merged PRs
+          token: ${{ secrets.GITHUB_TOKEN }}     # GITHUB_TOKEN is built-in, no setup needed

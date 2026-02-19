@@ -6,8 +6,9 @@ on:
       - main
       - develop
   push:
-    branches:
+    branches: 
       - feature/deploy-workflow # For testing purposes
+  workflow_call:  # allows other workflows to call this one
   workflow_dispatch:
 
 jobs:
