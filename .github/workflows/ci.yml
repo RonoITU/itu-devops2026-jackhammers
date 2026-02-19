@@ -1,0 +1,116 @@
+name: CI - Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build_web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Cache NuGet packages to speed up subsequent runs
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
+
+      - name: Build Web
+        run: dotnet build src/Chirp.Web/Chirp.Web.csproj --no-restore --configuration Release
+
+  unit_test:
+    needs: build_web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore test/Chirp.TestUnit/Chirp.TestUnit.csproj
+
+      - name: Run Unit Tests
+        run: dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj --no-restore --verbosity normal
+
+  integration_test:
+    needs: build_web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore test/Chirp.TestIntegration/Chirp.TestIntegration.csproj
+
+      - name: Run Integration Tests
+        run: dotnet test test/Chirp.TestIntegration/Chirp.TestIntegration.csproj --no-restore --verbosity normal
+
+  e2e_test:
+    needs: build_web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore test/Chirp.TestE2E/Chirp.TestE2E.csproj
+
+      - name: Build E2E Tests
+        run: dotnet build test/Chirp.TestE2E/Chirp.TestE2E.csproj --no-restore
+
+      - name: Install Playwright browsers
+        run: pwsh test/Chirp.TestE2E/bin/Debug/net10.0/playwright.ps1 install --with-deps
+
+      - name: Run E2E Tests
+        run: dotnet test test/Chirp.TestE2E/Chirp.TestE2E.csproj --no-restore --filter "Category=End2End" --verbosity normal
