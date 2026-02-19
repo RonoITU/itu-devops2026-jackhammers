@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - develop
+  push:
+    - branches:
       - feature/deploy-workflow # For testing purposes
   workflow_dispatch:
 
