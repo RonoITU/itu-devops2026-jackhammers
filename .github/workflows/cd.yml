@@ -36,8 +36,8 @@ jobs:
 
       # Builds the Docker image using Dockerfile (which handles restore, build and publish internally)
       # and pushes it to Docker Hub tagged with both the version number and 'latest', e.g.:
-      #   jackhammers/minitwit:1.0.0
-      #   jackhammers/minitwit:latest
+      #   rasmusachr/minitwit:1.0.0
+      #   rasmusachr/minitwit:latest
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -79,7 +79,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            docker pull jackhammers/minitwit:latest
+            docker pull rasmusachr/minitwit:latest
             docker compose -f ~/chirp/prod-compose/docker-compose.devops-serv1.yml up -d
             docker logout
 
