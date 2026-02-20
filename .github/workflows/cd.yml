@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/deploy-workflow # For testing purposes
   workflow_dispatch:
 
 jobs:
@@ -110,6 +109,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.VERSION }}
-          name: Release v${{ steps.version.outputs.VERSION }}
+          name: v${{ steps.version.outputs.VERSION }}
           generate_release_notes: true           # Auto-generates changelog from merged PRs
           token: ${{ secrets.GITHUB_TOKEN }}     # GITHUB_TOKEN is built-in, no setup needed
