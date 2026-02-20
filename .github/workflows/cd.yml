@@ -34,12 +34,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Dependency to build a multi-platform image.
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # Dependency to build a multi-platform image.
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       # Builds the Docker image using Dockerfile (which handles restore, build and publish internally)
       # and pushes it to Docker Hub tagged with both the version number and 'latest', e.g.:
       #   rasmusachr/minitwit:1.0.0
       #   rasmusachr/minitwit:latest
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: true
