@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v4
       
       # Copies the docker-compose file from the repo to the Hetzner server before deploying.
-      # This ensures the server always uses the latest version of the compose file.
+      # This ensures the server always uses the latest version of the compose file..
       - name: Copy docker-compose file to server
         uses: appleboy/scp-action@v0.1.7
         with:
