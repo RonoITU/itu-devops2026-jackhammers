@@ -95,6 +95,8 @@ jobs:
   release:
     needs: deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # This permission is required to create releases and tags via the GITHUB_TOKEN.
     steps:
       - uses: actions/checkout@v4
         with:
