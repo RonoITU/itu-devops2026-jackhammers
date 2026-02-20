@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/deploy-workflow # For testing purposes
   workflow_dispatch:
 
 jobs:
@@ -27,9 +28,6 @@ jobs:
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
       # Log in to Docker Hub using credentials stored in GitHub secrets.
-      # Set these up in repo: Settings > Secrets > Actions:
-      #   DOCKERHUB_USERNAME: Docker Hub username
-      #   DOCKERHUB_TOKEN:    a Docker Hub access token (not password)
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -80,8 +78,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             docker pull jackhammers/minitwit:latest
             docker compose -f /opt/chirp/prod-compose/docker-compose.devops-serv1.yml up -d
+            docker logout
 
   # This job creates a GitHub Release. It generates a tag and changelog based on merged PRs since the last release.
   release:
