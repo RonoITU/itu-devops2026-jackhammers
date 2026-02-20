@@ -1,0 +1,175 @@
+flowchart TD
+    subgraph feature_branch["Feature Branch"]
+        featcode(["Write Code"])
+        featcommit["Commit"]
+        featcode --> featcommit
+        featcommit --> featcode
+    end
+
+    featcommit --> pr_dev["Open Pull Request to develop"]
+
+    pr_dev --> ci_trigger_dev["CI Workflow Triggered on: pull_request to develop"]
+
+    subgraph ci_dev["CI — Build and Test  (on PR to develop)"]
+        subgraph build_web_dev["build_web"]
+            bw1["Checkout branch"]
+            --> bw2["Setup .NET 10"]
+            --> bw3["Cache NuGet packages"]
+            --> bw4["Restore dependencies Chirp.Web.csproj"]
+            --> bw5["Build Web --configuration Release"]
+        end
+
+        bw5 --> build_ok{"build_web success?"}
+
+        build_ok -- yes --> ut_start & it_start & e2e_start
+        build_ok -- no --> fail_build(["Pipeline fails PR blocked"])
+
+        subgraph unit_test["unit_test (parallel)"]
+            ut_start["Checkout branch"]
+            --> ut2["Setup .NET 10"]
+            --> ut3["Cache NuGet packages"]
+            --> ut4["Restore dependencies Chirp.TestUnit.csproj"]
+            --> ut5["Run Unit Tests"]
+        end
+
+        subgraph integration_test["integration_test (parallel)"]
+            it_start["Checkout branch"]
+            --> it2["Setup .NET 10"]
+            --> it3["Cache NuGet packages"]
+            --> it4["Restore dependencies Chirp.TestIntegration.csproj"]
+            --> it5["Run Integration Tests"]
+        end
+
+        subgraph e2e_test["e2e_test (parallel)"]
+            e2e_start["Checkout branch"]
+            --> e2e2["Setup .NET 10"]
+            --> e2e3["Cache NuGet packages"]
+            --> e2e4["Restore dependencies Chirp.TestE2E.csproj"]
+            --> e2e5["Build E2E Tests"]
+            --> e2e6["Install Playwright browsers"]
+            --> e2e7["Run E2E Tests Category=End2End"]
+        end
+    end
+
+    ci_trigger_dev --> build_web_dev
+
+    ut5 & it5 & e2e7 --> all_tests_ok_dev{"All tests passed?"}
+    all_tests_ok_dev -- no --> fail_tests_dev(["Pipeline fails PR blocked"])
+    all_tests_ok_dev -- yes --> merge_dev["Merge PR into develop"]
+
+    subgraph develop_branch["Develop Branch"]
+        merge_dev --> pr_main["Open Pull Request to main"]
+    end
+
+    pr_main --> ci_trigger_main["CI Workflow Triggered on: pull_request to main"]
+
+    subgraph ci_main["CI — Build and Test  (on PR to main)"]
+        subgraph build_web_main["build_web"]
+            mbw1["Checkout branch"]
+            --> mbw2["Setup .NET 10"]
+            --> mbw3["Cache NuGet packages"]
+            --> mbw4["Restore dependencies Chirp.Web.csproj"]
+            --> mbw5["Build Web --configuration Release"]
+        end
+
+        mbw5 --> build_ok_main{"build_web success?"}
+
+        build_ok_main -- yes --> mut_start & mit_start & me2e_start
+        build_ok_main -- no --> fail_build_main(["Pipeline fails PR blocked"])
+
+        subgraph unit_test_main["unit_test (parallel)"]
+            mut_start["Checkout branch"]
+            --> mut2["Setup .NET 10"]
+            --> mut3["Cache NuGet packages"]
+            --> mut4["Restore dependencies Chirp.TestUnit.csproj"]
+            --> mut5["Run Unit Tests"]
+        end
+
+        subgraph integration_test_main["integration_test (parallel)"]
+            mit_start["Checkout branch"]
+            --> mit2["Setup .NET 10"]
+            --> mit3["Cache NuGet packages"]
+            --> mit4["Restore dependencies Chirp.TestIntegration.csproj"]
+            --> mit5["Run Integration Tests"]
+        end
+
+        subgraph e2e_test_main["e2e_test (parallel)"]
+            me2e_start["Checkout branch"]
+            --> me2e2["Setup .NET 10"]
+            --> me2e3["Cache NuGet packages"]
+            --> me2e4["Restore dependencies Chirp.TestE2E.csproj"]
+            --> me2e5["Build E2E Tests"]
+            --> me2e6["Install Playwright browsers"]
+            --> me2e7["Run E2E Tests Category=End2End"]
+        end
+    end
+
+    ci_trigger_main --> build_web_main
+
+    mut5 & mit5 & me2e7 --> all_tests_ok_main{"All tests passed?"}
+    all_tests_ok_main -- no --> fail_tests_main(["Pipeline fails PR blocked"])
+    all_tests_ok_main -- yes --> merge_main["Merge PR into main"]
+
+    subgraph main_branch["Main Branch"]
+        merge_main --> cd_trigger["CD Workflow Triggered on: push to main"]
+
+        subgraph docker_job["docker job"]
+            d1["Checkout branch"]
+            --> d2["Read VERSION file"]
+            --> d3["Login to Docker Hub"]
+            --> d4["Setup QEMU"]
+            --> d5["Setup Docker Buildx"]
+            --> d6["Build & Push multi-platform image linux/amd64 + linux/arm64 Tagged: :VERSION and :latest"]
+        end
+
+        d6 --> docker_ok{"docker job success?"}
+        docker_ok -- no --> fail_docker(["Deploy skipped"])
+        docker_ok -- yes --> deploy_job
+
+        subgraph deploy_job["deploy job — environment: production"]
+            dp1["Checkout branch"]
+            --> dp2["SCP docker-compose file to Hetzner server"]
+            --> dp3["SSH into Hetzner server"]
+            --> dp4["docker login to Docker Hub"]
+            --> dp5["docker pull rasmusachr/minitwit:latest"]
+            --> dp6["docker compose up -d prod-compose file"]
+            --> dp7["docker logout"]
+        end
+
+        dp7 --> deploy_ok{"deploy job success?"}
+        deploy_ok -- no --> fail_deploy(["Release skipped"])
+        deploy_ok -- yes --> release_job
+
+        subgraph release_job["release job"]
+            r1["Checkout branch full git history"]
+            --> r2["Read VERSION file"]
+            --> r3["Create GitHub Release Tag: vVERSION Auto-generate changelog from merged PRs"]
+        end
+    end
+
+    cd_trigger --> docker_job
+
+    subgraph hetzner_vps["Hetzner VPS"]
+        vps1[("Docker container running minitwit:latest")]
+    end
+
+    dp6 --> vps1
+
+    %% Colors
+    style feature_branch fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    style ci_dev fill:#fef9c3,stroke:#eab308,color:#713f12
+    style build_web_dev fill:#fef3c7,stroke:#d97706,color:#713f12
+    style unit_test fill:#fef3c7,stroke:#d97706,color:#713f12
+    style integration_test fill:#fef3c7,stroke:#d97706,color:#713f12
+    style e2e_test fill:#fef3c7,stroke:#d97706,color:#713f12
+    style develop_branch fill:#dcfce7,stroke:#22c55e,color:#14532d
+    style ci_main fill:#fce7f3,stroke:#ec4899,color:#701a75
+    style build_web_main fill:#fdf2f8,stroke:#db2777,color:#701a75
+    style unit_test_main fill:#fdf2f8,stroke:#db2777,color:#701a75
+    style integration_test_main fill:#fdf2f8,stroke:#db2777,color:#701a75
+    style e2e_test_main fill:#fdf2f8,stroke:#db2777,color:#701a75
+    style main_branch fill:#ede9fe,stroke:#7c3aed,color:#2e1065
+    style docker_job fill:#f5f3ff,stroke:#8b5cf6,color:#2e1065
+    style deploy_job fill:#f5f3ff,stroke:#8b5cf6,color:#2e1065
+    style release_job fill:#f5f3ff,stroke:#8b5cf6,color:#2e1065
+    style hetzner_vps fill:#fee2e2,stroke:#ef4444,color:#7f1d1d
