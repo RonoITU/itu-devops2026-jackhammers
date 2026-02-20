@@ -17,7 +17,7 @@ services:
       retries: 5
   
   cheep:
-    image: jackhammers/minitwit:latest
+    image: rasmusachr/minitwit:latest
     container_name: cheep
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
