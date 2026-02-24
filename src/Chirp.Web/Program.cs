@@ -62,7 +62,7 @@ namespace Chirp.Web
             // Build the application
             var app = builder.Build();
 
-            // Seed the database after the application is built
+            
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -70,7 +70,11 @@ namespace Chirp.Web
                 
                 context.Database.Migrate();
                 
-                DbInitializer.SeedDatabase(context);
+                // Seed the database in non-production mode after the application is built
+                if (app.Environment.IsDevelopment())
+                {
+                    DbInitializer.SeedDatabase(context);
+                }
             }
             
 
