@@ -70,8 +70,11 @@ namespace Chirp.Web
                 
                 context.Database.Migrate();
                 
-                // Seed the database after the application is built
-                // DbInitializer.SeedDatabase(context);
+                // Seed the database in non-production mode after the application is built
+                if (app.Environment.IsDevelopment())
+                {
+                    DbInitializer.SeedDatabase(context);
+                }
             }
             
 
