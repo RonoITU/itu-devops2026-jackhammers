@@ -18,7 +18,7 @@ public class SimulatorApiTests : AbstractIntegration
         var response = await _client.GetAsync("/api/latest");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync<Core.DTOs.LatestResponse>();
+        var content = await response.Content.ReadFromJsonAsync<LatestResponse>();
         content.Should().NotBeNull();
         content.Latest.Should().Be(-1);
     }
@@ -39,7 +39,7 @@ public class SimulatorApiTests : AbstractIntegration
         var response = await _client.GetAsync("/api/latest");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync<Core.DTOs.LatestResponse>();
+        var content = await response.Content.ReadFromJsonAsync<LatestResponse>();
         content.Should().NotBeNull();
         content.Latest.Should().Be(testLatest);
     }
@@ -260,6 +260,73 @@ public class SimulatorApiTests : AbstractIntegration
                 Content = "I am an okay message.",
             }
         );
+
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        content.Should().NotBeNull();
+        content.Status.Should().Be(500);
+        content.ErrorMsg.Should().Be("Internal server error");
+    }
+
+    [Fact]
+    public async Task GetPublicMessages_EmptyDatabase()
+    {
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
+            await dbContext.Database.EnsureDeletedAsync(); // Clear previous data
+            await dbContext.Database.EnsureCreatedAsync(); // Recreate the database
+        }
+
+        var response = await _client.GetAsync("/api/msgs?latest=1");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetPublicMessages_NormalRequest()
+    {
+        await Register_CorrectRequest();
+
+        for (int i = 1; i <= 10; i++)
+        {
+            await _client.PostAsJsonAsync(
+                $"/api/msgs/Rono%20ITU?latest={i+1}", 
+                new MessageRequest
+                {
+                    Content = $"I am msg no {i}."
+                }
+            );
+        }
+        
+
+        var response = await _client.GetAsync("/api/msgs?latest=12");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().NotBeNull();
+        for (int i = 0, j = 10; i < 10; i++, j--)
+        {
+            content[i].Content.Should().Be($"I am msg no {j}.");
+        }
+    }
+
+
+    [Fact]
+    public async Task GetPublicMessages_CatchServerSideExceptions()
+    {
+        await Register_CorrectRequest();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
+            await dbContext.Database.EnsureDeletedAsync();
+            // Left in this state will raise an exception for most calls.
+        }
+
+        var response = await _client.GetAsync("/api/msgs?latest=13");
 
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
