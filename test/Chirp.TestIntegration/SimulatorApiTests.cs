@@ -3,8 +3,17 @@ using Chirp.Core.Interfaces;
 
 namespace Chirp.TestIntegration;
 
-public class SimulatorApiTests : AbstractIntegration
+public class SimulatorApiTests : IClassFixture<IntegrationFixture>
 {
+    private HttpClient _client = null!;
+    private WebApplicationFactory<Program> _factory = null!;
+
+    public SimulatorApiTests(IntegrationFixture fixture)
+    {
+        _client = fixture._client;
+        _factory = fixture._factory;
+    }
+
     [Fact]
     public async Task GetLatest_DefaultValue()
     {

@@ -1,68 +1,14 @@
 namespace Chirp.TestIntegration;
 
-public class IntegrationTests : IAsyncLifetime
+public class IntegrationTests : IClassFixture<IntegrationFixture>
 {
     private HttpClient _client = null!;
     private WebApplicationFactory<Program> _factory = null!;
-    private readonly PostgreSqlContainer _postgresContainer;
 
-    public IntegrationTests()
+    public IntegrationTests(IntegrationFixture fixture)
     {
-        // Initialize the PostgreSQL container with desired configuration
-        _postgresContainer = new PostgreSqlBuilder("postgres:15-alpine")
-            .WithDatabase("testdb")
-            .WithUsername("postgres")
-            .WithPassword("postgres")
-            .WithCleanUp(true)
-            .Build();
-    }
-
-    public async Task InitializeAsync()
-    {
-        // Start the PostgreSQL container (This order is important: start the db container before creating the factory)
-        await _postgresContainer.StartAsync();
-
-        // Create the factory with the postgresql container's connection string
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                // This commented code is not needed anymore, but in case something happens,
-                // and we need it, I will keep it here for reference.
-                //
-                // Remove existing DbContext registration
-                // var descriptor = services.SingleOrDefault(
-                //     d => d.ServiceType == typeof(DbContextOptions<CheepDBContext>));
-                //
-                // if (descriptor != null)
-                // {
-                //     services.Remove(descriptor);
-                // }
-
-                // Re-register with test PostgreSQL
-                services.AddDbContext<CheepDBContext>(options =>
-                {
-                    options.UseNpgsql(_postgresContainer.GetConnectionString());
-                });
-            });
-        });
-
-        _client = _factory.CreateClient();
-        
-        // Ensure database is created and migrated
-        using var scope = _factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-        await dbContext.Database.MigrateAsync();
-        
-        // Option to seed the database with initial data if needed
-        // DbInitializer.SeedDatabase(dbContext);
-    }
-
-    public async Task DisposeAsync()
-    {
-        // Stop and clean up the container
-        await _postgresContainer.StopAsync();
-        await _postgresContainer.DisposeAsync();
+        _client = fixture._client;
+        _factory = fixture._factory;
     }
 
     [Fact]
