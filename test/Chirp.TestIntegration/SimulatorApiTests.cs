@@ -301,7 +301,6 @@ public class SimulatorApiTests : AbstractIntegration
             );
         }
         
-
         var response = await _client.GetAsync("/api/msgs?latest=12");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -313,25 +312,61 @@ public class SimulatorApiTests : AbstractIntegration
         }
     }
 
-
     [Fact]
-    public async Task GetPublicMessages_CatchServerSideExceptions()
+    public async Task GetUserMessages_EmptyDatabase()
     {
         await Register_CorrectRequest();
 
-        using (var scope = _factory.Services.CreateScope())
+        var response = await _client.GetAsync("/api/msgs/Rono%20ITU?latest=2");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetUserMessages_NoneMatch()
+    {
+        await Register_CorrectRequest();
+
+        var response = await _client.GetAsync("/api/msgs/Rono%20ITU2?latest=2");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetUserMessages_SomeMatch()
+    {
+        await GetPublicMessages_NormalRequest();
+
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=2", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU2",
+                Email = "rono2@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
+
+        for (int i = 1; i <= 5; i++)
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            await dbContext.Database.EnsureDeletedAsync();
-            // Left in this state will raise an exception for most calls.
+            await _client.PostAsJsonAsync(
+                $"/api/msgs/Rono%20ITU2?latest={i+2}", 
+                new MessageRequest
+                {
+                    Content = $"I am msg no {i}."
+                }
+            );
         }
 
-        var response = await _client.GetAsync("/api/msgs?latest=13");
+        var response = await _client.GetAsync("/api/msgs/Rono%20ITU?latest=8");
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
         content.Should().NotBeNull();
-        content.Status.Should().Be(500);
-        content.ErrorMsg.Should().Be("Internal server error");
+        content.Count.Should().Be(10);
     }
 }
