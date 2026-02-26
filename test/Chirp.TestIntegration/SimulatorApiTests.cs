@@ -306,7 +306,36 @@ public class SimulatorApiTests : AbstractIntegration
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
         content.Should().NotBeNull();
+        content.Should().HaveCount(10);
         for (int i = 0, j = 10; i < 10; i++, j--)
+        {
+            content[i].Content.Should().Be($"I am msg no {j}.");
+        }
+    }
+
+    [Fact]
+    public async Task GetPublicMessages_NormalRequest_LimitedNo()
+    {
+        await GetPublicMessages_NormalRequest();
+
+        for (int i = 1; i <= 10; i++)
+        {
+            await _client.PostAsJsonAsync(
+                $"/api/msgs/Rono%20ITU?latest={i+1}", 
+                new MessageRequest
+                {
+                    Content = $"I am msg no {i}."
+                }
+            );
+        }
+        
+        var response = await _client.GetAsync("/api/msgs?latest=12&no=5");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().NotBeNull();
+        content.Should().HaveCount(5);
+        for (int i = 0, j = 10; i < 5; i++, j--)
         {
             content[i].Content.Should().Be($"I am msg no {j}.");
         }
@@ -368,6 +397,19 @@ public class SimulatorApiTests : AbstractIntegration
         var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
         content.Should().NotBeNull();
         content.Count.Should().Be(10);
+    }
+
+    [Fact]
+    public async Task GetUserMessages_SomeMatch_LimitedNo()
+    {
+        await GetUserMessages_SomeMatch();
+
+        var response = await _client.GetAsync("/api/msgs/Rono%20ITU?latest=9&no=7");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<List<MessageResponse>>();
+        content.Should().NotBeNull();
+        content.Count.Should().Be(3);
     }
 
     [Fact]
@@ -504,7 +546,7 @@ public class SimulatorApiTests : AbstractIntegration
     {
         await FollowUser_NormalRequest_Follow();
 
-        var response = await _client.GetAsync("/api/fllws/Rono%20ITU");
+        var response = await _client.GetAsync("/api/fllws/Rono%20ITU?latest=10");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadFromJsonAsync<FollowsResponse>();
@@ -517,7 +559,7 @@ public class SimulatorApiTests : AbstractIntegration
     {
         await FollowUser_NormalRequest_Follow();
 
-        var response = await _client.GetAsync("/api/fllws/Rono%20ITU2");
+        var response = await _client.GetAsync("/api/fllws/Rono%20ITU2?latest=10");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadFromJsonAsync<FollowsResponse>();
@@ -530,27 +572,39 @@ public class SimulatorApiTests : AbstractIntegration
     {
         await FollowUser_NormalRequest_Follow();
 
-        var response = await _client.GetAsync("/api/fllws/Rono%20ITU3");
+        var response = await _client.GetAsync("/api/fllws/Rono%20ITU3?latest=10");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task GetFollows_CatchServerSideExceptions()
+    public async Task GetFollows_NormalRequest_LimitedNo()
     {
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
-            await dbContext.Database.EnsureDeletedAsync();
-            // Left in this state will raise an exception for most calls.
-        }
+        await GetFollows_NormalRequest_OneFollower();
 
-        var response = await _client.GetAsync("/api/fllws/Rono%20ITU");
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=11", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU3",
+                Email = "rono3@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU?latest=12",
+            new FollowRequest
+            {
+                Follow = "Rono ITU3"
+            }
+        );
+
+        var response = await _client.GetAsync("/api/fllws/Rono%20ITU?latest=13&no=1");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadFromJsonAsync<FollowsResponse>();
         content.Should().NotBeNull();
-        content.Status.Should().Be(500);
-        content.ErrorMsg.Should().Be("Internal server error");
+        content.Follows.Should().HaveCount(1);
     }
 }
