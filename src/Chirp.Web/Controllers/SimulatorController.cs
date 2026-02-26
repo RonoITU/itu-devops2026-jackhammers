@@ -62,10 +62,10 @@ public class SimulatorController : ControllerBase
         [FromBody] RegisterRequest request,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             // Validate input
             if (string.IsNullOrWhiteSpace(request.Username))
             {
@@ -132,10 +132,10 @@ public class SimulatorController : ControllerBase
         [FromBody] MessageRequest request,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             // Check if user exists
             var author = await _authorService.FindAuthorByName(username);
             if (author == null)
@@ -197,10 +197,10 @@ public class SimulatorController : ControllerBase
         [FromQuery] int? no,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             int count = no ?? 100;
             
             var cheeps = await _cheepService.GetMessagesForSimulator(username, count);
@@ -234,10 +234,10 @@ public class SimulatorController : ControllerBase
         [FromQuery] int? no,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             int count = no ?? 100;
             
             var cheeps = await _cheepService.GetMessagesForSimulator(null, count);
@@ -273,10 +273,10 @@ public class SimulatorController : ControllerBase
         [FromBody] FollowRequest request,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             // Check if user exists
             var author = await _authorService.FindAuthorByName(username);
             if (author == null)
@@ -326,10 +326,10 @@ public class SimulatorController : ControllerBase
         [FromQuery] int? no,
         [FromQuery] int? latest)
     {
-        await _latestService.UpdateLatestAsync(latest);
-        
         try
         {
+            await _latestService.UpdateLatestAsync(latest);
+
             var followedAuthors = await _authorService.GetFollowedAuthors(username);
             
             return Ok(new FollowsResponse { Follows = followedAuthors });
