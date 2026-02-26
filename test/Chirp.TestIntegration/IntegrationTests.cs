@@ -1,5 +1,3 @@
-using Testcontainers.PostgreSql;
-
 namespace Chirp.TestIntegration;
 
 public class IntegrationTests : IAsyncLifetime
