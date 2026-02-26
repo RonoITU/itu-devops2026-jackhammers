@@ -50,7 +50,7 @@ public class SimulatorApiTests : AbstractIntegration
     [InlineData("/api/register?latest=1")]
     [InlineData("/api/msgs/rono?latest=1")]
     [InlineData("/api/fllws/rono?latest=1")]
-    public async Task GetEndpoints_CatchServerSideExceptions(string requestUri)
+    public async Task AllGetEndpoints_CatchServerSideExceptions(string requestUri)
     {
         using (var scope = _factory.Services.CreateScope())
         {
@@ -172,6 +172,92 @@ public class SimulatorApiTests : AbstractIntegration
                 Username = "Rono ITU",
                 Email = "rono@example.com",
                 Pwd = "2a3b&4Cd",
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        content.Should().NotBeNull();
+        content.Status.Should().Be(500);
+        content.ErrorMsg.Should().Be("Internal server error");
+    }
+
+    [Theory]
+    [InlineData("This better actually work.", 2)]
+    public async Task PostMessage_CorrectRequest(string msg, int latest)
+    {
+        await Register_CorrectRequest();
+
+        var response = await _client.PostAsJsonAsync(
+            $"/api/msgs/Rono%20ITU?latest={latest}", 
+            new MessageRequest
+            {
+                Content = msg,
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var cheepService = scope.ServiceProvider.GetRequiredService<ICheepService>();
+            var cheeps = await cheepService.GetCheepsFromAuthor("Rono ITU", 1);
+            cheeps.Should().NotBeEmpty();
+        }
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("I am a message of more than 160 characters! Reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!")]
+    public async Task PostMessage_BadRequest_MessageContent(string msg)
+    {
+        await Register_CorrectRequest();
+
+        var response = await _client.PostAsJsonAsync(
+            $"/api/msgs/Rono%20ITU?latest=2", 
+            new MessageRequest
+            {
+                Content = msg,
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task PostMessage_BadRequest_AuthorNotFound()
+    {
+        await Register_CorrectRequest();
+
+        var response = await _client.PostAsJsonAsync(
+            $"/api/msgs/Rono%20IT?latest=2", 
+            new MessageRequest
+            {
+                Content = "I am an okay message.",
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task PostMessage_CatchServerSideExceptions()
+    {
+        await Register_CorrectRequest();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
+            await dbContext.Database.EnsureDeletedAsync();
+            // Left in this state will raise an exception for most calls.
+        }
+
+        var response = await _client.PostAsJsonAsync(
+            $"/api/msgs/Rono%20ITU?latest=2", 
+            new MessageRequest
+            {
+                Content = "I am an okay message.",
             }
         );
 
