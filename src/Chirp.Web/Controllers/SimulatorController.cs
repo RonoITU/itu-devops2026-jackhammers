@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using Chirp.Core.DTOs;
 using Chirp.Core.Interfaces;
-using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chirp.Web.Controllers;
