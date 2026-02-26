@@ -369,4 +369,133 @@ public class SimulatorApiTests : AbstractIntegration
         content.Should().NotBeNull();
         content.Count.Should().Be(10);
     }
+
+    [Fact]
+    public async Task FollowUser_CorrectRequest_Follow()
+    {
+        await Register_CorrectRequest();
+
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=2", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU2",
+                Email = "rono2@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU?latest=3",
+            new FollowRequest
+            {
+                Follow = "Rono ITU2"
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task FollowUser_CorrectRequest_Unfollow()
+    {
+        await FollowUser_CorrectRequest_Follow();
+
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=4", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU2",
+                Email = "rono2@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU?latest=5",
+            new FollowRequest
+            {
+                Unfollow = "Rono ITU2"
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task FollowUser_NotFound_Follower()
+    {
+        await Register_CorrectRequest();
+
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=2", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU2",
+                Email = "rono2@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU3?latest=3",
+            new FollowRequest
+            {
+                Follow = "Rono ITU2"
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task FollowUser_NotFound_Followee()
+    {
+        await Register_CorrectRequest();
+
+        await _client.PostAsJsonAsync(
+            "/api/register?latest=2", 
+            new RegisterRequest
+            {
+                Username = "Rono ITU2",
+                Email = "rono2@example.com",
+                Pwd = "2a3b&4Cd",
+            }
+        );
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU?latest=3",
+            new FollowRequest
+            {
+                Follow = "Rono ITU3"
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task FollowUser_CatchServerSideExceptions()
+    {
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
+            await dbContext.Database.EnsureDeletedAsync();
+            // Left in this state will raise an exception for most calls.
+        }
+
+        var response = await _client.PostAsJsonAsync(
+            "/api/fllws/Rono%20ITU?latest=1",
+            new FollowRequest
+            {
+                Follow = "Rono ITU2"
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var content = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        content.Should().NotBeNull();
+        content.Status.Should().Be(500);
+        content.ErrorMsg.Should().Be("Internal server error");
+    }
 }
