@@ -1,60 +1,39 @@
-# Chirp
+# Minitwit
 ## Preface
-This project is part of our course on Analysis, Design, and Software Architecture at the IT University of Copenhagen.
-
-This project was originally developed in collaboration with four other contributors as part of our course. After the course ended, I made additional modifications independently. These changes were made solely by me and do not necessarily reflect the views or approval of the other contributors.
+This project is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
 
 ## About the project
-Chirp is a homemade Twitter-like system, allowing users to post and interact with short messages called cheeps. The platform supports various features to enhance user engagement and account management.
+Minitwit is a homemade Twitter-like system, allowing users to post and interact with short messages. The platform supports various features to enhance user engagement and account management.
 
 
 ## Live Deployment
-Currently there is no live deployment of this application, sorry.
-~~The project is hosted on Azure and can be accessed [here](https://bdsagroup07chirprazor.azurewebsites.net/).~~
+The project is hosted on Azure and can be accessed [here](https://windysquirrels.dk/).
 
 ## Local Deployment
 To run the project locally, follow these steps:
 
 1) **Clone the Repository**
 ```bash
-git clone https://github.com/ITU-BDSA2024-GROUP7/Chirp.git
+git clone https://github.com/RonoITU/itu-devops2026-jackhammers
 ```
 
-2) **Navigate to the Web Application**
+2) **Start the database container**
 ```bash
-cd Chirp.Web
+docker compose -f .\src\Chirp.Database\docker-compose.yml up -d
 ```
 
-3) **Setup GitHub OAuth**<br>
-[Register](https://github.com/settings/applications/new) a new OAuth application, and add the client id and secret to user-secrets
-```
-OAuth Settings:
-Application name: <Whatever you like>
-Homepage URL: http://localhost:5273/
-Application description: <Whatever you like>
-Authorization callback URL: <http://localhost:5273/signin-github>
-
-Set the secret:
-cd .\src\Chirp.Web\
-dotnet user-secrets init
-dotnet user-secrets set "AUTHENTICATION_GITHUB_CLIENTID" "your-client-id"
-dotnet user-secrets set "AUTHENTICATION_GITHUB_CLIENTSECRET" "your-client-secret"
-```
-
-
-4) **Run the Application**
+3) **Navigate to the Web Application and run**
 ```bash
-cd .\src\Chirp.Web\
+cd src/Chirp.Web/
 dotnet watch
 ```
 
----
-
-# DOCKER COMMANDS (DEVELOPING)
+## Run Tests
+To run the tests for the project, navigate to the test project directory and execute the following command:
+```bash
+cd src/Chirp.Tests/
+dotnet test
 ```
-// Build image from Dockerfile
-docker build -t jackhammer/aspnetapp .
 
-// See images
-docker images 
-```
+## More relevant documentation
+[Docker Documentation](/docs/Docker-Documentation.md)
