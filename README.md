@@ -1,6 +1,6 @@
-# Minitwit
+# Windy Squirrels - Minitwit
 ## Preface
-This project is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
+This project, officially called Minitwit, is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
 
 ## About the project
 Minitwit is a homemade Twitter-like system, allowing users to post and interact with short messages. The platform supports various features to enhance user engagement and account management.
