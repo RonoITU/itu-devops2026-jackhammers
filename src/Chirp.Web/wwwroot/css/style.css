@@ -1,6 +1,7 @@
 /*Images for background taken from https://www.spriters-resource.com/mobile/flappybird/sheet/59894/*/
 :root {
     --day-gradient-height: 100%; /* Default value */
+    --background-color-1: #cc6e6e;
 }
 
 body {
@@ -54,26 +55,52 @@ input[type="submit"] {
 
 div.page {
     width: 700px;
+    max-width: 100%;        /* ADD THIS — prevents overflow on narrow screens */
+    box-sizing: border-box; /* ADD THIS */
     background: white;
-    border: 1px solid #cc6e6e;
+    border: 1px solid var(--background-color-1);
     margin: 30px auto;
     padding: 10px;
     border-radius: 10px;
 }
 
 div.page > h1 {
-    background: #cc6e6e;
+    background: var(--background-color-1);
     margin: 0;
-    padding: 10px 14px;
+    padding: 16px 14px;
     color: white;
     letter-spacing: 1px;
     text-shadow: 0 0 3px #772424;
     font-weight: normal;
-    font-size: 80px;
+    font-size: clamp(20px, 3.5vw, 42px);   /* slightly more conservative scaling */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    line-height: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 div.page h1 img {
-    height: 1em;
+    height: 100%;
+    width: auto;
+    max-height: 80px;
+    min-width: 0;                           /* allows images to shrink if needed */
+    flex-shrink: 1;                         /* images shrink before text does */
+    display: block;
+    object-fit: contain;
+    align-self: stretch;
+}
+
+div.page h1 span.title-text {
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: visible;                      /* don't clip the text */
+    text-overflow: unset;
+    flex-shrink: 0;                         /* text never shrinks — images yield instead */
 }
 
 div.page div.navigation {
@@ -309,7 +336,7 @@ form * {
 }
 
 button {
-    background-color: #cc6e6e;
+    background-color: var(--background-color-1);
     border: none;
     color: white;
     padding: 8px 16px;
@@ -330,7 +357,7 @@ ul.nav {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #cc6e6e;
+    background-color: var(--background-color-1);
 }
 
 ul.nav li {
@@ -380,7 +407,7 @@ ul.nav li a:hover {
 }
 
 .cheep-container > form:has(#unfollowButton) > button {
-    background-color: #cc6e6e;
+    background-color: var(--background-color-1);
 }
 
 .providerImg {
@@ -450,7 +477,7 @@ ul.nav li a:hover {
 
 .stat-container .border {
     margin-top: 10px;
-    border: 2px solid #cc6e6e;
+    border: 2px solid var(--background-color-1);
     border-radius: 15px;
     display: flex;
     flex-direction: column;
@@ -470,7 +497,7 @@ ul.nav li a:hover {
 }
 
 .stat-container h3 {
-    color: #cc6e6e;
+    color: var(--background-color-1);
     margin: 3px 0!important;
 }
 .stat-container div {
@@ -483,7 +510,7 @@ ul.nav li a:hover {
     text-decoration: none;
     cursor: pointer;
     transition: all 0.3s ease-out;
-    color: #cc6e6e;
+    color: var(--background-color-1);
 }
 
 .stat-container .button:hover {
@@ -596,7 +623,7 @@ ul.nav li a:hover {
     margin: 0 0 0 5px;
     height: auto;
     border-radius: 50px;
-    background-color: #cc6e6e;
+    background-color: var(--background-color-1);
 }
 
 .modern-dropdown {
@@ -605,7 +632,7 @@ ul.nav li a:hover {
 }
 
 .dropdown-btn {
-    background-color: #cc6e6e;
+    background-color: var(--background-color-1);
     color: white;
     padding: 8px 12px; 
     font-size: 14px;  

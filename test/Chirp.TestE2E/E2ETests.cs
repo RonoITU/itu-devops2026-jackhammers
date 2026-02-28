@@ -1205,7 +1205,7 @@ public class E2ETests : PageTest
         await RegisterUser();
         
         var solutionDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-        var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "icon1.png");
+        var imagePath = Path.Combine(solutionDirectory, "src", "Chirp.Web", "wwwroot", "images", "logo", "logo.png");
         
         await CurrentPage.Locator("#CheepImage").ClickAsync();
         await CurrentPage.Locator("#CheepImage").SetInputFilesAsync([imagePath]);
