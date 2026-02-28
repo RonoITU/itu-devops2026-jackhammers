@@ -1,28 +1,61 @@
 /*Images for background taken from https://www.spriters-resource.com/mobile/flappybird/sheet/59894/*/
 :root {
     --day-gradient-height: 100%; /* Default value */
-    --background-color-1: #cc6e6e;
+
+    /* Primary brand — mossy olive/bark */
+    --background-color-1: #6b7c45;       /* mossy olive green  (was: #cc6e6e) */
+    --color-red-dark: #3b2a14;           /* deep bark brown    (was: #571010) */
+    --color-red-darker: #261a0a;         /* very dark bark     (was: #3b0707) */
+    --color-red-deep: #4a3318;           /* rich walnut        (was: #772424) */
+    --color-red-medium: #556330;         /* fern hover         (was: #8b4949) */
+    --color-red-medium-2: #7a8c50;       /* sage hover         (was: #b05c5c) */
+    --color-red-medium-3: #5c3d1e;       /* warm chestnut      (was: #7e2c2c) */
+    --color-red-hover: #47531f;          /* dark moss hover    (was: #783f3f) */
+    --color-red-dislike: #8b2500;        /* burnt sienna       (was: #9a0e0e) */
+
+    /* Earthy borders / backgrounds (replacing pinks) */
+    --color-pink-border: #c4b49a;        /* warm sandy tan     (was: #e6c0bf) */
+    --color-pink-medium: #a07850;        /* medium terracotta  (was: #ce8181) */
+    --color-pink-light: #e8d9bc;         /* pale parchment     (was: #f3b9b9) */
+    --color-pink-very-light: #f5efe2;    /* cream              (was: #FAE4E4) */
+    --color-error-border: #b07240;       /* amber warning      (was: #DD6F6F) */
+
+    /* Forest greens */
+    --color-teal-link: #2d6a4f;          /* deep jungle green  (was: #26776F) */
+    --color-teal-border: #c8dfc4;        /* soft leaf border   (was: #DBF3F1) */
+    --color-teal-bg: #f0f7ee;            /* misty fern bg      (was: #F0FAF9) */
+    --color-teal-muted: #dde8d8;         /* muted canopy       (was: #E3EBEA) */
+    --color-green-like: #2d7a2d;         /* vivid leaf green   (was: #0c770c) */
+
+    /* Earthy blues / accent (replacing blues) */
+    --color-blue-follow: #4a7c59;        /* hunter green       (was: #5690a3) */
+    --color-blue-nav-hover: #88aa88;     /* dusty sage         (was: #95afc0) */
+    --color-blue-comment: #5c7a3e;       /* olive comment      (was: #486dfa) */
+    --color-blue-comment-hover: #2d4a1e; /* dark forest hover  (was: #003bae) */
+
+    /* Neutrals */
+    --color-gray-dark: #2c2c1e;          /* near-black with green tint (was: #333) */
 }
 
 body {
     background-image:
-            url("../images/DayGradient.png"),  
-            url("../images/Day.png");  
+            url("../images/DayGradient.png"),
+            url("../images/Day.png");
     background-position: top center, bottom center;  /* Position gradient at the top and image at the bottom */
     background-repeat: no-repeat, no-repeat;  /* No repetition for both images */
     background-size: 100% var(--day-gradient-height), 100% auto;  /* Stretch gradient vertically and maintain aspect ratio for image */
-    
+
     min-height: 100vh;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
 }
 
 a {
-    color: #26776F;
+    color: var(--color-teal-link);
 }
 
 a:hover {
-    color: #333;
+    color: var(--color-gray-dark);
 }
 
 input[type="email"],
@@ -30,19 +63,19 @@ input[type="text"],
 input[type="tel"],
 input[type="password"] {
     background: white;
-    border: 1px solid #e6c0bf;
+    border: 1px solid var(--color-pink-border);
     padding: 2px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 5px;
-    color: #571010;
+    color: var(--color-red-dark);
 }
 
 input[type="submit"] {
-    background: #571010;
-    border: 1px solid #3b0707;
+    background: var(--color-red-dark);
+    border: 1px solid var(--color-red-darker);
     padding: 1px 3px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
@@ -70,7 +103,7 @@ div.page > h1 {
     padding: 16px 14px;
     color: white;
     letter-spacing: 1px;
-    text-shadow: 0 0 3px #772424;
+    text-shadow: 0 0 3px var(--color-red-deep);
     font-weight: normal;
     font-size: clamp(20px, 3.5vw, 42px);   /* slightly more conservative scaling */
     display: flex;
@@ -105,10 +138,10 @@ div.page h1 span.title-text {
 
 div.page div.navigation {
     position: fixed;
-    left: auto; 
-    margin-left: -220px; 
-    top: 50px; 
-    width: 150px; 
+    left: auto;
+    margin-left: -220px;
+    top: 50px;
+    width: 150px;
     padding: 10px;
     color: white;
     overflow-y: auto;
@@ -122,13 +155,13 @@ div.page div.navigation a {
     font-size: 22px;
     margin-bottom: 15px;
     display: inline-flex;
-    align-items: center; 
+    align-items: center;
     transition: background-color 0.4s ease;
     border-radius: 20px;
 }
 
 div.page div.navigation a:hover {
-    background-color: #95afc0;
+    background-color: var(--color-blue-nav-hover);
 }
 
 div.page div.navigation img {
@@ -156,21 +189,21 @@ div.page div.navigation form button {
 
 div.page h2 {
     margin: 0 0 5px;
-    color: #571010;
+    color: var(--color-red-dark);
     text-shadow: 0 1px 2px #ccc;
 }
 
 .timeline-header {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
-    position: relative; 
+    position: relative;
     width: 100%;
 }
 
 .timeline-button {
     position: absolute;
-    left: 0; 
+    left: 0;
 }
 
 div.page div.body {
@@ -186,7 +219,7 @@ div.page div.footer {
 
 div.page div.followstatus {
     border: 1px solid #ccc;
-    background: #E3EBEA;
+    background: var(--color-teal-muted);
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -203,8 +236,8 @@ div.page ul.cheeps {
 div.page ul.cheeps li {
     margin: 10px 0;
     padding: 10px;
-    background: #F0FAF9;
-    border: 1px solid #DBF3F1;
+    background: var(--color-teal-bg);
+    border: 1px solid var(--color-teal-border);
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -212,7 +245,7 @@ div.page ul.cheeps li {
 
 div.page ul.cheeps p {
     margin: 5px 0;
-    word-wrap: break-word; 
+    word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
@@ -221,8 +254,8 @@ div.page ul.cheeps p.cheep-text {
 }
 
 div.page ul.cheeps li img {
-    display: block; 
-    margin: 0 auto!important; 
+    display: block;
+    margin: 0 auto!important;
     max-width: 40%;
     width: 40%;
     max-height: 40%;
@@ -240,8 +273,8 @@ div.page ul.cheeps li small {
 div.page div.cheepbox {
     margin: 10px 0;
     padding: 5px;
-    background: #F0FAF9;
-    border: 1px solid #e29494;
+    background: var(--color-teal-bg);
+    border: 1px solid var(--color-pink-border);
     border-radius: 2px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -250,7 +283,7 @@ div.page div.cheepbox {
 div.page div.cheepbox h3 {
     margin: 0;
     font-size: 1em;
-    color: #7e2c2c;
+    color: var(--color-red-medium-3);
 }
 
 div.page div.cheepbox p {
@@ -270,8 +303,8 @@ div.message {
     list-style: none;
     margin: 10px 10px 0;
 
-    background: #f3b9b9;
-    border: 1px solid #ce8181;
+    background: var(--color-pink-light);
+    border: 1px solid var(--color-pink-medium);
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -280,8 +313,8 @@ div.message {
 }
 
 ul.message li {
-    background: #f3b9b9;
-    border: 1px solid #ce8181;
+    background: var(--color-pink-light);
+    border: 1px solid var(--color-pink-medium);
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -291,8 +324,8 @@ ul.message li {
 
 div.error {
     margin: 10px 0;
-    background: #FAE4E4;
-    border: 1px solid #DD6F6F;
+    background: var(--color-pink-very-light);
+    border: 1px solid var(--color-error-border);
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -304,7 +337,7 @@ div.topics {
     width: 180px;
     height: 250px;
     background: #ffffff;
-    border: 1px solid #e29494;
+    border: 1px solid var(--color-pink-border);
     border-radius: 2px;
     position: fixed;
     top: 50%;
@@ -323,8 +356,8 @@ ul.topic {
 li.topic {
     margin: 10px 0;
     padding: 5px;
-    background: #F0FAF9;
-    border: 1px solid #DBF3F1;
+    background: var(--color-teal-bg);
+    border: 1px solid var(--color-teal-border);
     border-radius: 2px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -349,7 +382,7 @@ button {
 }
 
 button:hover {
-    background-color: #8b4949;
+    background-color: var(--color-red-medium);
 }
 
 ul.nav {
@@ -373,7 +406,7 @@ ul.nav li a {
 }
 
 ul.nav li a:hover {
-    background-color: #8b4949;
+    background-color: var(--color-red-medium);
 }
 
 .cheep-container {
@@ -403,7 +436,7 @@ ul.nav li a:hover {
 }
 
 .cheep-container > form:has(#followButton) > button {
-    background-color: #5690a3;
+    background-color: var(--color-blue-follow);
 }
 
 .cheep-container > form:has(#unfollowButton) > button {
@@ -418,8 +451,8 @@ ul.nav li a:hover {
 
 .CheepReactions {
     display: flex;
-    align-items: center; 
-    gap: 0px; 
+    align-items: center;
+    gap: 0px;
 }
 
 .CheepReactions p {
@@ -433,7 +466,7 @@ ul.nav li a:hover {
 }
 
 .CheepReactions button{
-    padding: 0; 
+    padding: 0;
     cursor: pointer;
     background-color: transparent;
 }
@@ -444,11 +477,11 @@ ul.nav li a:hover {
 }
 
 .CheepReactions button.likedButton .fa-thumbs-up {
-    color: #0c770c !important;
+    color: var(--color-green-like) !important;
 }
 
 .CheepReactions button.dislikedButton .fa-thumbs-down {
-    color: #9a0e0e !important;
+    color: var(--color-red-dislike) !important;
 }
 
 /*.CheepReactions button:hover {*/
@@ -456,13 +489,13 @@ ul.nav li a:hover {
 /*}*/
 
 .CheepReactions button .fa-thumbs-up:hover {
-    color: #0c770c !important;
+    color: var(--color-green-like) !important;
     scale: 1.1;
     transition: all 0.3s ease;
 }
 
 .CheepReactions button .fa-thumbs-down:hover {
-    color: #9a0e0e !important;
+    color: var(--color-red-dislike) !important;
     scale: 1.1;
     transition: all 0.3s ease;
 
@@ -481,7 +514,7 @@ ul.nav li a:hover {
     border-radius: 15px;
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     justify-content: center;
     padding: 10px 0;
 }
@@ -491,9 +524,9 @@ ul.nav li a:hover {
 }
 
 .stat-container .karma-counter-container {
-    display: flex; 
+    display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
 }
 
 .stat-container h3 {
@@ -501,7 +534,7 @@ ul.nav li a:hover {
     margin: 3px 0!important;
 }
 .stat-container div {
-    margin: 0 10px; 
+    margin: 0 10px;
 }
 
 /* Java scriptless popup from https://jsfiddle.net/kzgjr6so/ */
@@ -544,12 +577,12 @@ ul.nav li a:hover {
     width: 30%;
     position: relative;
     transition: 2s ease-in;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .popup h2 {
     margin-top: 0;
-    color: #333;
+    color: var(--color-gray-dark);
     font-family: Tahoma, Arial, sans-serif;
 }
 
@@ -561,7 +594,7 @@ ul.nav li a:hover {
     font-size: 30px;
     font-weight: bold;
     text-decoration: none;
-    color: #333;
+    color: var(--color-gray-dark);
 }
 
 .popup .close:hover {
@@ -576,11 +609,11 @@ ul.nav li a:hover {
 }
 
 .popup .content li {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     padding: 5px;
-    background: #F0FAF9;
-    border: 1px solid #DBF3F1;
+    background: var(--color-teal-bg);
+    border: 1px solid var(--color-teal-border);
     border-radius: 2px;
     min-height: 48px;
     list-style: none;
@@ -588,12 +621,12 @@ ul.nav li a:hover {
 }
 
 .popup .content li a {
-    margin-right: 10px; 
+    margin-right: 10px;
     font-weight: bold;
 }
 
 .popup .content li button {
-    margin-left: 5px; 
+    margin-left: 5px;
 }
 
 #followButton {
@@ -608,7 +641,7 @@ ul.nav li a:hover {
     margin: 0 0 0 5px;
     height: auto;
     border-radius: 50px;
-    background-color: #5690a3;
+    background-color: var(--color-blue-follow);
 }
 
 #unfollowButton {
@@ -634,8 +667,8 @@ ul.nav li a:hover {
 .dropdown-btn {
     background-color: var(--background-color-1);
     color: white;
-    padding: 8px 12px; 
-    font-size: 14px;  
+    padding: 8px 12px;
+    font-size: 14px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -644,15 +677,15 @@ ul.nav li a:hover {
 }
 
 .dropdown-btn:hover {
-    background-color: #b05c5c; 
+    background-color: var(--color-red-medium-2);
 }
 
 #selectedOption {
-    margin-right: 8px; 
+    margin-right: 8px;
 }
 
 .arrow {
-    font-size: 10px;  
+    font-size: 10px;
 }
 
 .dropdown-content {
@@ -665,16 +698,16 @@ ul.nav li a:hover {
 }
 
 .dropdown-item {
-    padding: 10px 14px; 
+    padding: 10px 14px;
     cursor: pointer;
     background-color: #ffd2d2;
-    color: black; 
+    color: black;
     border-radius: 5px;
-    border: 1px solid #b05c5c;
+    border: 1px solid var(--color-red-medium-2);
 }
 
 .dropdown-item:hover {
-    background-color: #783f3f; /* Hover background */
+    background-color: var(--color-red-hover); /* Hover background */
     color: white; /* Change text color on hover to white */
 }
 
@@ -684,7 +717,7 @@ ul.nav li a:hover {
 
 .Delete button {
     background-color: transparent;
-    border: none;  
+    border: none;
 }
 
 .Delete form button i {
@@ -696,39 +729,39 @@ ul.nav li a:hover {
 .Comment button {
     background-color: rgba(52, 137, 243, 0);
     border: none;
-    color: #486dfa;
-    padding: 4px 0px;  
+    color: var(--color-blue-comment);
+    padding: 4px 0px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     font-weight: bold;
 }
 .Comment button:hover {
-    color: #003bae;
+    color: var(--color-blue-comment-hover);
 }
 .CommentForm {
     margin: 10px 0;
     padding: 5px;
-    gap: 5px; 
-    
+    gap: 5px;
+
 }
 .CommentForm input[type="text"] {
-    width: 100%; 
-    padding: 5px; 
-    border: 1px solid #e6c0bf;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid var(--color-pink-border);
     border-radius: 2px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
 }
 .CommentForm button {
-    background: #571010;
-    border: 1px solid #3b0707;
+    background: var(--color-red-dark);
+    border: 1px solid var(--color-red-darker);
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 12px;
     font-weight: bold;
     border-radius: 2px;
     color: white;
-    padding: 5px 10px; 
+    padding: 5px 10px;
     cursor: pointer;
 }
 
@@ -831,25 +864,25 @@ ul.nav li a:hover {
     color: dimgrey;  /* Change the color to something visible */
     font-size: 18px;
     margin-left: 6px;
-}   
+}
 .Comment button {
     background-color: rgba(52, 137, 243, 0);
     border: none;
-    color: #486dfa;
-    padding: 4px 0px;  
+    color: var(--color-blue-comment);
+    padding: 4px 0px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     font-weight: bold;
 }
 .Comment button:hover {
-    color: #003bae;
+    color: var(--color-blue-comment-hover);
 }
 .Cheepforcomments {
     margin: 10px 0;
     padding: 5px;
-    background: #F0FAF9;
-    border: 1px solid #e29494;
+    background: var(--color-teal-bg);
+    border: 1px solid var(--color-pink-border);
     border-radius: 2px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -858,37 +891,37 @@ ul.nav li a:hover {
     margin-bottom: 0px;
 }
 .Cheepforcomments img {
-    max-width: 100%; 
+    max-width: 100%;
     max-height: 200px;
-    height: auto; 
-    margin: 10px auto; 
+    height: auto;
+    margin: 10px auto;
     border-radius: 5px;
-    border: 1px solid #DBF3F1; 
+    border: 1px solid var(--color-teal-border);
 }
 .CommentForm {
     margin: 10px 0;
     padding: 5px;
-    gap: 5px; 
-    
+    gap: 5px;
+
 }
 .CommentForm input[type="text"] {
     width: 100%;
-    padding: 5px; 
-    border: 1px solid #e6c0bf;
+    padding: 5px;
+    border: 1px solid var(--color-pink-border);
     border-radius: 2px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
 }
 .CommentForm button {
-    background: #571010;
-    border: 1px solid #3b0707;
+    background: var(--color-red-dark);
+    border: 1px solid var(--color-red-darker);
     font-family: 'Trebuchet MS', sans-serif;
-    font-size: 12px; 
+    font-size: 12px;
     font-weight: bold;
     border-radius: 2px;
     color: white;
-    padding: 5px 10px; 
-    cursor: pointer; 
+    padding: 5px 10px;
+    cursor: pointer;
 }
 
 div.page ul.cheeps li img.Profile-Picture {
@@ -904,16 +937,16 @@ div.page ul.cheeps li img.Profile-Picture {
 
 .cheep-details {
     display: flex;
-    flex-direction: column; 
-    flex: 1; 
-    justify-content: space-between; 
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
 .cheep-header {
     display: flex;
-    align-items: center; 
-    justify-content: space-between; 
-    gap: 10px; 
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 .cheep-actions {
@@ -930,7 +963,7 @@ div.page ul.cheeps li img.Profile-Picture {
 
 .Cheep-Details {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     align-items: flex-start;
     justify-content: center;
 }
