@@ -48,7 +48,10 @@ public class UserTimelineModel : PageModel
         // Format the timestamp
         var CurrentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
         
-        var timeDifference = CurrentTime - timeStampDateTime;
+        // Convert the parsed timestamp from UTC to local time (it's stored as UTC)
+        var localTimeStamp = TimeZoneInfo.ConvertTimeFromUtc(timeStampDateTime, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+        
+        var timeDifference = CurrentTime - localTimeStamp;
         
         if (timeDifference.TotalSeconds < 60)
         {
