@@ -1,6 +1,6 @@
 /*Images for background taken from https://www.spriters-resource.com/mobile/flappybird/sheet/59894/*/
 :root {
-    --day-gradient-height: 100%; /* Default value */
+    --day-img-aspect: 0.42424242424242425;
 
     /* Primary brand — mossy olive/bark */
     --background-color-1: #6b7c45;       /* mossy olive green  (was: #cc6e6e) */
@@ -38,12 +38,31 @@
 }
 
 body {
+    /* Height the Day.png will occupy = 100vw * aspect ratio */
+    --day-img-height: calc(100vw * var(--day-img-aspect));
+
     background-image:
-            url("../images/DayGradient.png"),
-            url("../images/Day.png");
-    background-position: top center, bottom center;  /* Position gradient at the top and image at the bottom */
-    background-repeat: no-repeat, no-repeat;  /* No repetition for both images */
-    background-size: 100% var(--day-gradient-height), 100% auto;  /* Stretch gradient vertically and maintain aspect ratio for image */
+            linear-gradient(
+                    to bottom,
+                    #e0f6ff 0%,        /* very light sky blue */
+                    #87ceeb 30%,       /* sky blue */
+                    #31808a 100%       /* deep forest */
+            ),
+            url("../images/background.png");
+
+    background-position:
+            top center,
+            bottom center;
+
+    background-repeat:
+            no-repeat,
+            no-repeat;
+
+    background-size:
+            100% calc(100% - var(--day-img-height)),  /* gradient fills above the image */
+            100% auto;                                 /* image at natural aspect ratio */
+
+    background-attachment: scroll, scroll;
 
     min-height: 100vh;
     font-family: 'Trebuchet MS', sans-serif;
