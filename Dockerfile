@@ -5,16 +5,19 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy .csproj files for dotnet restore.
 COPY ["src/Chirp.Web/Chirp.Web.csproj", "src/Chirp.Web/"]
 COPY ["src/Chirp.Infrastructure/Chirp.Infrastructure.csproj", "src/Chirp.Infrastructure/"]
 COPY ["src/Chirp.Core/Chirp.Core.csproj", "src/Chirp.Core/"]
+
 RUN dotnet restore "src/Chirp.Web/Chirp.Web.csproj"
 COPY . .
 WORKDIR "/src/src/Chirp.Web"
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
 
 FROM base AS final
 WORKDIR /app
