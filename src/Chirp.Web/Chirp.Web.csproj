@@ -30,9 +30,6 @@
 
   <ItemGroup>
     <Content Include="**\Migrations\**\*.*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

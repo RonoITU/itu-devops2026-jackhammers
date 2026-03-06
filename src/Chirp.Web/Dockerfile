@@ -10,7 +10,7 @@ COPY ["src/Chirp.Infrastructure/Chirp.Infrastructure.csproj", "src/Chirp.Infrast
 COPY ["src/Chirp.Core/Chirp.Core.csproj", "src/Chirp.Core/"]
 RUN dotnet restore "src/Chirp.Web/Chirp.Web.csproj"
 COPY . .
-WORKDIR /src/Chirp.Web
+WORKDIR "/src/src/Chirp.Web"
 RUN dotnet build "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

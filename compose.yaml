@@ -4,7 +4,7 @@
       context: .
       dockerfile: src/Chirp.Web/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:8080"
     depends_on:
