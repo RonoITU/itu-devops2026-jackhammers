@@ -81,6 +81,7 @@ jobs:
       #   POSTGRES_PROD_USER:     PostgreSQL username for production database
       #   POSTGRES_PROD_PASSWORD: PostgreSQL password for production database
       #   POSTGRES_PROD_DB:       PostgreSQL database name for production database
+      #   POSTGRES_PROD_HOST:     PostgreSQL host (defaults to 'db' if not set, set to IP/hostname for external DB)
       - name: Deploy to Hetzner via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -91,6 +92,7 @@ jobs:
             echo "POSTGRES_PROD_USER=${{ secrets.POSTGRES_PROD_USER }}" > ~/chirp/prod-compose/.env
             echo "POSTGRES_PROD_PASSWORD=${{ secrets.POSTGRES_PROD_PASSWORD }}" >> ~/chirp/prod-compose/.env
             echo "POSTGRES_PROD_DB=${{ secrets.POSTGRES_PROD_DB }}" >> ~/chirp/prod-compose/.env
+            echo "POSTGRES_PROD_HOST=${{ secrets.POSTGRES_PROD_HOST }}" >> ~/chirp/prod-compose/.env
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             docker pull rasmusachr/minitwit:latest
             docker compose -f ~/chirp/prod-compose/docker-compose.devops-serv1.yml up -d

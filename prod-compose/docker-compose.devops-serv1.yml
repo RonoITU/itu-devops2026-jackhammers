@@ -24,7 +24,7 @@ services:
       - ASPNETCORE_URLS=https://*:8081;http://*:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/cert/live/windysquirrels.dk/fullchain.pem
       - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/cert/live/windysquirrels.dk/privkey.pem
-      - ConnectionStrings__DefaultConnection=Host=db;Database=${POSTGRES_PROD_DB};Username=${POSTGRES_PROD_USER};Password=${POSTGRES_PROD_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Host=${POSTGRES_PROD_HOST:-db};Database=${POSTGRES_PROD_DB};Username=${POSTGRES_PROD_USER};Password=${POSTGRES_PROD_PASSWORD}
     volumes:
       - /etc/letsencrypt:/cert
     ports:
