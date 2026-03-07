@@ -1,4 +1,4 @@
-# Using .NET 10 SDK for building
+﻿# Using .NET 10 SDK for building
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /app
 
@@ -7,7 +7,6 @@ COPY . ./
 
 # Restore dependencies
 RUN dotnet restore
-
 
 # Build and publish the web project
 RUN dotnet publish src/Chirp.Web/Chirp.Web.csproj -c Release -o out
@@ -18,6 +17,8 @@ WORKDIR /app
 
 # Copy published output from build stage
 COPY --from=build /app/out .
+
+RUN apk add --no-cache tzdata
 
 # Expose port
 EXPOSE 8080

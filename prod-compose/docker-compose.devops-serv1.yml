@@ -18,6 +18,7 @@ services:
   
   cheep:
     image: rasmusachr/minitwit:latest
+    user: "0:0" # Root
     container_name: cheep
     environment:
       - ASPNETCORE_ENVIRONMENT=Production

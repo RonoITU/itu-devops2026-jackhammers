@@ -46,10 +46,10 @@ public class UserTimelineModel : PageModel
             return "Invalid date";
         }
         // Format the timestamp
-        var CurrentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+        var CurrentTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen"));
         
         // Convert the parsed timestamp from UTC to local time (it's stored as UTC)
-        var localTimeStamp = TimeZoneInfo.ConvertTimeFromUtc(timeStampDateTime, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+        var localTimeStamp = TimeZoneInfo.ConvertTimeFromUtc(timeStampDateTime, TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen"));
         
         var timeDifference = CurrentTime - localTimeStamp;
         
