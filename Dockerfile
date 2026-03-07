@@ -1,27 +1,28 @@
-# Using .NET 10 SDK for building
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
+USER $APP_UID
 WORKDIR /app
 
-# Copy everything
-COPY . ./
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
 
-# Restore dependencies
-RUN dotnet restore
+# Copy .csproj files for dotnet restore.
+COPY ["src/Chirp.Web/Chirp.Web.csproj", "src/Chirp.Web/"]
+COPY ["src/Chirp.Infrastructure/Chirp.Infrastructure.csproj", "src/Chirp.Infrastructure/"]
+COPY ["src/Chirp.Core/Chirp.Core.csproj", "src/Chirp.Core/"]
 
+RUN dotnet restore "src/Chirp.Web/Chirp.Web.csproj"
+COPY . .
+WORKDIR "/src/src/Chirp.Web"
 
-# Build and publish the web project
-RUN dotnet publish src/Chirp.Web/Chirp.Web.csproj -c Release -o out
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
 
-# Build runtime image using .NET 10 ASP.NET runtime
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM base AS final
 WORKDIR /app
+COPY --from=publish /app/publish .
 
-# Copy published output from build stage
-COPY --from=build /app/out .
-
-# Expose port
 EXPOSE 8080
-
-# ASP.NET Environment is specified in docker-compose file
 
 ENTRYPOINT ["dotnet", "Chirp.Web.dll"]
