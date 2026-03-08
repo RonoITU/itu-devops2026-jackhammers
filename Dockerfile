@@ -1,5 +1,4 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
-USER $APP_UID
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
@@ -20,8 +19,12 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
 
 FROM base AS final
+USER root
+
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN apk add --no-cache tzdata
 
 EXPOSE 8080
 
