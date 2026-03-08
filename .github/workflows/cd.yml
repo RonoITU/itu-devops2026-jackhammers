@@ -81,7 +81,7 @@ jobs:
       #   POSTGRES_PROD_USER:     PostgreSQL username for production database
       #   POSTGRES_PROD_PASSWORD: PostgreSQL password for production database
       #   POSTGRES_PROD_DB:       PostgreSQL database name for production database
-      #   POSTGRES_PROD_HOST:     PostgreSQL host (defaults to 'db' if not set, set to IP/hostname for external DB)
+      #   POSTGRES_PROD_HOST:     PostgreSQL host for production database
       - name: Deploy to Hetzner via SSH
         uses: appleboy/ssh-action@v1
         with:
