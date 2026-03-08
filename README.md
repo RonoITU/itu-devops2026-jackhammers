@@ -1,60 +1,76 @@
-# Chirp
-## Preface
-This project is part of our course on Analysis, Design, and Software Architecture at the IT University of Copenhagen.
+# Windy Squirrels - Minitwit
 
-This project was originally developed in collaboration with four other contributors as part of our course. After the course ended, I made additional modifications independently. These changes were made solely by me and do not necessarily reflect the views or approval of the other contributors.
+## Preface
+
+This project, officially called Minitwit, is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
 
 ## About the project
-Chirp is a homemade Twitter-like system, allowing users to post and interact with short messages called cheeps. The platform supports various features to enhance user engagement and account management.
+
+Minitwit is a homemade Twitter-like system, allowing users to post and interact with short messages. The platform supports various features to enhance user engagement and account management.
 
 
-## Live Deployment
-Currently there is no live deployment of this application, sorry.
-~~The project is hosted on Azure and can be accessed [here](https://bdsagroup07chirprazor.azurewebsites.net/).~~
+## Our live deployment
 
-## Local Deployment
-To run the project locally, follow these steps:
+We are hosting the project [here](https://windysquirrels.dk/). We use [Hetzner](https://www.hetzner.com/) for the VPS and [Dandomain](https://dandomain.dk/) for domain name services. 
+
+## Local development, testing and deployment
+These are methods to run the project locally:
+
+### Development with .NET 10 and Docker
+
+This is the "hot reload" for .NET web applications. 
 
 1) **Clone the Repository**
+
 ```bash
-git clone https://github.com/ITU-BDSA2024-GROUP7/Chirp.git
+git clone https://github.com/RonoITU/itu-devops2026-jackhammers
 ```
 
-2) **Navigate to the Web Application**
+2) **Start the database container**
+
 ```bash
-cd Chirp.Web
+docker compose -f docker-compose.db.yml up -d
 ```
 
-3) **Setup GitHub OAuth**<br>
-[Register](https://github.com/settings/applications/new) a new OAuth application, and add the client id and secret to user-secrets
-```
-OAuth Settings:
-Application name: <Whatever you like>
-Homepage URL: http://localhost:5273/
-Application description: <Whatever you like>
-Authorization callback URL: <http://localhost:5273/signin-github>
+3) **Start the Web Application**
 
-Set the secret:
-cd .\src\Chirp.Web\
-dotnet user-secrets init
-dotnet user-secrets set "AUTHENTICATION_GITHUB_CLIENTID" "your-client-id"
-dotnet user-secrets set "AUTHENTICATION_GITHUB_CLIENTSECRET" "your-client-secret"
-```
-
-
-4) **Run the Application**
 ```bash
-cd .\src\Chirp.Web\
-dotnet watch
+dotnet watch --project ./src/Chirp.Web/
 ```
 
----
+### Automated testing with .NET 10 and Docker
 
-# DOCKER COMMANDS (DEVELOPING)
-```
-// Build image from Dockerfile
-docker build -t jackhammer/aspnetapp .
+Run all tests in the solution by running `dotnet test` in the root folder. 
 
-// See images
-docker images 
+Test projects are divided into `Unit`, `Integration` and `E2E` tests. 
+
+- Unit tests: A few seconds. No dependencies. 
+- Integration tests: 15 to 30 seconds. 
+    - Uses Docker to host the database. (Process must have privilege to access Docker.)
+- End to End tests: Several minutes and high memory. 
+    - Uses Docker to host the site. 
+    - Playwright must first be installed using PowerShell. (`pwsh test/Chirp.TestE2E/bin/Debug/net10.0/playwright.ps1 install --with-deps`)
+
+Depending on your testing needs, these are run commands for each test project:
+
+```bash
+dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj
+dotnet test test/Chirp.TestIntegration/Chirp.TestIntegration.csproj
+dotnet test test/Chirp.TestE2E/Chirp.TestE2E.csproj
 ```
+
+### Test deployment using Docker only
+
+Using Docker Compose with the file `docker-compose.dev.yml`, you can host the Postgres database and site locally, as it would be in production. 
+
+### Note about production deployment 
+
+The compose instructions for real production deployments are setup differently.
+ 
+1. An actual server volume is mounted for Postgres. The port to access Postgres is not exposed to The Web.
+2. Paths to SSL certificates should be setup for single app deployment, or a reverse proxy should be configured for multi-app deployment.
+3. Need to use the standard ports for HTTP and HTTPS, which normally take privileged access to bind. 
+
+## More relevant documentation
+
+[Docker Documentation](/docs/Docker-Documentation.md)

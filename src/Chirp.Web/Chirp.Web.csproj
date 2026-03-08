@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Chirp.Web</RootNamespace>
     <UserSecretsId>149f19c4-0ea1-4aed-9058-2f0f20b1a19b</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
