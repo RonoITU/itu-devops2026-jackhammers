@@ -82,7 +82,6 @@ namespace Chirp.Web
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                app.UseHsts();
             }
             
             app.Use(async (context, next) =>
@@ -109,8 +108,6 @@ namespace Chirp.Web
 
             //Use CORS
             app.UseCors();
-            
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
