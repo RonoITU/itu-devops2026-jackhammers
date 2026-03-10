@@ -82,7 +82,7 @@ namespace Chirp.Web
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                app.UseHsts();
+                //app.UseHsts();  // Only if app is directly responsible for HTTPS. 
             }
             
             app.Use(async (context, next) =>
@@ -109,8 +109,8 @@ namespace Chirp.Web
 
             //Use CORS
             app.UseCors();
-            
-            app.UseHttpsRedirection();
+
+            // app.UseHttpsRedirection();  // Only if app is directly responsible for HTTPS. 
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
