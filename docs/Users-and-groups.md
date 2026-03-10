@@ -59,10 +59,10 @@ In this case, `rono` is not present to set the password himself. I want to creat
 _With elevated privileges:_
 
 ```bash
-adduser --disabled-password --shell /bin/bash --ingroup users --ingroup admin rono
+adduser --shell /bin/bash --ingroup users --ingroup admin rono
 ```
 
-> Without a password set, it is impossible to use password login for this user in any case, whether locally or remotely. 
+> You must still set some password in this case and give it to `rono`. Otherwise `rono` will not be able to set one!
 
 I then follow the same steps as before to setup SSH: [[Users and Groups#2. Adding the public SSH key|Adding the public SSH key.]]
 
@@ -72,5 +72,6 @@ To force `rono` to set a password on the first login attempt, run this command t
 passwd -e rono
 ```
 
-> If SSH password authentication is allowed on the system, the password that `rono` sets will allow SSH login!
+> If SSH password authentication is allowed on the system, remember that passwords will allow SSH login!
+
 
