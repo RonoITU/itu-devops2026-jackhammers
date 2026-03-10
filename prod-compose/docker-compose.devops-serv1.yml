@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PROD_PASSWORD}
       POSTGRES_DB: ${POSTGRES_PROD_DB}
     volumes:
-      - /mnt/HC_Volume_104685938/itu-minitwit/postgresql/data:/var/lib/postgresql/data
+      - /root/itu-minitwit/postgresql/data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
