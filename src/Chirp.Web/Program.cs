@@ -108,6 +108,9 @@ namespace Chirp.Web
             // Use Prometheus middleware to expose metrics at /metrics
             app.UseHttpMetrics();
 
+            // Use Prometheus middleware to expose metrics at /metrics
+            app.UseHttpMetrics();
+
             //Use CORS
             app.UseCors();
 
