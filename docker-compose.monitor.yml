@@ -9,8 +9,6 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
-    networks:
-      - monitoring
   grafana:
     build:
       dockerfile: ./Dockerfile
@@ -19,15 +17,9 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
-    networks:
-      - monitoring
     volumes:
       - grafana-storage:/var/lib/grafana
 
 volumes:
   db_data:
   grafana-storage: { }
-
-networks:
-  monitoring:
-    external: true
