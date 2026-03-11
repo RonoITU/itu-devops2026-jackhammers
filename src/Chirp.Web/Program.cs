@@ -5,6 +5,7 @@ using Chirp.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Chirp.Web.Middleware;
+using Prometheus;
 
 namespace Chirp.Web
 {
@@ -107,6 +108,9 @@ namespace Chirp.Web
             
             
 
+            // Use Prometheus middleware to expose metrics at /metrics
+            app.UseHttpMetrics();
+
             //Use CORS
             app.UseCors();
 
@@ -122,7 +126,10 @@ namespace Chirp.Web
             app.UseAuthorization();
 
             // Map Razor Pages
-            app.MapRazorPages(); 
+            app.MapRazorPages();
+            
+            // Expose metrics endpoint for Prometheus
+            app.MapMetrics();
             
             // Map Controllers (Used for Simulator API endpoints)
             app.MapControllers();
