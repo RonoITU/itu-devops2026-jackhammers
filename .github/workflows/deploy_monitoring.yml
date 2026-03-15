@@ -13,18 +13,18 @@ jobs:
       - name: Copy docker-compose file and monitoring configs to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SSH2_HOST }}
-          username: ${{ secrets.SSH2_USER }}
-          key: ${{ secrets.SSH2_PRIVATE_KEY }}
+          host: ${{ secrets.SERV2_SSH_HOST }}
+          username: ${{ secrets.SERV2_SSH_USER }}
+          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
           source: "docker-compose.monitor.yml,monitoring/"
           target: ~/chirp/
           
       - name: Deploy monitoring stack on server
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH2_USER }}
-          key: ${{ secrets.SSH2_PRIVATE_KEY }}
+          host: ${{ secrets.SERV2_SSH_HOST }}
+          username: ${{ secrets.SERV2_SSH_USER }}
+          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
           script: |
             cd ~/chirp
             docker compose -f docker-compose.monitor.yml up -d --build

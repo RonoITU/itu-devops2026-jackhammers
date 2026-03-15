@@ -66,10 +66,10 @@ jobs:
       - name: Copy docker-compose file to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SERV2_SSH_HOST }}
-          username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
-          source: "prod-compose/docker-compose.devops-serv2.yml,prod-compose/nginx.conf,monitoring"
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "prod-compose/docker-compose.devops-serv1.yml,prod-compose/nginx.conf"
           target: ~/chirp/
       
       # SSHes into Hetzner server, pulls the latest image from Docker Hub (public repo, no login needed),
@@ -85,9 +85,9 @@ jobs:
       - name: Deploy to Hetzner via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.SERV2_SSH_HOST }}
-          username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "POSTGRES_PROD_USER=${{ secrets.POSTGRES_PROD_USER }}" > ~/chirp/prod-compose/.env
             echo "POSTGRES_PROD_PASSWORD=${{ secrets.POSTGRES_PROD_PASSWORD }}" >> ~/chirp/prod-compose/.env
@@ -95,7 +95,7 @@ jobs:
             echo "POSTGRES_PROD_HOST=${{ secrets.POSTGRES_PROD_HOST }}" >> ~/chirp/prod-compose/.env
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             docker pull rasmusachr/minitwit:latest
-            docker compose -f ~/chirp/prod-compose/docker-compose.devops-serv2.yml up -d
+            docker compose -f ~/chirp/prod-compose/docker-compose.devops-serv1.yml up -d
             docker logout
   
   
