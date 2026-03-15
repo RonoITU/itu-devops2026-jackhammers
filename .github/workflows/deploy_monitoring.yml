@@ -1,0 +1,30 @@
+﻿name: Deploy Monitoring Stack
+
+on:
+  workflow_dispatch: 
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production  # Enables GitHub environment protection rules and approval gates
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Copy docker-compose file and monitoring configs to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERV2_SSH_HOST }}
+          username: ${{ secrets.SERV2_SSH_USER }}
+          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          source: "docker-compose.monitor.yml,monitoring/"
+          target: ~/chirp/
+          
+      - name: Deploy monitoring stack on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERV2_SSH_HOST }}
+          username: ${{ secrets.SERV2_SSH_USER }}
+          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/chirp
+            docker compose -f docker-compose.monitor.yml up -d --build

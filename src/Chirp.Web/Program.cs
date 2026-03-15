@@ -105,9 +105,6 @@ namespace Chirp.Web
                 await next();
             });
 
-            
-            
-
             // Use Prometheus middleware to expose metrics at /metrics
             app.UseHttpMetrics();
 
@@ -127,7 +124,7 @@ namespace Chirp.Web
 
             // Map Razor Pages
             app.MapRazorPages();
-            
+
             // Expose metrics endpoint for Prometheus
             app.MapMetrics();
             

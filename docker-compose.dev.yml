@@ -19,10 +19,13 @@ services:
       retries: 5
   
   cheep:
+    build:
+      dockerfile: ./Dockerfile
     image: jackhammers/minitwit:latest
     container_name: cheep
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres
     ports:
       - "8080:8080"
     depends_on:
