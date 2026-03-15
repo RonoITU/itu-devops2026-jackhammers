@@ -15,7 +15,7 @@ jobs:
         with:
           host: ${{ secrets.SERV2_SSH_HOST }}
           username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.monitor.yml,monitoring/"
           target: ~/chirp/
           
@@ -24,7 +24,7 @@ jobs:
         with:
           host: ${{ secrets.SERV2_SSH_HOST }}
           username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/chirp
             docker compose -f docker-compose.monitor.yml up -d --build
