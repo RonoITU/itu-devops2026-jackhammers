@@ -24,6 +24,6 @@ scrape_configs:
     scrape_interval: 5s
 
     static_configs:
-      - targets: ['cheep:8080']
+      - targets: ['10.0.0.3:80']
         labels:
           group: 'production'
