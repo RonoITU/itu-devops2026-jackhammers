@@ -24,5 +24,4 @@ services:
       - /root/itu-minitwit/grafana/data:/var/lib/grafana
 
 volumes:
-  db_data:
   grafana-storage: { }
