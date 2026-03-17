@@ -471,13 +471,225 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
+          "editorMode": "code",
           "expr": "sum(rate(http_requests_received_total{code=~\"4..|5..\"}[5m])) / sum(rate(http_requests_received_total[5m]))",
           "legendFormat": "error %",
+          "range": true,
           "refId": "A"
         }
       ],
       "title": "HTTP Error Rate (4xx+5xx)",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": true,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.9",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum by (endpoint) (rate(http_requests_received_total{code=~\"4..|5..\"}[5m])) / sum by (endpoint) (rate(http_requests_received_total[5m]))",
+          "legendFormat": "{{endpoint}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "HTTP Error Rate by Endpoint (4xx+5xx)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-background"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 0.01
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "endpoint"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 280
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "code"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 31,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Value"
+          }
+        ]
+      },
+      "pluginVersion": "12.1.9",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "expr": "sum by (endpoint, code) (rate(http_requests_received_total{code=~\"4..|5..\"}[5m])) > 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Error Requests by Endpoint & Status Code",
+      "type": "table"
     },
     {
       "datasource": {
@@ -560,7 +772,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 13
       },
       "id": 6,
       "options": {
@@ -659,7 +871,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 13
       },
       "id": 7,
       "options": {
@@ -776,7 +988,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 21
       },
       "id": 8,
       "options": {
@@ -816,7 +1028,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 29
       },
       "id": 102,
       "panels": [],
@@ -861,7 +1073,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 22
+        "y": 30
       },
       "id": 14,
       "options": {
@@ -931,7 +1143,7 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 22
+        "y": 30
       },
       "id": 15,
       "options": {
@@ -1001,7 +1213,7 @@
         "h": 6,
         "w": 6,
         "x": 12,
-        "y": 22
+        "y": 30
       },
       "id": 16,
       "options": {
@@ -1071,7 +1283,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 22
+        "y": 30
       },
       "id": 17,
       "options": {
@@ -1169,7 +1381,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 36
       },
       "id": 18,
       "options": {
@@ -1265,7 +1477,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 36
       },
       "id": 19,
       "options": {
@@ -1320,7 +1532,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 44
       },
       "id": 101,
       "panels": [],
@@ -1392,7 +1604,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 45
       },
       "id": 9,
       "options": {
@@ -1488,7 +1700,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 45
       },
       "id": 10,
       "options": {
@@ -1636,7 +1848,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 45
+        "y": 53
       },
       "id": 11,
       "options": {
@@ -1750,7 +1962,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 45
+        "y": 53
       },
       "id": 12,
       "options": {
@@ -1855,7 +2067,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 45
+        "y": 53
       },
       "id": 13,
       "options": {
@@ -1892,7 +2104,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 61
       },
       "id": 103,
       "panels": [],
@@ -1964,7 +2176,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 54
+        "y": 62
       },
       "id": 20,
       "options": {
@@ -2078,7 +2290,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 54
+        "y": 62
       },
       "id": 21,
       "options": {
@@ -2174,7 +2386,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 70
       },
       "id": 22,
       "options": {
@@ -2249,7 +2461,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 78
       },
       "id": 104,
       "panels": [],
@@ -2321,7 +2533,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 79
       },
       "id": 23,
       "options": {
@@ -2417,7 +2629,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 71
+        "y": 79
       },
       "id": 24,
       "options": {
@@ -2522,7 +2734,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 87
       },
       "id": 25,
       "options": {
@@ -2627,7 +2839,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 87
       },
       "id": 26,
       "options": {
@@ -2681,5 +2893,5 @@
   "timezone": "browser",
   "title": "Windysquirrels Dashboard",
   "uid": "chirp-aspnet-001",
-  "version": 10
+  "version": 12
 }
