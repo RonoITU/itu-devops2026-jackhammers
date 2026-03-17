@@ -27,4 +27,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/chirp
-            docker compose -f docker-compose.monitor.yml up -d --build
+            docker compose -f prod-compose/docker-compose.devops-serv2.yml up -d --build
