@@ -27,6 +27,6 @@ services:
       - "3100:3100"
     volumes:
       - /home/github/chirp/logging/loki:/etc/loki
-      - /root/itu-minitwit/loki-data:/loki
-    command: -config.file=/etc/loki/loki-config.yaml
+      - /home/github/chirp/loki-data/loki:/loki
+    command: -config.file=/etc/loki/loki-config.yml
     restart: unless-stopped
