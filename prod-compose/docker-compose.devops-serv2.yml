@@ -18,7 +18,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - /home/github/chirp/grafana-storage:/var/lib/grafana
   
   loki:
     image: grafana/loki:3.6.7
@@ -30,7 +30,3 @@ services:
       - /root/itu-minitwit/loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     restart: unless-stopped
-
-volumes:
-  db_data:
-  grafana-storage: { }
