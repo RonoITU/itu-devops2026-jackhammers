@@ -49,12 +49,12 @@ services:
     image: grafana/promtail:3.6.0
     container_name: promtail
     volumes:
-      - ../promtail/promtail-config.yml:/etc/promtail/config.yml
+      - ../logging/promtail/promtail-config.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
-      - loki
+      - nginx
     restart: unless-stopped
 
 volumes:
