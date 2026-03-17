@@ -2,7 +2,7 @@ services:
   prometheus:
     build:
       dockerfile: ./Dockerfile
-      context: ./monitoring/prometheus
+      context: ../monitoring/prometheus
     image: prometheus_image
     container_name: prometheus
     command:
@@ -12,7 +12,7 @@ services:
   grafana:
     build:
       dockerfile: ./Dockerfile
-      context: ./monitoring/grafana
+      context: ../monitoring/grafana
     image: grafana_image
     container_name: grafana
     ports:
