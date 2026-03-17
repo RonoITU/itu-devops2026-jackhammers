@@ -69,7 +69,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "prod-compose/docker-compose.devops-serv1.yml,prod-compose/nginx.conf"
+          source: "prod-compose/docker-compose.devops-serv1.yml,prod-compose/nginx.conf,logging/promtail/"
           target: ~/chirp/
       
       # SSHes into Hetzner server, pulls the latest image from Docker Hub (public repo, no login needed),
