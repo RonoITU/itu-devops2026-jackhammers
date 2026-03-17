@@ -15,8 +15,8 @@ jobs:
         with:
           host: ${{ secrets.SERV2_SSH_HOST }}
           username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
-          source: "prod-compose/docker-compose.devops-serv2.yml,monitoring/,logging/loki/"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.monitor.yml,monitoring/"
           target: ~/chirp/
           
       - name: Deploy monitoring stack on server
@@ -24,7 +24,7 @@ jobs:
         with:
           host: ${{ secrets.SERV2_SSH_HOST }}
           username: ${{ secrets.SERV2_SSH_USER }}
-          key: ${{ secrets.SERV2_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/chirp
             docker compose -f prod-compose/docker-compose.devops-serv2.yml up -d --build
