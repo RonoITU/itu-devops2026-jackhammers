@@ -295,5 +295,13 @@ namespace Chirp.Infrastructure.Repositories
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        /// <summary>
+        /// Method for to get total amount of current users in the system.
+        /// </summary>
+        public async Task<long> TotalAuthorCount()
+        {
+            return  await _dbContext.Authors.CountAsync();
+        }
     }    
 }

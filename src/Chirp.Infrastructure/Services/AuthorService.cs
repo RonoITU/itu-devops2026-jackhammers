@@ -113,4 +113,13 @@ public class AuthorService : IAuthorService
     {
         await _authorRepository.ClearProfilePicture(authorName, profilePicture);
     }
+
+    /// <summary>
+    /// Method for to get total amount of current users in the system.
+    /// </summary>
+    public async Task<long> TotalAuthorCount()
+    {
+        return await _authorRepository.TotalAuthorCount();
+    }
+    
 }

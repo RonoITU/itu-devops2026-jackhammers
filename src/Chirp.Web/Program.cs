@@ -59,7 +59,10 @@ namespace Chirp.Web
             builder.Services.AddScoped<ICheepService, CheepService>();
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<ILatestService, LatestService>();
-
+            
+            // Tilføjelse af vores egne statistikker til prometheus.
+            builder.Services.AddHostedService<MetricsUpdater>();
+            
             // Build the application
             var app = builder.Build();
 
