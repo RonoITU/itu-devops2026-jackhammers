@@ -4,6 +4,7 @@ services:
   db:
     image: postgres:15-alpine
     container_name: db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_PROD_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PROD_PASSWORD}
@@ -21,6 +22,7 @@ services:
   cheep:
     image: rasmusachr/minitwit:latest
     container_name: cheep
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://*:8080
@@ -34,6 +36,7 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -48,6 +51,7 @@ services:
   promtail:
     image: grafana/promtail:3.6.0
     container_name: promtail
+    restart: unless-stopped
     volumes:
       - ../logging/promtail/promtail-config.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
