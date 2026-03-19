@@ -214,7 +214,15 @@ public class CheepService : ICheepService
     {
         return await _cheepRepository.RetriveAllCommentsFromAnAuthor(authorName);
     }
-    
+
+    /// <summary>
+    /// Retrieves all cheeps from the system.
+    /// </summary>
+    public async Task<long> TotalCheepsPosted()
+    {
+        return await _cheepRepository.TotalCheepsPosted();
+    }
+
     /// <summary>
     /// Gets messages for simulator API with pagination
     /// </summary>
