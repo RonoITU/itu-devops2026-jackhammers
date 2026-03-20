@@ -26,6 +26,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://*:8080
+      - Logging__Console__IncludeScopes=false
       - ConnectionStrings__DefaultConnection=Host=${POSTGRES_PROD_HOST:-db};Database=${POSTGRES_PROD_DB};Username=${POSTGRES_PROD_USER};Password=${POSTGRES_PROD_PASSWORD}
     depends_on:
       db:
