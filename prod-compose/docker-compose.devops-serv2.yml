@@ -2,9 +2,10 @@ services:
   prometheus:
     build:
       dockerfile: ./Dockerfile
-      context: ./monitoring/prometheus
+      context: ../monitoring/prometheus
     image: prometheus_image
     container_name: prometheus
+    restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
@@ -12,25 +13,22 @@ services:
   grafana:
     build:
       dockerfile: ./Dockerfile
-      context: ./monitoring/grafana
+      context: ../monitoring/grafana
     image: grafana_image
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - /home/github/chirp/grafana-storage:/var/lib/grafana
   
   loki:
     image: grafana/loki:3.6.7
     container_name: loki
+    restart: unless-stopped
     ports:
       - "3100:3100"
     volumes:
-      - ./logging/loki/loki-config.yml:/etc/loki/local-config.yaml
-      - /root/itu-minitwit/loki-data:/loki
-    command: -config.file=/etc/loki/local-config.yaml
+      - /home/github/chirp/logging/loki:/etc/loki
+      - /home/github/chirp/loki-data/loki:/loki
+    command: -config.file=/etc/loki/loki-config.yml
     restart: unless-stopped
-
-volumes:
-  db_data:
-  grafana-storage: { }

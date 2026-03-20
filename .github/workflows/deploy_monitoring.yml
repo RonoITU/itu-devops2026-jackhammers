@@ -16,7 +16,7 @@ jobs:
           host: ${{ secrets.SERV2_SSH_HOST }}
           username: ${{ secrets.SERV2_SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "prod-compose/docker-compose.devops-serv2.yml,monitoring/,logging/promtail/"
+          source: "prod-compose/docker-compose.devops-serv2.yml,monitoring/,logging/loki/"
           target: ~/chirp/
           
       - name: Deploy monitoring stack on server
