@@ -122,4 +122,29 @@ public class AuthorService : IAuthorService
         return await _authorRepository.TotalAuthorCount();
     }
     
+    /// <summary>
+    /// Method for to get the most 10 followed persons in the system.
+    /// </summary>
+    public async Task<List<(string Author, int Followers)>> GetMostFollowed()
+    {
+        return await _authorRepository.GetMostFollowed();
+    }
+
+    /// <summary>
+    /// Method for to get average and median number of followers in the system.
+    /// </summary>
+    public async Task<(double Average, double Median)> GetFollowerStats()
+    {
+        return await _authorRepository.GetFollowerStats();
+    }
+
+    /// <summary>
+    /// Method for to get active users, defined as users that have post in the last 30 days.
+    /// </summary>
+    public async Task<int> GetActiveUsers()
+    {
+        return await _authorRepository.GetActiveUsers();
+    }
+
+    
 }

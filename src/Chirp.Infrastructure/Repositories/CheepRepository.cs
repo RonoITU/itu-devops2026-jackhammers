@@ -945,5 +945,11 @@ namespace Chirp.Infrastructure.Repositories
     
             return cheeps;
         }
+        
+        public async Task<long> TotalCheepsPosted()
+        {
+            return await _dbContext.Cheeps.CountAsync();
+        }
+
     }
 }

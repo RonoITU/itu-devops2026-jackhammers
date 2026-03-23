@@ -24,6 +24,20 @@ public class MetricsUpdater : BackgroundService
             
             var count2 = await cheepService.TotalCheepsPosted();
             MetricsRegistry.TotalCheepsPosted.Set(count2);
+            
+            MetricsRegistry.ActiveUsers.Set(await authorService.GetActiveUsers());
+            
+            var (average, median) = await authorService.GetFollowerStats();
+            MetricsRegistry.AverageFollowers.Set(average);
+            MetricsRegistry.MedianFollowers.Set(median);
+            
+            var mostFollowed = await authorService.GetMostFollowed();
+            foreach (var (author, followers) in mostFollowed)
+            {
+                MetricsRegistry.MostFollowed
+                    .WithLabels(author)
+                    .Set(followers);
+            }
 
             await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
         }

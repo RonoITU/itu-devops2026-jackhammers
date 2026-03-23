@@ -17,4 +17,7 @@ public interface IAuthorService
     public Task UpdateProfilePicture(string authorName, IFormFile profilePicture);
     public Task ClearProfilePicture(string authorName, IFormFile profilePicture);
     public Task<long> TotalAuthorCount();
+    Task<List<(string Author, int Followers)>> GetMostFollowed();
+    Task<(double Average, double Median)> GetFollowerStats();
+    Task<int> GetActiveUsers();
 }
