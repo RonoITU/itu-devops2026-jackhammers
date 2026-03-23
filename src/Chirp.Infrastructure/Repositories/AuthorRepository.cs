@@ -354,7 +354,7 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         public async Task<int> GetActiveUsers()
         {
-            var cutoff = DateTime.UtcNow.AddDays(-30);
+            var cutoff = DateTime.UtcNow.AddDays(-3);
 
             return await _dbContext.Cheeps
                 .Where(c => c.TimeStamp >= cutoff)
