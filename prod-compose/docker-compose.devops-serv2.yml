@@ -31,4 +31,3 @@ services:
       - /home/github/chirp/logging/loki:/etc/loki
       - /home/github/chirp/loki-data/loki:/loki
     command: -config.file=/etc/loki/loki-config.yml
-    restart: unless-stopped

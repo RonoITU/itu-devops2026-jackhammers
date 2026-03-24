@@ -33,4 +33,5 @@ public interface ICheepService
     Task<List<String>> GetTopReactions(int cheepId);
     Task DeleteCheep(int cheepId);
     Task<List<Core.DTOs.CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName);
+    Task<long> TotalCheepsPosted();
 }
