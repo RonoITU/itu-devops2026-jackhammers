@@ -26,5 +26,8 @@ jobs:
           username: ${{ secrets.SERV2_SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "SONAR_DB_USER=${{ secrets.SONAR_DB_USER }}" > ~/chirp/prod-compose/.env
+            echo "SONAR_DB_PASSWORD=${{ secrets.SONAR_DB_PASSWORD }}" >> ~/chirp/prod-compose/.env
+                      
             cd ~/chirp
             docker compose -f prod-compose/docker-compose.devops-serv2.yml up -d --build
