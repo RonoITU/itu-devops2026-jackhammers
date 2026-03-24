@@ -295,5 +295,74 @@ namespace Chirp.Infrastructure.Repositories
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        /// <summary>
+        /// Method for to get total amount of current users in the system.
+        /// </summary>
+        public async Task<long> TotalAuthorCount()
+        {
+            return  await _dbContext.Authors.CountAsync();
+        }
+
+        /// <summary>
+        /// Method for to get the most 10 followed persons in the system.
+        /// </summary>
+        public async Task<List<(string Author, int Followers)>> GetMostFollowed()
+        {
+            var authors = await _dbContext.Authors.ToListAsync();
+
+            var followerCounts = authors
+                .Select(a => new 
+                {
+                    Author = a.Name,
+                    Followers = authors.Count(other => other.AuthorsFollowed.Contains(a.Name))
+                })
+                .OrderByDescending(x => x.Followers)
+                .Take(10)
+                .Select(x => (x.Author, x.Followers))
+                .ToList();
+
+            return followerCounts;
+        }
+        
+        /// <summary>
+        /// Method for to get average and median number of followers in the system.
+        /// </summary>
+        public async Task<(double Average, double Median)> GetFollowerStats()
+        {
+            var authors = await _dbContext.Authors.ToListAsync();
+
+            var counts = authors
+                .Select(a => authors.Count(other => other.AuthorsFollowed.Contains(a.Name)))
+                .OrderBy(c => c)
+                .ToList();
+
+            if (!counts.Any())
+                return (0, 0);
+
+            double average = counts.Average();
+
+            double median = counts.Count % 2 == 0
+                ? (counts[counts.Count / 2 - 1] + counts[counts.Count / 2]) / 2.0
+                : counts[counts.Count / 2];
+
+            return (average, median);
+        }
+
+        /// <summary>
+        /// Method for to get active users, defined as users that have post in the last 30 days.
+        /// </summary>
+        public async Task<int> GetActiveUsers()
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-30);
+
+            return await _dbContext.Cheeps
+                .Where(c => c.TimeStamp >= cutoff)
+                .Select(c => c.AuthorId)
+                .Distinct()
+                .CountAsync();
+        }
+
+        
     }    
 }

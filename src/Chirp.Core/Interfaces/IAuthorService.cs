@@ -11,9 +11,13 @@ public interface IAuthorService
     public Task FollowAuthor(string userAuthorName, string followedAuthorName);
     public Task UnfollowAuthor(string userAuthor, string authorToBeRemoved);
     public Task RemovedAuthorFromFollowingList(string authorName);
-    public Task <List<string>>GetFollowedAuthors(string userName);
+    public Task<List<string>> GetFollowedAuthors(string userName);
     public Task<List<string>> GetFollowingAuthors(string userName);
     public Task<int> GetKarmaForAuthor(string authorName);
     public Task UpdateProfilePicture(string authorName, IFormFile profilePicture);
     public Task ClearProfilePicture(string authorName, IFormFile profilePicture);
+    public Task<long> TotalAuthorCount();
+    public Task<List<(string Author, int Followers)>> GetMostFollowed();
+    public Task<(double Average, double Median)> GetFollowerStats();
+    public Task<int> GetActiveUsers();
 }
