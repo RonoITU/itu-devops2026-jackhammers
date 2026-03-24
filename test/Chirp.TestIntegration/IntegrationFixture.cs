@@ -1,3 +1,5 @@
+using Chirp.Web;
+
 namespace Chirp.TestIntegration;
 
 public class IntegrationFixture : IDisposable
@@ -41,6 +43,14 @@ public class IntegrationFixture : IDisposable
                 {
                     options.UseNpgsql(_postgresContainer.GetConnectionString());
                 });
+
+                // Remove MetricsUpdater during tests
+                var descriptor = services.SingleOrDefault(
+                    d => d.ImplementationType == typeof(MetricsUpdater)
+                );
+
+                if (descriptor != null)
+                    services.Remove(descriptor);
             });
         });
 

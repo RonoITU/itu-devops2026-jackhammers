@@ -60,7 +60,6 @@ services:
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - nginx
-    restart: unless-stopped
 
 volumes:
   db_data:
