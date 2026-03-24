@@ -216,7 +216,7 @@ public class CheepService : ICheepService
     }
 
     /// <summary>
-    /// Retrieves all cheeps from the system.
+    /// Returns the total number of cheeps posted.
     /// </summary>
     public async Task<long> TotalCheepsPosted()
     {
@@ -224,7 +224,7 @@ public class CheepService : ICheepService
     }
 
     /// <summary>
-    /// Gets messages for simulator API with pagination
+    /// Gets messages for simulator API with pagination. 
     /// </summary>
     public async Task<List<CheepDTO>> GetMessagesForSimulator(string? username = null, int count = 100)
     {

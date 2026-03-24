@@ -1,5 +1,4 @@
-﻿using Chirp.Core;
-using Prometheus;
+﻿using Prometheus;
 
 namespace Chirp.Web;
 
@@ -9,7 +8,7 @@ public static class MetricsRegistry
         Metrics.CreateGauge("minitwit_total_users", "Number of total users");
 
     public static readonly Gauge TotalCheepsPosted =
-        Metrics.CreateGauge("minitwit_total_cheeps_posted", "Numbers of cheeps in the system");
+        Metrics.CreateGauge("minitwit_total_cheeps_posted", "Number of cheeps in the system");
     
     public static readonly Gauge ActiveUsers =
         Metrics.CreateGauge("minitwit_active_users", "Users who posted in the last 30 days");
