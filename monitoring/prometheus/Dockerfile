@@ -1,6 +1,6 @@
 FROM prom/prometheus:v3.5.1
 
-USER 472
+USER nobody
 
 COPY prometheus.yml /etc/prometheus/prometheus.yml
 
