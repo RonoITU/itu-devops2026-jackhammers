@@ -10,3 +10,8 @@ docs
 *.md
 Dockerfile
 docker-compose*
+*.user
+*.suo
+.env
+.env.*
+*.log
