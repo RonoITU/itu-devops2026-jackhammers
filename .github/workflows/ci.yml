@@ -143,6 +143,9 @@ jobs:
       - name: Install coverlet
         run: dotnet tool install --global coverlet.console
 
+      - name: Prepare coverage directory
+        run: mkdir -p coverage
+
       - name: SonarQube Begin
         env:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
@@ -153,7 +156,7 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORG" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/coverage.opencover.xml" \
             /d:sonar.qualitygate.wait=false
 
       
@@ -169,7 +172,8 @@ jobs:
             --verbosity normal \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=$(pwd)/coverage.opencover.xml
+            /p:CoverletOutput=../../coverage/coverage.opencover.xml \
+            /p:DeterministicSourcePaths=true
 
       - name: SonarQube End
         env:
