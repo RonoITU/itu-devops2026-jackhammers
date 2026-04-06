@@ -60,7 +60,7 @@
         }
         <br/>
         <small>@Model.GetFormattedTimeStamp(Model.OriginalCheep.FormattedTimeStamp)</small>
-        <p>@Html.Raw(Model.ConvertLinksToAnchors(Model.OriginalCheep.Text))</p>
+        <p>@Html.Raw(Shared.ConvertLinksToAnchors(Model.OriginalCheep.Text))</p>
         <div>
             @* If image reference is not null then make an image element *@
             @if (!string.IsNullOrEmpty(Model.OriginalCheep?.ImageReference))

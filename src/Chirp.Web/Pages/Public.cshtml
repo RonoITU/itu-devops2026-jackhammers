@@ -91,7 +91,7 @@
                          </div>
                     </div>
                     <br>
-                    <p class="cheep-text">@Html.Raw(Model.ConvertLinksToAnchors(cheep.Text))</p><br/>
+                    <p class="cheep-text">@Html.Raw(Shared.ConvertLinksToAnchors(cheep.Text))</p><br/>
                     <div>
                         @* If image reference is not null then make an image element *@
                         @if (!string.IsNullOrEmpty(cheep.ImageReference))

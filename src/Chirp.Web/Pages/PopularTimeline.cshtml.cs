@@ -183,19 +183,6 @@ public class PopularTimelineModel : PageModel
         return Page();
     }
     
-    public string ConvertLinksToAnchors(string text)
-    {
-        if (string.IsNullOrEmpty(text))
-            return text;
-
-        // Regular expression to detect URLs
-        var regex = new Regex(@"((http|https):\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\S*[^.,\s])?", RegexOptions.Compiled | RegexOptions.IgnoreCase, matchTimeout: TimeSpan.FromMilliseconds(500));
-
-
-        // Replace URLs with anchor tags
-        return regex.Replace(text, match => $"<a href=\"{match.Value}\" target=\"_blank\">{match.Value}</a>");
-    }
-    
     public string GetFormattedTimeStamp(string timeStamp)
     {
         if (!DateTime.TryParse(timeStamp, out DateTime timeStampDateTime))
@@ -255,6 +242,4 @@ public class PopularTimelineModel : PageModel
             return $"{(int)(timeDifference.TotalDays / 365)} years ago";
         }
     }
-
-
 }

@@ -1,4 +1,5 @@
 using Chirp.Core.DTOs;
+using Chirp.Web.Pages;
 using Xunit.Abstractions;
 
 namespace Chirp.TestUnit;
@@ -565,5 +566,21 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
             
         // Assert
         Assert.True(cheep1.Dislikes.Count == 0);
+    }
+
+    [Theory]
+    [InlineData("Check this site http://example.com",
+                "Check this site <a href=\"http://example.com\" target=\"_blank\">http://example.com</a>")]
+    [InlineData("Visit example.com for more info",
+                "Visit <a href=\"example.com\" target=\"_blank\">example.com</a> for more info")]
+    [InlineData("Multiple links: example.com and https://google.com",
+                "Multiple links: <a href=\"example.com\" target=\"_blank\">example.com</a> and <a href=\"https://google.com\" target=\"_blank\">https://google.com</a>")]
+    public void ConvertLinksToAnchors_ReplacesUrlsWithAnchorTags_PublicModel(string input, string expected)
+    {
+        // Act
+        var result = Shared.ConvertLinksToAnchors(input);
+
+        // Assert
+        Assert.Equal(expected, result);
     }
 }
