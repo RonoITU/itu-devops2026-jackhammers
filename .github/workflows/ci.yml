@@ -169,7 +169,7 @@ jobs:
             --verbosity normal \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=./coverage.opencover.xml
+            /p:CoverletOutput=$(pwd)/coverage.opencover.xml
 
       - name: SonarQube End
         env:
