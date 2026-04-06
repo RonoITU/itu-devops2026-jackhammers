@@ -144,16 +144,19 @@ jobs:
         run: dotnet tool install --global coverlet.console
 
       - name: SonarQube Begin
+        env:
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin \
-            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
-            /o:"${{ secrets.SONAR_ORG }}" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /k:"$SONAR_PROJECT_KEY" \
+            /o:"$SONAR_ORG" \
+            /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.qualitygate.wait=false
-        # To block CI on quality gate failure, change the last flag to:
-        #   /d:sonar.qualitygate.wait=true
 
+      
       - name: Restore dependencies
         run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
 
@@ -169,8 +172,11 @@ jobs:
             /p:CoverletOutput=./coverage.opencover.xml
 
       - name: SonarQube End
-        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+  
   codacy:
     needs: build_web
     runs-on: ubuntu-latest
@@ -181,7 +187,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Codacy Analysis
-        uses: codacy/codacy-analysis-cli-action@v4
+        uses: codacy/codacy-analysis-cli-action@562ee3e92b8e92df8b67e0a5ff8aa8e261919c08
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           # upload: true          # Uncomment if we want to upload results to Codacy dashboard
