@@ -575,7 +575,7 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
                 "Visit <a href=\"example.com\" target=\"_blank\">example.com</a> for more info")]
     [InlineData("Multiple links: example.com and https://google.com",
                 "Multiple links: <a href=\"example.com\" target=\"_blank\">example.com</a> and <a href=\"https://google.com\" target=\"_blank\">https://google.com</a>")]
-    public void ConvertLinksToAnchors_ReplacesUrlsWithAnchorTags_PublicModel(string input, string expected)
+    public void ConvertLinksToAnchors_ReplacesUrlsWithAnchorTags(string input, string expected)
     {
         // Act
         var result = Shared.ConvertLinksToAnchors(input);
