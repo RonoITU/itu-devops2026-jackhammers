@@ -1,6 +1,7 @@
 ﻿@page "/{author}"
 @using Chirp.Core
 @using Chirp.Core.DTOs
+@using Chirp.Web.Pages
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Chirp.Web.Pages.UserTimelineModel
 @{
@@ -197,7 +198,7 @@
                     </div>
                     <small>@Model.GetFormattedTimeStamp(cheep.FormattedTimeStamp)</small>
                     <br><br>
-                    <p>@Html.Raw(Model.ConvertLinksToAnchors(cheep.Text))</p>
+                    <p>@Html.Raw(Shared.ConvertLinksToAnchors(cheep.Text))</p>
                     <div>
                         @* If image reference is not null then make an image element *@
                         @if (!string.IsNullOrEmpty(cheep.ImageReference))
