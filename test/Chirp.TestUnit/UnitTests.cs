@@ -583,4 +583,13 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
         // Assert
         Assert.Equal(expected, result);
     }
+
+    [Fact]
+    public async Task ConvertLinksToAnchors_EmptyOrNullString()
+    {
+        Assert.Null(Shared.ConvertLinksToAnchors(null!));
+
+        var es = "";
+        Assert.Equal(es, Shared.ConvertLinksToAnchors(es));
+    }
 }
