@@ -169,7 +169,7 @@ jobs:
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=./coverage.opencover.xml \
+          /p:CoverletOutput=$(pwd)/coverage/coverage.opencover.xml \
           /p:DeterministicSourcePaths=true
 
       - name: See coverage report for workflow debugging.
@@ -177,6 +177,12 @@ jobs:
 
       - name: Run pwd for debugging
         run: pwd
+
+      - name: Run ls in pwd dir
+        run: ls
+
+      - name: Run ls in coverage
+        run: ls coverage
 
       - name: SonarQube End
         env:
