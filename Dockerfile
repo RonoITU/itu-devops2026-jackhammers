@@ -19,12 +19,13 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
 
 FROM base AS final
-USER root
 
+USER root
+RUN apk add --no-cache tzdata
+
+USER app
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-RUN apk add --no-cache tzdata
 
 EXPOSE 8080
 
