@@ -156,7 +156,7 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORG" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="coverage/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" \
             /d:sonar.qualitygate.wait=false
 
       
