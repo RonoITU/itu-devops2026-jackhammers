@@ -153,23 +153,24 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORG" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/*.opencover.xml" \
             /d:sonar.qualitygate.wait=false
 
       
       - name: Restore dependencies
-        run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
+        run: dotnet restore Chirp.sln
 
       - name: Build (wrapped by SonarScanner)
-        run: dotnet build src/Chirp.Web/Chirp.Web.csproj --configuration Release
+        run: dotnet build Chirp.sln
 
       - name: Run unit tests with coverage
         run: |
+          mkdir -p coverage
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
-            --verbosity normal \
-            /p:CollectCoverage=true \
-            /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=./coverage.opencover.xml
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          /p:CoverletOutput=$(pwd)/coverage/TestUnit.opencover.xml \
+          /p:DeterministicSourcePaths=true
 
       - name: SonarQube End
         env:
