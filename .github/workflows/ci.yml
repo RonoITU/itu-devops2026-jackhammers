@@ -172,18 +172,6 @@ jobs:
           /p:CoverletOutput=$(pwd)/coverage/TestUnit.opencover.xml \
           /p:DeterministicSourcePaths=true
 
-      - name: See coverage report for workflow debugging.
-        run: find . -name "TestUnit.opencover.xml" -print
-
-      - name: Run pwd for debugging
-        run: pwd
-
-      - name: Run ls in pwd dir
-        run: ls
-
-      - name: Run ls in coverage
-        run: ls coverage
-
       - name: SonarQube End
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
