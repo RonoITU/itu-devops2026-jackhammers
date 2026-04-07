@@ -5,8 +5,8 @@ namespace Chirp.TestIntegration;
 
 public class SimulatorApiTests : IClassFixture<IntegrationFixture>
 {
-    private HttpClient _client = null!;
-    private WebApplicationFactory<Program> _factory = null!;
+    private readonly HttpClient _client;
+    private readonly WebApplicationFactory<Program> _factory;
 
     public SimulatorApiTests(IntegrationFixture fixture)
     {
