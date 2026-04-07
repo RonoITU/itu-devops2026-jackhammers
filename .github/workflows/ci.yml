@@ -163,13 +163,23 @@ jobs:
       - name: Build (wrapped by SonarScanner)
         run: dotnet build Chirp.sln
 
+      - name: Create coverage file directory
+        run: mkdir -p coverage
+
       - name: Run unit tests with coverage
         run: |
-          mkdir -p coverage
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
           /p:CoverletOutput=$(pwd)/coverage/TestUnit.opencover.xml \
+          /p:DeterministicSourcePaths=true
+
+      - name: Run integration tests with coverage
+        run: |
+          dotnet test test/Chirp.TestIntegration/Chirp.TestIntegration.csproj \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=opencover \
+          /p:CoverletOutput=$(pwd)/coverage/TestIntegration.opencover.xml \
           /p:DeterministicSourcePaths=true
 
       - name: SonarQube End
