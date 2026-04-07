@@ -169,7 +169,7 @@ jobs:
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=$./coverage.opencover.xml \
+          /p:CoverletOutput=./coverage.opencover.xml \
           /p:DeterministicSourcePaths=true
 
       - name: See coverage report for workflow debugging.
