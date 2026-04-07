@@ -176,8 +176,7 @@ jobs:
             /p:DeterministicSourcePaths=true
 
       - name: See coverage report for workflow debugging.
-        run: | 
-          find . -name "coverage.opencover.xml" -print
+        run: find . -name "coverage.opencover.xml" -print
 
 
       - name: SonarQube End
