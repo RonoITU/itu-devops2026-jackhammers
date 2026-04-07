@@ -42,45 +42,30 @@ public static class Shared
         {
             return "just now";
         }
-        else if (timeDifference.TotalMinutes < 60)
+        if (timeDifference.TotalMinutes < 60)
         {
-            if ((int)timeDifference.TotalMinutes == 1)
-            {
-                return $"{(int)timeDifference.TotalMinutes} minute ago";
-            }
-            return $"{(int)timeDifference.TotalMinutes} minutes ago";
+            var n = (int) timeDifference.TotalMinutes;
+            return $"{n} minute{(n == 1 ? "" : "s")} ago";
         }
-        else if (timeDifference.TotalHours < 24)
+        if (timeDifference.TotalHours < 24)
         {
-            if ((int)timeDifference.TotalHours == 1)
-            {
-                return $"{(int)timeDifference.TotalHours} hour ago";
-            }
-            return $"{(int)timeDifference.TotalHours} hours ago";
+            var n = (int) timeDifference.TotalHours;
+            return $"{n} hour{(n == 1 ? "" : "s")} ago";
         }
-        else if (timeDifference.TotalDays < 30)
+        if (timeDifference.TotalDays < 30)
         {
-            if ((int)timeDifference.TotalDays == 1)
-            {
-                return $"{(int)timeDifference.TotalDays} day ago";
-            }
-            return $"{(int)timeDifference.TotalDays} days ago";
+            var n = (int) timeDifference.TotalDays;
+            return $"{n} day{(n == 1 ? "" : "s")} ago";
         }
-        else if (timeDifference.TotalDays < 365)
+        if (timeDifference.TotalDays < 365)
         {
-            if ((int)(timeDifference.TotalDays / 30) == 1)
-            {
-                return $"{(int)(timeDifference.TotalDays / 30)} month ago";
-            }
-            return $"{(int)(timeDifference.TotalDays / 30)} months ago";
+            var n = (int) (timeDifference.TotalDays / 30);
+            return $"{n} month{(n == 1 ? "" : "s")} ago";
         }
         else
         {
-            if ((int)(timeDifference.TotalDays / 365) == 1)
-            {
-                return $"{(int)(timeDifference.TotalDays / 365)} year ago";
-            }
-            return $"{(int)(timeDifference.TotalDays / 365)} years ago";
+            var n = (int) (timeDifference.TotalDays / 365);
+            return $"{n} year{(n == 1 ? "" : "s")} ago";
         }
     }
 }
