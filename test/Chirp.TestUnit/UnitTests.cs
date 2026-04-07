@@ -595,6 +595,7 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
 
     public static IEnumerable<object[]> TimeStampCases =>
     [
+        ["Tuesaday, 07 April 2026 12:20:21", "Invalid date"],
         [DateTime.UtcNow.ToString("F"), "just now"],
         [(DateTime.UtcNow - TimeSpan.FromMinutes(1)).ToString("F"), "1 minute ago"],
         [(DateTime.UtcNow - TimeSpan.FromMinutes(2)).ToString("F"), "2 minutes ago"],
