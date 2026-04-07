@@ -153,7 +153,7 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORG" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="coverage/*.opencover.xml" \
             /d:sonar.qualitygate.wait=false
 
       
@@ -169,11 +169,11 @@ jobs:
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=$(pwd)/coverage/coverage.opencover.xml \
+          /p:CoverletOutput=$(pwd)/coverage/TestUnit.opencover.xml \
           /p:DeterministicSourcePaths=true
 
       - name: See coverage report for workflow debugging.
-        run: find . -name "coverage.opencover.xml" -print
+        run: find . -name "TestUnit.opencover.xml" -print
 
       - name: Run pwd for debugging
         run: pwd
