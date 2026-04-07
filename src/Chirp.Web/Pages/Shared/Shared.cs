@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualBasic;
 
 namespace Chirp.Web.Pages;
 
@@ -44,28 +45,26 @@ public static class Shared
         }
         if (timeDifference.TotalMinutes < 60)
         {
-            var n = (int) timeDifference.TotalMinutes;
-            return $"{n} minute{(n == 1 ? "" : "s")} ago";
+            return TimeStampFormat((int) timeDifference.TotalMinutes, "minute");
         }
         if (timeDifference.TotalHours < 24)
         {
-            var n = (int) timeDifference.TotalHours;
-            return $"{n} hour{(n == 1 ? "" : "s")} ago";
+            return TimeStampFormat((int) timeDifference.TotalHours, "hour");
         }
         if (timeDifference.TotalDays < 30)
         {
-            var n = (int) timeDifference.TotalDays;
-            return $"{n} day{(n == 1 ? "" : "s")} ago";
+            return TimeStampFormat((int) timeDifference.TotalDays, "day");
         }
         if (timeDifference.TotalDays < 365)
         {
-            var n = (int) (timeDifference.TotalDays / 30);
-            return $"{n} month{(n == 1 ? "" : "s")} ago";
+            return TimeStampFormat((int) (timeDifference.TotalDays / 30), "month");
         }
-        else
-        {
-            var n = (int) (timeDifference.TotalDays / 365);
-            return $"{n} year{(n == 1 ? "" : "s")} ago";
-        }
+
+        return TimeStampFormat((int) (timeDifference.TotalDays / 365), "year");
+    }
+
+    private static string TimeStampFormat(int n, string unit)
+    {
+        return $"{n} {unit}{(n == 1 ? "" : "s")} ago";
     }
 }
