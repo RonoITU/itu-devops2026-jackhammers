@@ -592,4 +592,34 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
         var es = "";
         Assert.Same(es, Shared.ConvertLinksToAnchors(es));
     }
+
+    public static IEnumerable<object[]> TimeStampCases =>
+    [
+        [DateTime.UtcNow.ToString("F"), "just now"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(1)).ToString("F"), "1 minute ago"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(2)).ToString("F"), "2 minutes ago"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(59)).ToString("F"), "59 minutes ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(1)).ToString("F"), "1 hour ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(2)).ToString("F"), "2 hours ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(23)).ToString("F"), "23 hours ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(1)).ToString("F"), "1 day ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(2)).ToString("F"), "2 days ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(29)).ToString("F"), "29 days ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(30)).ToString("F"), "1 month ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(59)).ToString("F"), "1 month ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(60)).ToString("F"), "2 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(359)).ToString("F"), "11 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(360)).ToString("F"), "12 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(364)).ToString("F"), "12 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365)).ToString("F"), "1 year ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365*2 - 1)).ToString("F"), "1 year ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365*2)).ToString("F"), "2 years ago"]
+    ];
+
+    [Theory]
+    [MemberData(nameof(TimeStampCases))]
+    public async Task GetFormattedTimeStamp_TestFormats(string timeStamp, string expected)
+    {
+        Assert.Equal(expected, Shared.GetFormattedTimeStamp(timeStamp));
+    }
 }
