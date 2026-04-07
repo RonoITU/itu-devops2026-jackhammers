@@ -60,7 +60,7 @@
             </form>
         }
         <br/>
-        <small>@Model.GetFormattedTimeStamp(Model.OriginalCheep.FormattedTimeStamp)</small>
+        <small>@Shared.GetFormattedTimeStamp(Model.OriginalCheep.FormattedTimeStamp)</small>
         <p>@Html.Raw(Shared.ConvertLinksToAnchors(Model.OriginalCheep.Text))</p>
         <div>
             @* If image reference is not null then make an image element *@
@@ -116,7 +116,7 @@
                         }
                     </div>
                 </div>
-                <small>@Model.GetFormattedTimeStamp(comment.FormattedTimeStamp)</small>
+                <small>@Shared.GetFormattedTimeStamp(comment.FormattedTimeStamp)</small>
                 <p>@comment.Text</p>
             </li>
         }
