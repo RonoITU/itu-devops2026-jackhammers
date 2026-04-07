@@ -175,6 +175,9 @@ jobs:
       - name: See coverage report for workflow debugging.
         run: find . -name "coverage.opencover.xml" -print
 
+      - name: Run pwd for debugging
+        run: pwd
+
       - name: SonarQube End
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
