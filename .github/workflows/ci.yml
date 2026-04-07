@@ -175,6 +175,11 @@ jobs:
             /p:CoverletOutput=../../coverage/coverage.opencover.xml \
             /p:DeterministicSourcePaths=true
 
+      - name: See coverage report for workflow debugging.
+        run: | 
+          find . -name "coverage.opencover.xml" -print
+
+
       - name: SonarQube End
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
