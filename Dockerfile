@@ -17,7 +17,7 @@ COPY /src .
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Chirp.Web/Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
+RUN dotnet publish "./Chirp.Web/Chirp.Web.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false --ucr
 
 FROM base AS final
 
