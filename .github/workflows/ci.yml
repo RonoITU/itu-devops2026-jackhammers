@@ -143,9 +143,6 @@ jobs:
       - name: Install coverlet
         run: dotnet tool install --global coverlet.console
 
-      - name: Prepare coverage directory
-        run: mkdir -p coverage
-
       - name: SonarQube Begin
         env:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
@@ -156,15 +153,15 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORG" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths="**/*.opencover.xml" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
             /d:sonar.qualitygate.wait=false
 
       
       - name: Restore dependencies
-        run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
+        run: dotnet restore Chirp.sln
 
       - name: Build (wrapped by SonarScanner)
-        run: dotnet build src/Chirp.Web/Chirp.Web.csproj
+        run: dotnet build Chirp.sln
 
       - name: Run unit tests with coverage
         run: |
@@ -172,7 +169,7 @@ jobs:
           dotnet test test/Chirp.TestUnit/Chirp.TestUnit.csproj \
           /p:CollectCoverage=true \
           /p:CoverletOutputFormat=opencover \
-          /p:CoverletOutput=$(pwd)/coverage/coverage.opencover.xml \
+          /p:CoverletOutput=$./coverage.opencover.xml \
           /p:DeterministicSourcePaths=true
 
       - name: See coverage report for workflow debugging.
