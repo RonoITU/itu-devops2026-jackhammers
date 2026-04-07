@@ -11,12 +11,13 @@ COPY ["src/Chirp.Infrastructure/Chirp.Infrastructure.csproj", "src/Chirp.Infrast
 COPY ["src/Chirp.Core/Chirp.Core.csproj", "src/Chirp.Core/"]
 
 RUN dotnet restore "src/Chirp.Web/Chirp.Web.csproj"
-COPY . .
-WORKDIR "/src/src/Chirp.Web"
+
+# Copy rest of source to prepare for publish step
+COPY /src .
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
+RUN dotnet publish "./Chirp.Web/Chirp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false --ucr
 
 FROM base AS final
 
