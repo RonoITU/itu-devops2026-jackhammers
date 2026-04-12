@@ -592,4 +592,65 @@ public class UnitTests(ITestOutputHelper testOutputHelper)
         var es = "";
         Assert.Same(es, Shared.ConvertLinksToAnchors(es));
     }
+
+    /*public static TheoryData<string, string> GetFormattedTimeStampData =>
+    [
+        ["Tuesaday, 07 April 2026 12:20:21", "Invalid date"],
+        [DateTime.UtcNow.ToString("F"), "just now"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(1)).ToString("F"), "1 minute ago"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(2)).ToString("F"), "2 minutes ago"],
+        [(DateTime.UtcNow - TimeSpan.FromMinutes(59)).ToString("F"), "59 minutes ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(1)).ToString("F"), "1 hour ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(2)).ToString("F"), "2 hours ago"],
+        [(DateTime.UtcNow - TimeSpan.FromHours(23)).ToString("F"), "23 hours ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(1)).ToString("F"), "1 day ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(2)).ToString("F"), "2 days ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(29)).ToString("F"), "29 days ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(30)).ToString("F"), "1 month ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(59)).ToString("F"), "1 month ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(60)).ToString("F"), "2 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(359)).ToString("F"), "11 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(360)).ToString("F"), "12 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(364)).ToString("F"), "12 months ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365)).ToString("F"), "1 year ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365*2 - 1)).ToString("F"), "1 year ago"],
+        [(DateTime.UtcNow - TimeSpan.FromDays(365*2)).ToString("F"), "2 years ago"]
+    ];
+    */
+
+    private class GetFormattedTimeStamp_TestFormats_Data : TheoryData<string, string>
+    {
+        public GetFormattedTimeStamp_TestFormats_Data()
+        {
+            var now = DateTime.UtcNow;
+
+            Add("Tuesaday, 07 April 2026 12:20:21", "Invalid date");
+            Add(now.ToString("F"), "just now");
+            Add((now - TimeSpan.FromMinutes(1)).ToString("F"), "1 minute ago");
+            Add((now - TimeSpan.FromMinutes(2)).ToString("F"), "2 minutes ago");
+            Add((now - TimeSpan.FromMinutes(59)).ToString("F"), "59 minutes ago");
+            Add((now - TimeSpan.FromHours(1)).ToString("F"), "1 hour ago");
+            Add((now - TimeSpan.FromHours(2)).ToString("F"), "2 hours ago");
+            Add((now - TimeSpan.FromHours(23)).ToString("F"), "23 hours ago");
+            Add((now - TimeSpan.FromDays(1)).ToString("F"), "1 day ago");
+            Add((now - TimeSpan.FromDays(2)).ToString("F"), "2 days ago");
+            Add((now - TimeSpan.FromDays(29)).ToString("F"), "29 days ago");
+            Add((now - TimeSpan.FromDays(30)).ToString("F"), "1 month ago");
+            Add((now - TimeSpan.FromDays(59)).ToString("F"), "1 month ago");
+            Add((now - TimeSpan.FromDays(60)).ToString("F"), "2 months ago");
+            Add((now - TimeSpan.FromDays(359)).ToString("F"), "11 months ago");
+            Add((now - TimeSpan.FromDays(360)).ToString("F"), "12 months ago");
+            Add((now - TimeSpan.FromDays(364)).ToString("F"), "12 months ago");
+            Add((now - TimeSpan.FromDays(365)).ToString("F"), "1 year ago");
+            Add((now - TimeSpan.FromDays(365*2 - 1)).ToString("F"), "1 year ago");
+            Add((now - TimeSpan.FromDays(365*2)).ToString("F"), "2 years ago");
+        }
+    }    
+
+    [Theory]
+    [ClassData(typeof(GetFormattedTimeStamp_TestFormats_Data))]
+    public async Task GetFormattedTimeStamp_TestFormats(string timeStamp, string expected)
+    {
+        Assert.Equal(expected, Shared.GetFormattedTimeStamp(timeStamp));
+    }
 }
