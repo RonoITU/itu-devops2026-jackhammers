@@ -5,6 +5,8 @@ services:
     image: postgres:15-alpine
     container_name: db
     restart: unless-stopped
+    ports:
+     - "10.0.0.3:5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_PROD_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PROD_PASSWORD}
