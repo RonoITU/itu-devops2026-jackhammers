@@ -38,19 +38,21 @@ def main():
         application_version="v1.0.0"
     )
 
-    volumeResponse = client.volumes.create( # Provision a 10 GB volume for the server database. 
-        size=10,
-        name = args.servername + "-volume",
-        location=client.locations.get_by_name("hel1")  # Provision in the Helsinki data center.
-    )
+    cloud_init = None
+    with open("provision/default-cloud-init.yml") as f:
+        cloud_init = f.read()
+
+    if cloud_init is None or cloud_init == "":
+        print("Failed to read cloud-init file.")
+        sys.exit(1)
 
     serverResponse = client.servers.create( # Creates a server with Docker CE image
         name=args.servername,
-        server_type=ServerType(name="cax11"),          # Provision the small CAX11 ARM64 server.
+        server_type=ServerType(name="cpx22"),          # Product name to provision. 
         image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
         location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
-        volumes=[volumeResponse.volume],               # This will mount the volume we just created.
-        ssh_keys=client.ssh_keys.get_all()             # ALL public SSH keys in the project will be authorized for root logon!
+        ssh_keys=client.ssh_keys.get_all(),            # ALL public SSH keys in the project will be authorized for root logon!
+        user_data=cloud_init
     )
 
     server = serverResponse.server
