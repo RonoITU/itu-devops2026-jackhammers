@@ -309,7 +309,9 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         public async Task<List<(string Author, int Followers)>> GetMostFollowed()
         {
-            var authors = await _dbContext.Authors.ToListAsync();
+            var authors = await _dbContext.Authors
+                .AsNoTracking()
+                .ToListAsync();
 
             var followerCounts = authors
                 .Select(a => new 
