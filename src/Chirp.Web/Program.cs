@@ -66,21 +66,16 @@ namespace Chirp.Web
             // Build the application
             var app = builder.Build();
 
-            
-            using (var scope = app.Services.CreateScope())
-            {
+            if (app.Environment.IsDevelopment()) {
+                using var scope = app.Services.CreateScope();
+
                 var services = scope.ServiceProvider;
                 var context = services.GetRequiredService<CheepDBContext>();
                 
                 context.Database.Migrate();
-                
-                // Seed the database in non-production mode after the application is built
-                if (app.Environment.IsDevelopment())
-                {
-                    DbInitializer.SeedDatabase(context);
-                }
+
+                DbInitializer.SeedDatabase(context);
             }
-            
 
             // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
