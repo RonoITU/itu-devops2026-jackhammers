@@ -4,6 +4,7 @@ services:
     container_name: cheep
     restart: unless-stopped
     environment:
+      - DISABLE_METRICS_UPDATER=1
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://*:8080
       - Logging__Console__IncludeScopes=false
