@@ -1,0 +1,60 @@
+#cloud-config
+
+users:
+  - name: rono
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICiS3X+So0cGV1oyUuwuIQZ9x5mMTe22LTIwTJugr68E ronas@RonoVivo
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJQmWa1bC1sTbijYKrNHxxGzZ85yMAweBhocrGnpZuae rono@DESKTOP-OV81K77
+  
+  - name: ralc
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCpnjMzZKWWvxoDdl06oiaFRqJhFbI0KNn3OjSFqYIn05M2UuSL7gPYik3Bz/4JdzKXvjbEOfMAnkmX6o73JfzuHq61eAA/FDFEKcFA+X4/qAPbemWCaggmVvekzbiBTkARpl+1zW9slQvj1KuQDjyfvm1jusR0lgFaA77Cw1xZ7gttDXX+8awYOhwUCXgqWPG/KMjWlneQddSxnyJ4u+Va9LySCDGI0ojE+WUEaBkFI+KRgeFrDPTyxvZPqXm/lgYgjkjwPrUqmCtsG2lbx+xoQJslPnpBBenITiN7eDYVk0IJk4Q4wPcR6f4Gf30DZyZ0qWyF6Gi+UtAmaUeVTMMCzBrkczC94c1T/6FFwpJ2KzPrKDUkjJRWIAT1znXI2bllQN1PNpVWDSV41VKU2al5wg/k/mVkryC2Db3rtTatA3lxk3cNUQlya5T+0YOaM+H8YuT5jAznq5yt0IYtthzWCIFue1EmQdd/Q+2JMn3qX71R5IGBGkYsk6j6XdDCPv2WCTj1F0fgWzITBeDHFUJmF3BJGqrctWxITLWtsA4VffW1QiDRUrOjpESVLuG3mocs56MLMK7HjWaLWhLjp/cA4OJXJ7R0QFeKVl2UGW4SgL13EHx/h3ybS1HvvtSGzmdBA/IEaJZEPledcqFLx6qCJYwb0zOUO2RVPIHeDH4wXQ== rasmus@fedora
+  
+  - name: chris
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDG6E7KmEHeHG8c+j/YxEQeLxoNqhkEI3gdsfrM/59jisF4My1BJY8xGuw0yM3ZHQViC32n6aiQqWx8rT6Vsd+Pv5em+cAMWB55e6OGz9d5wKIqhxtKHS2bTNKOWz3UC/eqWqBkOU2y2ILmIHmGKaBJQ0bwB1Z6KVcKPwIiXxgWa631nO5dDP1p1BWiCaqC1e0PWBwsF8Ebo+rRE+xAvzEUFG0HFkhVwt/JwpnOZFiFyUC2dhaw4Mev/3E0JgMLhGwXwjDQ32xSPapxojmT7wSBgeyVjAZ4aRaGnYPKOTsVTFJ9WOkKaOkNh8wHtInGHA0JcKCDI04BxUL7TZZnJQFuo2axun8ev67Rdjj8dX9+Rkgtvy7NIaYm/xYWcuGqoMsRitJya+ObuZJ+r2d4i6YYIzP25T8luUzeWQLhJpdxVr4trpkLQJDiok5vZTXNezQW6RMyDfqctCtUqONtrhzOprzRmkIJpxAN3CaNIEOVQlxv4Mox4vRuz+qqSkwR9FNW4oe1+ODOlLnlojt0ZXCjsZ3TAiELxqbBFQUIEoEDe2H25MH81jVWE+jvNTLD3STa0Hitg6YvvyYCKdNcnCGjE5+IZt/HtP/bLUqOFQNiRubjndvdG8wEzaiBGRXo9CDVZ69fA1Cgmip5J/S32pCdTp6XAjQ+ETfxEsAFGozuSQ== christianjorgensen@MacBook-Pro-tilhrende-Christian.local
+
+  - name: github
+    groups: users, docker
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEXFzyHEkDj2hd6X1JTW7PmwLOGvHSBUrw8g5PTdHSFh github@windysquirrels
+
+packages:
+  - fail2ban
+  - ufw
+package_update: true
+package_upgrade: true
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/ssh-hardening.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port 22
+      KbdInteractiveAuthentication no
+      ChallengeResponseAuthentication no
+      MaxAuthTries 2
+      AllowTcpForwarding no
+      X11Forwarding no
+      AllowAgentForwarding no
+      AuthorizedKeysFile .ssh/authorized_keys
+      AllowUsers rono ralc chris github
+
+runcmd:
+  - printf "[sshd]\nenabled = true\nport = ssh, 22\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+
+  - ufw allow 22
+  - ufw enable
+
+  - reboot

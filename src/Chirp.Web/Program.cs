@@ -61,8 +61,12 @@ namespace Chirp.Web
             builder.Services.AddScoped<ILatestService, LatestService>();
             
             // Add our custom metrics to Prometheus.
-            builder.Services.AddHostedService<MetricsUpdater>();
-            
+            var disableMetrics = Environment.GetEnvironmentVariable("DISABLE_METRICS_UPDATER");
+            if (string.IsNullOrEmpty(disableMetrics) || disableMetrics != "1")
+            {
+                builder.Services.AddHostedService<MetricsUpdater>();
+            }
+
             // Build the application
             var app = builder.Build();
 
