@@ -495,4 +495,57 @@ public class CheepServiceTests
         }
     }
 
+    // GetTotalPageNumberForPopular
+
+    [Fact]
+    public async Task GetTotalPageNumberForPopular_ReturnsZero_WhenNoLikedCheepsExist()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var result = await svc.GetTotalPageNumberForPopular();
+            Assert.Equal(0, result);
+        }
+    }
+
+    [Fact]
+    public async Task GetTotalPageNumberForPopular_ReturnsOne_WhenFewerThan32LikedCheepsExist()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A liked cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null);
+
+            var result = await svc.GetTotalPageNumberForPopular();
+            Assert.Equal(1, result);
+        }
+    }
+
+    [Fact]
+    public async Task GetTotalPageNumberForPopular_ExcludesCheepsWithNoLikes_FromCount()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Liked cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Unliked cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null); // only 1 liked cheep
+
+            var result = await svc.GetTotalPageNumberForPopular();
+
+            Assert.Equal(1, result); // ceil(1/32) = 1
+        }
+    }
+
 }
