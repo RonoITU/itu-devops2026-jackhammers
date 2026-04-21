@@ -904,4 +904,54 @@ public class CheepServiceTests
         }
     }
 
+    // TotalCheepsPosted
+
+    [Fact]
+    public async Task TotalCheepsPosted_ReturnsZero_WhenDatabaseIsEmpty()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var result = await svc.TotalCheepsPosted();
+            Assert.Equal(0L, result);
+        }
+    }
+
+    [Fact]
+    public async Task TotalCheepsPosted_ReturnsCorrectCount_AfterAddingCheeps()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Cheep 1"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Cheep 2"));
+            ctx.Cheeps.Add(MakeCheep(3, alice, "Cheep 3"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.TotalCheepsPosted();
+
+            Assert.Equal(3L, result);
+        }
+    }
+
+    [Fact]
+    public async Task TotalCheepsPosted_ReflectsCountAcrossMultipleAuthors()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Alice's cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, bob,   "Bob's cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.TotalCheepsPosted();
+
+            Assert.Equal(2L, result);
+        }
+    }
 }
