@@ -21,8 +21,8 @@ public static class DbInitializer
             var a8 = new Author() { Name = "Superman", Email = "metropolis.hero@dailyplanet.com", Cheeps = new List<Cheep>(), AuthorsFollowed = new List<string>(), ProfilePicture = DbInitializerPBs.SupermanPB };
             var a9 = new Author() { Name = "James Bond", Email = "007.secret.agent@mi6.co.uk", Cheeps = new List<Cheep>(), AuthorsFollowed = new List<string>(), ProfilePicture = DbInitializerPBs.JamesBondPB };
             var a10 = new Author() { Name = "Jackie Chan", Email = "action.star@jackiechan.com", Cheeps = new List<Cheep>(), AuthorsFollowed = new List<string>(), ProfilePicture = DbInitializerPBs.JackieChanPB };
-            var a11 = new Author() { Name = "Helge", Email = "ropf@itu.dk", Cheeps = new List<Cheep>(), AuthorsFollowed = new List<string>(), ProfilePicture = DbInitializerPBs.HelgePB };
-            var a12 = new Author() { Name = "Adrian", Email = "adho@itu.dk", Cheeps = new List<Cheep>(), AuthorsFollowed = new List<string>() };
+            var a11 = new Author() { Name = "Helge", Email = "ropf@itu.dk", Cheeps = new List<Cheep>(), AuthorsFollowed = ["James Bond", "Jack Sparrow"], ProfilePicture = DbInitializerPBs.HelgePB };
+            var a12 = new Author() { Name = "Adrian", Email = "adho@itu.dk", Cheeps = new List<Cheep>(), AuthorsFollowed = ["James Bond"] };
 
             var authors = new List<Author>() { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12 };
 

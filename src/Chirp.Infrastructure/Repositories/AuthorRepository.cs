@@ -309,20 +309,25 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         public async Task<List<(string Author, int Followers)>> GetMostFollowed()
         {
-            var authors = await _dbContext.Authors.ToListAsync();
-
-            var followerCounts = authors
-                .Select(a => new 
+            var query =
+                from follower in _dbContext.Authors
+                from followed in follower.AuthorsFollowed
+                group follower by followed into g
+                orderby g.Count() descending
+                select new
                 {
-                    Author = a.Name,
-                    Followers = authors.Count(other => other.AuthorsFollowed.Contains(a.Name))
-                })
-                .OrderByDescending(x => x.Followers)
+                    Author = g.Key,
+                    Followers = g.Count()
+                };
+
+            var result = await query
                 .Take(10)
+                .Select(x => new { x.Author, x.Followers })
+                .ToListAsync();
+
+            return result
                 .Select(x => (x.Author, x.Followers))
                 .ToList();
-
-            return followerCounts;
         }
         
         /// <summary>
