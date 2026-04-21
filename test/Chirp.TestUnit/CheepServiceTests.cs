@@ -265,5 +265,86 @@ public class CheepServiceTests
             Assert.Null(ex);
         }
     }
+    
+    // HandleLike
 
+    [Fact]
+    public async Task HandleLike_AddsLike_WhenAuthorHasNotLikedBefore()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null);
+
+            Assert.Single(ctx.Likes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleLike_RemovesLike_WhenAuthorAlreadyLiked()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null); // like
+            await svc.HandleLike("Bob", 1, null); // unlike (toggle)
+
+            Assert.Empty(ctx.Likes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleLike_SwitchesFromDislikeToLike()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleDislike("Bob", 1, null);
+            Assert.Single(ctx.Dislikes.ToList());
+
+            await svc.HandleLike("Bob", 1, null);
+
+            Assert.Empty(ctx.Dislikes.ToList());
+            Assert.Single(ctx.Likes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleLike_AddsEmojiReaction_WhenEmojiProvided()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, "😊");
+
+            var reactions = ctx.Reaction.ToList();
+            Assert.Single(reactions);
+            Assert.Equal("😊", reactions[0].Emoji);
+        }
+    }
+    
 }
