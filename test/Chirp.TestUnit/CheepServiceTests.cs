@@ -548,4 +548,53 @@ public class CheepServiceTests
         }
     }
 
+    // HandleImageUpload
+
+    [Fact]
+    public async Task HandleImageUpload_ReturnsNonEmptyBase64String_ForJpegImage()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var jpegBytes = CreateMinimalJpeg();
+            using var stream = new MemoryStream(jpegBytes);
+
+            var formFile = new FormFile(stream, 0, stream.Length, "image", "test.jpg")
+            {
+                Headers     = new HeaderDictionary(),
+                ContentType = "image/jpeg"
+            };
+
+            var result = await svc.HandleImageUpload(formFile);
+
+            Assert.NotEmpty(result);
+            // Verify the result is a valid Base64-encoded string
+            var decoded = Convert.FromBase64String(result);
+            Assert.NotEmpty(decoded);
+        }
+    }
+
+    [Fact]
+    public async Task HandleImageUpload_ReturnsNonEmptyBase64String_ForPngImage()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var pngBytes = CreateMinimalPng();
+            using var stream = new MemoryStream(pngBytes);
+
+            var formFile = new FormFile(stream, 0, stream.Length, "image", "test.png")
+            {
+                Headers     = new HeaderDictionary(),
+                ContentType = "image/png"
+            };
+
+            var result = await svc.HandleImageUpload(formFile);
+
+            Assert.NotEmpty(result);
+            var decoded = Convert.FromBase64String(result);
+            Assert.NotEmpty(decoded);
+        }
+    }
+
 }
