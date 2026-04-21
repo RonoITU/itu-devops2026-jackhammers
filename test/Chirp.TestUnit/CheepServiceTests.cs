@@ -741,4 +741,38 @@ public class CheepServiceTests
         }
     }
 
+    // GetCheepFromId
+
+    [Fact]
+    public async Task GetCheepFromId_ReturnsCorrectCheep_WhenExists()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "The right cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Another cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetCheepFromId(1);
+
+            Assert.NotNull(result);
+            Assert.Equal(1, result.CheepId);
+            Assert.Equal("The right cheep", result.Text);
+            Assert.Equal("Alice", result.Author.Name);
+        }
+    }
+
+    [Fact]
+    public async Task GetCheepFromId_ThrowsInvalidOperationException_WhenCheepDoesNotExist()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(
+                () => svc.GetCheepFromId(999));
+        }
+    }
+
 }
