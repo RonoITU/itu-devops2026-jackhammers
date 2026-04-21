@@ -1,6 +1,5 @@
 using Chirp.Core.DTOs;
 using Chirp.Core.Interfaces;
-using Chirp.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Chirp.Infrastructure.Services;
@@ -28,7 +27,7 @@ public class CheepService : ICheepService
     /// </summary>
     /// <param name="page">The page number for pagination.</param>
     /// <returns>A list of CheepDTO objects.</returns>
-    public async Task<List<Core.DTOs.CheepDTO>> GetCheeps(int page)
+    public async Task<List<CheepDTO>> GetCheeps(int page)
     {
         return await _cheepRepository.ReadAllCheeps(page);
     }
@@ -36,10 +35,10 @@ public class CheepService : ICheepService
     /// <summary>
     /// Reads cheeps from a specific author and maps them to CheepDTO.
     /// </summary>
-    /// <param name="userName">The name of the author.</param>
+    /// <param name="author">The name of the author.</param>
     /// <param name="page">The page number for pagination.</param>
     /// <returns>A list of CheepDTO objects.</returns>
-    public async Task<List<Core.DTOs.CheepDTO>> GetCheepsFromAuthor(string author, int page)
+    public async Task<List<CheepDTO>> GetCheepsFromAuthor(string author, int page)
     {
         return await _cheepRepository.ReadCheepsFromAuthor(author, page);
     }
@@ -48,9 +47,9 @@ public class CheepService : ICheepService
     /// Reads private cheeps for a specific user with pagination.
     /// </summary>
     /// <param name="page">The page number for pagination.</param>
-    /// <param name="userName">The name of the user.</param>
+    /// <param name="username">The name of the user.</param>
     /// <returns>A list of CheepDTO objects.</returns>
-    public async Task<List<Core.DTOs.CheepDTO>> GetPrivateCheeps(int page, string username)
+    public async Task<List<CheepDTO>> GetPrivateCheeps(int page, string username)
     {
         return await _cheepRepository.ReadPrivateCheeps(page, username);
     }
@@ -59,7 +58,7 @@ public class CheepService : ICheepService
     /// Retrieves all cheeps for an endpoint.
     /// </summary>
     /// <returns>A list of CheepDTO objects.</returns>
-    public async Task<List<Core.DTOs.CheepDTO>> RetrieveAllCheeps()
+    public async Task<List<CheepDTO>> RetrieveAllCheeps()
     {
         return await _cheepRepository.RetrieveAllCheepsForEndPoint();
     }
@@ -67,19 +66,19 @@ public class CheepService : ICheepService
     /// <summary>
     /// Creates a new cheep.
     /// </summary>
-    /// <param name="cheepDTO">The CheepDTO object containing cheep details.</param>
-    public async Task CreateCheep(CheepDTO Cheep)
+    /// <param name="cheep">The CheepDTO object containing cheep details.</param>
+    public async Task CreateCheep(CheepDTO cheep)
     {
-        await _cheepRepository.CreateCheep(Cheep);
+        await _cheepRepository.CreateCheep(cheep);
     }
     
     /// <summary>
     /// Deletes all cheeps from a specific author.
     /// </summary>
-    /// <param name="Author">The AuthorDTO object containing author details.</param>
-    public async Task DeleteUserCheeps(AuthorDTO Author)
+    /// <param name="author">The AuthorDTO object containing author details.</param>
+    public async Task DeleteUserCheeps(AuthorDTO author)
     {
-        await _cheepRepository.DeleteUserCheeps(Author);
+        await _cheepRepository.DeleteUserCheeps(author);
     }
     
     /// <summary>
@@ -103,9 +102,9 @@ public class CheepService : ICheepService
     /// <summary>
     /// Retrieves all cheeps from a specific author.
     /// </summary>
-    /// <param name="Username">The name of the author.</param>
+    /// <param name="authorName">The name of the author.</param>
     /// <returns>A list of CheepDTO objects.</returns>
-    public async Task<List<Core.DTOs.CheepDTO>> RetrieveAllCheepsFromAnAuthor(string authorName)
+    public async Task<List<CheepDTO>> RetrieveAllCheepsFromAnAuthor(string authorName)
     {
         return await _cheepRepository.RetrieveAllCheepsFromAnAuthor(authorName);
     }
@@ -113,8 +112,9 @@ public class CheepService : ICheepService
     /// <summary>
     /// Likes a cheep.
     /// </summary>
-    /// <param name="authorId">The ID of the author.</param>
+    /// <param name="authorName">The name of the author.</param>
     /// <param name="cheepId">The ID of the cheep to like.</param>
+    /// <param name="emoji">The emoji reaction (optional).</param>
     public async Task HandleLike(string authorName, int cheepId, string? emoji)
     {
         await _cheepRepository.HandleLike(authorName, cheepId, emoji);
@@ -129,7 +129,6 @@ public class CheepService : ICheepService
     public async Task HandleDislike(string authorName, int cheepId, string? emoji)
     {
         await _cheepRepository.HandleDislike(authorName, cheepId, emoji);
-
     }
     
     /// <summary>
@@ -177,9 +176,9 @@ public class CheepService : ICheepService
     /// <param name="cheepDto">The CheepDTO object containing cheep details.</param>
     /// <param name="text">The text of the comment.</param>
     /// <param name="author">The name of the author.</param>
-    public async Task AddCommentToCheep(CheepDTO cheepDto, string Text, string author)
+    public async Task AddCommentToCheep(CheepDTO cheepDto, string text, string author)
     {
-        await _cheepRepository.AddCommentToCheep(cheepDto, Text, author);
+        await _cheepRepository.AddCommentToCheep(cheepDto, text, author);
     }
     
     /// <summary>
@@ -196,7 +195,6 @@ public class CheepService : ICheepService
     /// Gets the top reactions for a cheep.
     /// </summary>
     /// <param name="cheepId">The ID of the cheep.</param>
-    /// <param name="topN">The number of top reactions to retrieve.</param>
     /// <returns>A list of top emoji reactions.</returns>
     public async Task<List<String>> GetTopReactions (int cheepId)
     {
@@ -206,9 +204,9 @@ public class CheepService : ICheepService
     /// <summary>
     /// Retrieves all comments from a specific author.
     /// </summary>
-    /// <param name="Username">The name of the author.</param>
+    /// <param name="authorName">The name of the author.</param>
     /// <returns>A list of CommentDTO objects.</returns>
-    public async Task<List<Core.DTOs.CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName)
+    public async Task<List<CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName)
     {
         return await _cheepRepository.RetriveAllCommentsFromAnAuthor(authorName);
     }
