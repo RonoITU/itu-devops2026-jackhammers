@@ -1,4 +1,5 @@
 using Chirp.Web;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Chirp.TestIntegration;
 
@@ -40,7 +41,14 @@ public class MetricsTests : IClassFixture<MetricsTestFixture>
     public async Task PrometheusMetrics_CheckEndpoint()
     {
         await PrepareDatabase();
-        await Task.Delay(5000);
+        
+        for (int i = 0; i < 10; i++)
+        {
+            await Task.Delay(1000);
+            var check = await _client.GetAsync("/metrics");
+            var control = await check.Content.ReadAsStringAsync();
+            if (control.Contains("minitwit_total_users 12")) break;
+        }
 
         var response = await _client.GetAsync("/metrics");
         var body = await response.Content.ReadAsStringAsync();
