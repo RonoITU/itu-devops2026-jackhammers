@@ -25,6 +25,8 @@ services:
     image: rasmusachr/minitwit:latest
     container_name: cheep
     restart: unless-stopped
+    ports:
+     - "10.0.0.3:8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://*:8080
