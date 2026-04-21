@@ -69,13 +69,13 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Retrieves all cheeps from a specific author.
         /// </summary>
-        /// <param name="Username">The name of the author.</param>
+        /// <param name="username">The name of the author.</param>
         /// <returns>A list of CheepDTO objects.</returns>
-        public async Task<List<CheepDTO>> RetrieveAllCheepsFromAnAuthor(string Username)
+        public async Task<List<CheepDTO>> RetrieveAllCheepsFromAnAuthor(string username)
         {
             var query = _dbContext.Cheeps
                 .Include(c => c.Author)
-                .Where(cheep => cheep.Author.Name == Username)
+                .Where(cheep => cheep.Author.Name == username)
                 .OrderByDescending(cheep => cheep.TimeStamp)
                 .Select(cheep => new CheepDTO
                 {
@@ -102,13 +102,13 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Retrieves all comments from a specific author.
         /// </summary>
-        /// <param name="Username">The name of the author.</param>
+        /// <param name="username">The name of the author.</param>
         /// <returns>A list of CommentDTO objects.</returns>
-        public async Task<List<CommentDTO>> RetriveAllCommentsFromAnAuthor(string Username)
+        public async Task<List<CommentDTO>> RetriveAllCommentsFromAnAuthor(string username)
         {
             var query = _dbContext.Comment
                 .Include(c => c.Author)
-                .Where(comment => comment.Author.Name == Username)
+                .Where(comment => comment.Author.Name == username)
                 .OrderByDescending(comment => comment.TimeStamp)
                 .Select(comment => new CommentDTO
                 {
@@ -166,12 +166,12 @@ namespace Chirp.Infrastructure.Repositories
         /// Reads private cheeps for a specific user with pagination.
         /// </summary>
         /// <param name="page">The page number for pagination.</param>
-        /// <param name="userName">The name of the user.</param>
+        /// <param name="username">The name of the user.</param>
         /// <returns>A list of CheepDTO objects.</returns>
-        public async Task<List<CheepDTO>> ReadPrivateCheeps(int page, string userName)
+        public async Task<List<CheepDTO>> ReadPrivateCheeps(int page, string username)
         {
             // Resolve the user and their followed authors first
-            var userAuthor = await _authorRepository.FindAuthorByName(userName);
+            var userAuthor = await _authorRepository.FindAuthorByName(username);
             if (userAuthor == null)
             {
                 // Return an empty list if the user is not found
@@ -183,7 +183,7 @@ namespace Chirp.Infrastructure.Repositories
 
             var query = _dbContext.Cheeps
                 .Include(c => c.Author)
-                .Where(cheep => followedAuthors.Contains(cheep.Author.Name) || cheep.Author.Name == userName)
+                .Where(cheep => followedAuthors.Contains(cheep.Author.Name) || cheep.Author.Name == username)
                 .OrderByDescending(cheep => cheep.TimeStamp)
                 .Skip((page - 1) * 32)
                 .Take(32)
@@ -215,7 +215,7 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         /// <param name="authorName">The name of the author (optional).</param>
         /// <returns>The total number of pages.</returns>
-        public async Task<int> GetTotalPages(string authorName = "")
+        public async Task<int> GetTotalPages(string authorName)
         {
             var query = _dbContext.Cheeps.AsQueryable();
 
@@ -279,25 +279,25 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Creates a new cheep.
         /// </summary>
-        /// <param name="cheepDTO">The CheepDTO object containing cheep details.</param>
-        public async Task CreateCheep(CheepDTO cheepDTO)
+        /// <param name="newCheep">The CheepDTO object containing cheep details.</param>
+        public async Task CreateCheep(CheepDTO newCheep)
         {
             // Find the author by name
-            var author = await _authorRepository.FindAuthorByName(cheepDTO.Author.Name);
+            var author = await _authorRepository.FindAuthorByName(newCheep.Author.Name);
 
             // Create a new Cheep 
             if (author != null)
             {
-                Cheep newCheep = new Cheep
+                Cheep newCheepEntity = new Cheep
                 {
-                    Text = cheepDTO.Text,
+                    Text = newCheep.Text,
                     Author = author,
-                    ImageReference = cheepDTO.ImageReference,
+                    ImageReference = newCheep.ImageReference,
                     TimeStamp = DateTime.UtcNow
                 };
 
                 // Add the new Cheep to the DbContext
-                await _dbContext.Cheeps.AddAsync(newCheep);
+                await _dbContext.Cheeps.AddAsync(newCheepEntity);
             }
 
             await _dbContext.SaveChangesAsync(); // Persist the changes to the database
@@ -329,11 +329,11 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Deletes all cheeps from a specific author.
         /// </summary>
-        /// <param name="Author">The AuthorDTO object containing author details.</param>
-        public async Task DeleteUserCheeps(AuthorDTO Author)
+        /// <param name="author">The AuthorDTO object containing author details.</param>
+        public async Task DeleteUserCheeps(AuthorDTO author)
         {
             var cheeps = await _dbContext.Cheeps
-                .Where(cheep => cheep.Author.Name == Author.Name)
+                .Where(cheep => cheep.Author.Name == author.Name)
                 .ToListAsync();
             if (!cheeps.Count.Equals(0))
             {
@@ -371,18 +371,19 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Likes a cheep.
         /// </summary>
-        /// <param name="authorId">The ID of the author.</param>
+        /// <param name="authorName">The name of the author.</param>
         /// <param name="cheepId">The ID of the cheep to like.</param>
+        /// <param name="emoji">The emoji reaction (optional).</param>
         public async Task HandleLike(string authorName, int cheepId, string? emoji = null)
         {
-            // Find the author by Id (or by name if needed)
+            // Find the author by name
             var author = await _authorRepository.FindAuthorByName(authorName);
-            var authorId = author!.AuthorId;
             if (author == null)
             {
                 // Handle case where author is not found
                 throw new Exception("Author not found");
             }
+            var authorId = author!.AuthorId;
 
             // Find the Cheep by its Id
             var cheep = await _dbContext.Cheeps.FindAsync(cheepId);
@@ -473,12 +474,12 @@ namespace Chirp.Infrastructure.Repositories
         {
             // Find the author by Id (or by name if needed)
             var author = await _authorRepository.FindAuthorByName(authorName);
-            var authorId = author!.AuthorId;
             if (author == null)
             {
                 // Handle case where author is not found
                 throw new Exception("Author not found");
             }
+            var authorId = author!.AuthorId;
 
             // Find the Cheep by its Id
             var cheep = await _dbContext.Cheeps.FindAsync(cheepId);
@@ -953,3 +954,4 @@ namespace Chirp.Infrastructure.Repositories
 
     }
 }
+
