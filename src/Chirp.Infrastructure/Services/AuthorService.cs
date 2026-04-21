@@ -20,7 +20,7 @@ public class AuthorService : IAuthorService
     /// <returns></returns>
     public async Task<AuthorDTO?> FindAuthorByName(String name)
     {
-        return await _authorRepository.FindAuthorByNameDTO(name);
+        return await _authorRepository.FindAuthorByNameDto(name);
     }
     /// <summary>
     ///  This method is for creating a new author
