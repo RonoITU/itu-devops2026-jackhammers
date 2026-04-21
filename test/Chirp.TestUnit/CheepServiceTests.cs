@@ -200,4 +200,70 @@ public class CheepServiceTests
             Assert.Single(ctx.Cheeps.ToList());
         }
     }
+    
+    // DeleteComment
+
+    [Fact]
+    public async Task DeleteComment_RemovesCommentById()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 1, CheepId = 1, Author = alice, AuthorId = 1,
+                Text = "A comment", TimeStamp = DateTime.UtcNow
+            });
+            await ctx.SaveChangesAsync();
+
+            await svc.DeleteComment(1);
+
+            Assert.Empty(ctx.Comment.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task DeleteComment_LeavesOtherCommentsIntact()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 1, CheepId = 1, Author = alice, AuthorId = 1,
+                Text = "Keep me", TimeStamp = DateTime.UtcNow
+            });
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 2, CheepId = 1, Author = alice, AuthorId = 1,
+                Text = "Delete me", TimeStamp = DateTime.UtcNow
+            });
+            await ctx.SaveChangesAsync();
+
+            await svc.DeleteComment(2);
+
+            var remaining = ctx.Comment.ToList();
+            Assert.Single(remaining);
+            Assert.Equal("Keep me", remaining[0].Text);
+        }
+    }
+
+    [Fact]
+    public async Task DeleteComment_IsIdempotent_WhenCommentDoesNotExist()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            // Deleting a non-existent comment should not throw
+            var ex = await Record.ExceptionAsync(() => svc.DeleteComment(999));
+            Assert.Null(ex);
+        }
+    }
+
 }
