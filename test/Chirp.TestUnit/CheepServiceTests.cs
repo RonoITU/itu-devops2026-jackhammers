@@ -846,4 +846,62 @@ public class CheepServiceTests
         }
     }
 
+    // RetrieveAllCommentsFromAnAuthor
+
+    [Fact]
+    public async Task RetrieveAllCommentsFromAnAuthor_ReturnsAllCommentsBySpecifiedAuthor()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            var dto = MakeCheepDto(1, "Alice", "alice@test.com", "A cheep");
+            await svc.AddCommentToCheep(dto, "Alice comment 1", "Alice");
+            await svc.AddCommentToCheep(dto, "Alice comment 2", "Alice");
+            await svc.AddCommentToCheep(dto, "Bob comment",     "Bob");
+
+            var aliceComments = await svc.RetrieveAllCommentsFromAnAuthor("Alice");
+
+            Assert.Equal(2, aliceComments.Count);
+            Assert.All(aliceComments, c => Assert.Equal("Alice", c.Author.Name));
+        }
+    }
+
+    [Fact]
+    public async Task RetrieveAllCommentsFromAnAuthor_ReturnsEmpty_WhenAuthorHasNoComments()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var result = await svc.RetrieveAllCommentsFromAnAuthor("GhostUser");
+            Assert.Empty(result);
+        }
+    }
+
+    [Fact]
+    public async Task RetrieveAllCommentsFromAnAuthor_DoesNotReturnCommentsFromOtherAuthors()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            var dto = MakeCheepDto(1, "Alice", "alice@test.com", "A cheep");
+            await svc.AddCommentToCheep(dto, "Bob's comment", "Bob");
+
+            var aliceComments = await svc.RetrieveAllCommentsFromAnAuthor("Alice");
+
+            Assert.Empty(aliceComments);
+        }
+    }
+
 }
