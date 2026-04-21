@@ -1,4 +1,5 @@
 using Chirp.Core.Interfaces;
+using Chirp.Web;
 
 namespace Chirp.TestIntegration;
 

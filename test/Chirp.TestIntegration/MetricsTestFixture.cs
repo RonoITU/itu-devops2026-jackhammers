@@ -1,14 +1,15 @@
 using Chirp.Web;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Chirp.TestIntegration;
 
-public class IntegrationFixture : IDisposable
+public class MetricsTestFixture : IDisposable
 {
     public HttpClient _client;
     public WebApplicationFactory<Program> _factory;
     private readonly PostgreSqlContainer _postgresContainer;
 
-    public IntegrationFixture()
+    public MetricsTestFixture()
     {
         // Initialize the PostgreSQL container with desired configuration
         _postgresContainer = new PostgreSqlBuilder("postgres:15-alpine")
@@ -26,31 +27,17 @@ public class IntegrationFixture : IDisposable
         {
             builder.ConfigureServices(services =>
             {
-                // This commented code is not needed anymore, but in case something happens,
-                // and we need it, I will keep it here for reference.
-                //
-                // Remove existing DbContext registration
-                // var descriptor = services.SingleOrDefault(
-                //     d => d.ServiceType == typeof(DbContextOptions<CheepDBContext>));
-                //
-                // if (descriptor != null)
-                // {
-                //     services.Remove(descriptor);
-                // }
+                // Configure for frequent metrics updates.
+                services.Configure<MetricsUpdaterOptions>(o => 
+                {
+                    o.Interval = TimeSpan.FromMilliseconds(100);
+                });
 
                 // Re-register with test PostgreSQL
                 services.AddDbContext<CheepDBContext>(options =>
                 {
                     options.UseNpgsql(_postgresContainer.GetConnectionString());
                 });
-
-                // Remove MetricsUpdater during tests
-                var descriptor = services.SingleOrDefault(
-                    d => d.ImplementationType == typeof(MetricsUpdater)
-                );
-
-                if (descriptor != null)
-                    services.Remove(descriptor);
             });
         });
 
@@ -60,9 +47,6 @@ public class IntegrationFixture : IDisposable
         using var scope = _factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<CheepDBContext>();
         dbContext.Database.MigrateAsync().Wait();
-
-        // Option to seed the database with initial data if needed
-        // DbInitializer.SeedDatabase(dbContext);
     }
 
     public async void Dispose()
