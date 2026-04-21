@@ -775,4 +775,75 @@ public class CheepServiceTests
         }
     }
 
+    // GetTopReactions
+
+    [Fact]
+    public async Task GetTopReactions_ReturnsEmpty_WhenCheepHasNoReactions()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetTopReactions(1);
+
+            Assert.Empty(result);
+        }
+    }
+
+    [Fact]
+    public async Task GetTopReactions_ReturnsMostFrequentEmojiFirst()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var author1 = MakeAuthor(1, "Author1", "a1@test.com");
+            var author2 = MakeAuthor(2, "Author2", "a2@test.com");
+            var author3 = MakeAuthor(3, "Author3", "a3@test.com");
+            var author4 = MakeAuthor(4, "Author4", "a4@test.com");
+            ctx.Authors.AddRange(author1, author2, author3, author4);
+            ctx.Cheeps.Add(MakeCheep(1, author1, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            // 😊 appears twice, 😢 once → 😊 should be the top reaction
+            await svc.HandleLike("Author2", 1, "😊");
+            await svc.HandleLike("Author3", 1, "😊");
+            await svc.HandleLike("Author4", 1, "😢");
+
+            var topReactions = await svc.GetTopReactions(1);
+
+            Assert.NotEmpty(topReactions);
+            Assert.Equal("😊", topReactions[0]);
+        }
+    }
+
+    [Fact]
+    public async Task GetTopReactions_ReturnsAtMostThreeReactions_ByDefault()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            // Create 5 authors to react with 4 different emojis
+            var authors = Enumerable.Range(1, 6)
+                .Select(i => MakeAuthor(i, $"Author{i}", $"a{i}@test.com"))
+                .ToList();
+            ctx.Authors.AddRange(authors);
+            ctx.Cheeps.Add(MakeCheep(1, authors[0], "A popular cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Author2", 1, "😊");
+            await svc.HandleLike("Author3", 1, "😢");
+            await svc.HandleLike("Author4", 1, "🔥");
+            await svc.HandleLike("Author5", 1, "💯");
+            await svc.HandleLike("Author6", 1, "❤️");
+
+            var result = await svc.GetTopReactions(1);
+
+            Assert.True(result.Count <= 3, "GetTopReactions should return at most 3 reactions by default.");
+        }
+    }
+
 }
