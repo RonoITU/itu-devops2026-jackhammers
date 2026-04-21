@@ -21,6 +21,8 @@ public class MetricsUpdater : BackgroundService
         {
             try
             {
+                var delay = Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+
                 using var scope = _scopeFactory.CreateScope();
                 var authorService = scope.ServiceProvider.GetRequiredService<IAuthorService>();
                 var cheepService = scope.ServiceProvider.GetRequiredService<ICheepService>();
@@ -49,7 +51,7 @@ public class MetricsUpdater : BackgroundService
                 }
                 _previousAuthors = currentAuthors;
 
-                await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
+                await delay;
             }
             catch (Exception ex) when (!stoppingToken.IsCancellationRequested)
             {
