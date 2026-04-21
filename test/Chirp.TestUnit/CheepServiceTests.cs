@@ -148,4 +148,56 @@ public class CheepServiceTests
             Assert.Empty(result);
         }
     }
+    
+    // DeleteUserCheeps
+
+    [Fact]
+    public async Task DeleteUserCheeps_RemovesAllCheepsFromSpecifiedAuthor()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Alice cheep 1"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Alice cheep 2"));
+            ctx.Cheeps.Add(MakeCheep(3, bob,   "Bob cheep"));    // must survive
+            await ctx.SaveChangesAsync();
+
+            await svc.DeleteUserCheeps(new AuthorDTO
+            {
+                Name            = "Alice",
+                Email           = "alice@test.com",
+                AuthorsFollowed = new List<string>()
+            });
+
+            var remaining = ctx.Cheeps.ToList();
+            Assert.Single(remaining);
+            Assert.Equal("Bob cheep", remaining[0].Text);
+        }
+    }
+
+    [Fact]
+    public async Task DeleteUserCheeps_LeavesOtherCheepsUntouched_WhenAuthorHasNoCheeps()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var bob = MakeAuthor(1, "Bob", "bob@test.com");
+            ctx.Authors.Add(bob);
+            ctx.Cheeps.Add(MakeCheep(1, bob, "Bob cheep"));
+            await ctx.SaveChangesAsync();
+
+            // Delete an author who owns no cheeps
+            await svc.DeleteUserCheeps(new AuthorDTO
+            {
+                Name            = "Alice",
+                Email           = "alice@test.com",
+                AuthorsFollowed = new List<string>()
+            });
+
+            Assert.Single(ctx.Cheeps.ToList());
+        }
+    }
 }
