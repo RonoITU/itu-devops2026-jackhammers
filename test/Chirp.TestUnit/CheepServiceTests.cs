@@ -673,4 +673,72 @@ public class CheepServiceTests
         }
     }
 
+    // AddCommentToCheep
+
+    [Fact]
+    public async Task AddCommentToCheep_PersistsCommentToDatabase()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.AddCommentToCheep(
+                MakeCheepDto(1, "Alice", "alice@test.com", "A cheep"),
+                "Great cheep!",
+                "Alice");
+
+            var comments = ctx.Comment.ToList();
+            Assert.Single(comments);
+            Assert.Equal("Great cheep!", comments[0].Text);
+        }
+    }
+
+    [Fact]
+    public async Task AddCommentToCheep_CorrectlyAssignsAuthorAndCheepId()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.AddCommentToCheep(
+                MakeCheepDto(1, "Alice", "alice@test.com", "A cheep"),
+                "Bob's comment",
+                "Bob");
+
+            var comment = ctx.Comment.Include(c => c.Author).Single();
+            Assert.Equal("Bob", comment.Author.Name);
+            Assert.Equal(1, comment.CheepId);
+            Assert.Equal("Bob's comment", comment.Text);
+        }
+    }
+
+    [Fact]
+    public async Task AddCommentToCheep_MultipleComments_AllPersisted()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            var dto = MakeCheepDto(1, "Alice", "alice@test.com", "A cheep");
+            await svc.AddCommentToCheep(dto, "First comment",  "Alice");
+            await svc.AddCommentToCheep(dto, "Second comment", "Bob");
+
+            Assert.Equal(2, ctx.Comment.Count());
+        }
+    }
+
 }
