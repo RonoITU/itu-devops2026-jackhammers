@@ -8,11 +8,9 @@ namespace Chirp.Infrastructure.Services;
 public class CheepService : ICheepService
 {
     private readonly ICheepRepository _cheepRepository;
-    private readonly IAuthorRepository _authorRepository;
-    public CheepService(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
+    public CheepService(ICheepRepository cheepRepository)
     {
         _cheepRepository = cheepRepository;
-        _authorRepository = authorRepository;
     }
     
     /// <summary>
