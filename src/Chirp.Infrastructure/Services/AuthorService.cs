@@ -1,6 +1,5 @@
 ﻿using Chirp.Core.DTOs;
 using Chirp.Core.Interfaces;
-using Chirp.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Chirp.Infrastructure.Services;
@@ -21,9 +20,9 @@ public class AuthorService : IAuthorService
     /// <returns></returns>
     public async Task<AuthorDTO?> FindAuthorByName(String name)
     {
-        return await _authorRepository.FindAuthorByNameDTO(name);
+        return await _authorRepository.FindAuthorByNameDto(name);
     }
-    // <summary>
+    /// <summary>
     ///  This method is for creating a new author
     /// </summary>
     /// <param name="authorName"></param>
@@ -36,10 +35,10 @@ public class AuthorService : IAuthorService
     /// <summary>
     /// This method is used for deleting an author
     /// </summary>
-    /// <param name="Author"></param>
-    public async Task DeleteUser(AuthorDTO Author)
+    /// <param name="author"></param>
+    public async Task DeleteUser(AuthorDTO author)
     {
-        await _authorRepository.DeleteUser(Author);
+        await _authorRepository.DeleteUser(author);
     }
     /// <summary>
     /// This Method is for Following an author
@@ -53,7 +52,7 @@ public class AuthorService : IAuthorService
     /// <summary>
     /// Unfollows an author
     /// </summary>
-    /// <param name="userAuthorName"></param>
+    /// <param name="userAuthor"></param>
     /// <param name="authorToBeRemoved"></param>
     public async Task UnfollowAuthor(string userAuthor, string authorToBeRemoved)
     {
@@ -63,7 +62,6 @@ public class AuthorService : IAuthorService
     /// When deleting user data we need to delete the username for every other author list. 
     /// </summary>
     /// <param name="authorName"></param>
-    /// <param name="page"></param>
     public async Task RemovedAuthorFromFollowingList(string authorName)
     {
         await _authorRepository.RemovedAuthorFromFollowingList(authorName);
@@ -87,7 +85,7 @@ public class AuthorService : IAuthorService
         return await _authorRepository.GetFollowingAuthors(userName);
     }
     /// <summary>
-    /// This methods returns the amount of karma a specific user has
+    /// This method returns the amount of karma a specific user has
     /// </summary>
     /// <param name="authorName"></param>
     /// <returns>Karma</returns>

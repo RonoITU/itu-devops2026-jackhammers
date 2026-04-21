@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using CheepDTO = Chirp.Core.DTOs.CheepDTO;
 
 namespace Chirp.Infrastructure.Repositories
 {
@@ -23,7 +22,7 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<AuthorDTO?> FindAuthorByNameDTO(string name)
+        public async Task<AuthorDTO?> FindAuthorByNameDto(string name)
         {
             var author = await (from a in _dbContext.Authors
                 where a.Name == name
@@ -78,16 +77,16 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// This method is used for deleting an author
         /// </summary>
-        /// <param name="Author"></param>
-        public async Task DeleteUser(AuthorDTO Author)
+        /// <param name="author"></param>
+        public async Task DeleteUser(AuthorDTO author)
         {
             // Retrieve the author by name and then remove them
-            var author = await _dbContext.Authors
-                .FirstOrDefaultAsync(a => a.Name == Author.Name);
+            var foundAuthor = await _dbContext.Authors
+                .FirstOrDefaultAsync(a => a.Name == author.Name);
 
-            if (author != null)
+            if (foundAuthor != null)
             {
-                _dbContext.Authors.Remove(author);
+                _dbContext.Authors.Remove(foundAuthor);
             }
 
             await _dbContext.SaveChangesAsync();
@@ -96,14 +95,14 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// This Method is for Following an author
         /// </summary>
-        /// <param name="userAuthorName"></param>
-        /// <param name="followedAuthorName"></param>
-        public async Task FollowAuthor(string userAuthorName, string followedAuthorName)
+        /// <param name="userAuthor"></param>
+        /// <param name="followedAuthor"></param>
+        public async Task FollowAuthor(string userAuthor, string followedAuthor)
         {
-            var author = await FindAuthorByName(userAuthorName); // Find the author by name
-            if (author != null && !author.AuthorsFollowed.Contains(followedAuthorName)) // Check if the author is not already followed
+            var author = await FindAuthorByName(userAuthor); // Find the author by name
+            if (author != null && !author.AuthorsFollowed.Contains(followedAuthor)) // Check if the author is not already followed
             {
-                author.AuthorsFollowed.Add(followedAuthorName); // Add the author to the list of followed authors
+                author.AuthorsFollowed.Add(followedAuthor); // Add the author to the list of followed authors
                 await _dbContext.SaveChangesAsync(); // Persist the changes to the database
             }
         }
@@ -111,11 +110,11 @@ namespace Chirp.Infrastructure.Repositories
         /// <summary>
         /// Unfollows an author
         /// </summary>
-        /// <param name="userAuthorName"></param>
+        /// <param name="userAuthor"></param>
         /// <param name="authorToBeRemoved"></param>
-        public async Task UnfollowAuthor(string userAuthorName, string authorToBeRemoved)
+        public async Task UnfollowAuthor(string userAuthor, string authorToBeRemoved)
         {
-            var author = await FindAuthorByName(userAuthorName); // Find the author by name
+            var author = await FindAuthorByName(userAuthor); // Find the author by name
             if (author != null && author.AuthorsFollowed.Contains(authorToBeRemoved)) // Check if the author is followed
             {
                 author.AuthorsFollowed.Remove(authorToBeRemoved); // Remove the author from the list of followed authors
@@ -127,7 +126,6 @@ namespace Chirp.Infrastructure.Repositories
         /// When deleting user data we need to delete the username for every other author list. 
         /// </summary>
         /// <param name="authorName"></param>
-        /// <param name="page"></param>
         public async Task RemovedAuthorFromFollowingList(string authorName)
         {
             // Fetch all authors that follows a specific author 
@@ -162,17 +160,10 @@ namespace Chirp.Infrastructure.Repositories
         /// <returns></returns>
         public async Task<List<string>> GetFollowingAuthors(string userName)
         {
-            var author = await Task.Run(() => FindAuthorByName(userName));
-            var followingAuthors = new List<string>();
-            foreach (Author a in _dbContext.Authors) 
-            {
-                if (a.AuthorsFollowed.Contains(userName))
-                {
-                    followingAuthors.Add(a.Name);
-                }
-            }
-
-            return followingAuthors;
+            return await _dbContext.Authors
+                .Where(a => a.AuthorsFollowed.Contains(userName))
+                .Select(a => a.Name)
+                .ToListAsync();
         }
         /// <summary>
         /// This methods returns the amount of karma a specific user has
@@ -206,7 +197,7 @@ namespace Chirp.Infrastructure.Repositories
         /// <param name="imageUrl">The URL of the image to download.</param>
         /// <returns>A Base64 string representation of the downloaded image.</returns>
         /// <exception cref="Exception">Thrown when there is an error downloading or converting the image.</exception>
-        public async Task<string> DownloadAndConvertToBase64Async(string imageUrl)
+        public static async Task<string> DownloadAndConvertToBase64Async(string imageUrl)
         {
             // Create an HTTP client
             using var httpClient = new HttpClient();
@@ -246,11 +237,11 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         /// <param name="image">The image file to compress.</param>
         /// <returns>The byte array of the compressed image.</returns>
-        public async Task<byte[]> CompressImage(IFormFile image)
+        public static async Task<byte[]> CompressImage(IFormFile image)
         {
-            if (image == null || image.Length == 0)
+            if (image.Length == 0)
             {
-                return Array.Empty<byte>();
+                return [];
             }
 
             // Step 1: Convert IFormFile to MemoryStream
@@ -259,7 +250,7 @@ namespace Chirp.Infrastructure.Repositories
             inputStream.Position = 0; // Reset the position to the start of the stream after copying
 
             // Step 2: Load the image using ImageSharp
-            using var img = Image.Load(inputStream);
+            using var img = await Image.LoadAsync(inputStream);
 
             // Step 3: Resize the image (max width/height) and compress it
             img.Mutate(x => x.Resize(new ResizeOptions
@@ -271,7 +262,7 @@ namespace Chirp.Infrastructure.Repositories
 
             // Step 4: Save the processed image to a memory stream (compressed with quality)
             using var outputStream = new MemoryStream();
-            img.Save(outputStream, new JpegEncoder
+            await img.SaveAsync(outputStream, new JpegEncoder
             {
                 Quality = 30  // Adjust quality as needed (0-100 scale)
             });
@@ -350,7 +341,7 @@ namespace Chirp.Infrastructure.Repositories
                 .Select(x => x.Followers)
                 .ToListAsync();
 
-            if (!counts.Any())
+            if (counts.Count == 0)
                 return (0, 0);
 
             double average = counts.Average();

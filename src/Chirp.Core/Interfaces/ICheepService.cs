@@ -5,18 +5,18 @@ namespace Chirp.Core.Interfaces;
 
 public interface ICheepService
 {
-    public Task<List<Core.DTOs.CheepDTO>> GetCheeps(int page);
-    public Task<List<Core.DTOs.CheepDTO>> GetCheepsFromAuthor(string author, int page);
+    public Task<List<CheepDTO>> GetCheeps(int page);
+    public Task<List<CheepDTO>> GetCheepsFromAuthor(string author, int page);
     
     public Task<int> GetTotalPageNumber(string authorName  = "");
     
-    public Task<List<Core.DTOs.CheepDTO>> RetrieveAllCheeps();
+    public Task<List<CheepDTO>> RetrieveAllCheeps();
     
-    public Task CreateCheep(CheepDTO Cheep);
+    public Task CreateCheep(CheepDTO cheep);
     
-    public Task<List<Core.DTOs.CheepDTO>> RetrieveAllCheepsFromAnAuthor(string authorName);
+    public Task<List<CheepDTO>> RetrieveAllCheepsFromAnAuthor(string authorName);
    
-    public Task DeleteUserCheeps(AuthorDTO Author);
+    public Task DeleteUserCheeps(AuthorDTO author);
     
     public Task HandleLike(string authorName, int cheepId, string? emoji);
     public Task HandleDislike(string authorName, int cheepId, string? emoji);
@@ -27,11 +27,11 @@ public interface ICheepService
     Task<List<CheepDTO>> GetMessagesForSimulator(string? username = null, int count = 100);
     Task<CheepDTO?> GetCheepFromId(int cheepId);
     Task<List<CommentDTO>> GetCommentsByCheepId(int cheepId);
-    Task AddCommentToCheep(CheepDTO cheepDto, string Text, string author);
+    Task AddCommentToCheep(CheepDTO cheepDto, string text, string author);
     Task DeleteComment(int commentId);
-    Task<List<Core.DTOs.CheepDTO>> GetPrivateCheeps(int page, string username);
+    Task<List<CheepDTO>> GetPrivateCheeps(int page, string username);
     Task<List<String>> GetTopReactions(int cheepId);
     Task DeleteCheep(int cheepId);
-    Task<List<Core.DTOs.CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName);
+    Task<List<CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName);
     Task<long> TotalCheepsPosted();
 }
