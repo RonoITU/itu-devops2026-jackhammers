@@ -89,5 +89,63 @@ public class CheepServiceTests
         return ms.ToArray();
     }
     
-    
+    // GetPrivateCheeps
+
+    [Fact]
+    public async Task GetPrivateCheeps_ReturnsOwnCheepsAndFollowedAuthorsCheeps()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            // Alice follows Bob but not Carol
+            var alice = MakeAuthor(1, "Alice", "alice@test.com", followed: new List<string> { "Bob" });
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            var carol = MakeAuthor(3, "Carol", "carol@test.com");
+
+            ctx.Authors.AddRange(alice, bob, carol);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Alice cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, bob,   "Bob cheep"));
+            ctx.Cheeps.Add(MakeCheep(3, carol, "Carol cheep")); // should NOT appear
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetPrivateCheeps(1, "Alice");
+
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, c => c.Author.Name == "Alice");
+            Assert.Contains(result, c => c.Author.Name == "Bob");
+            Assert.DoesNotContain(result, c => c.Author.Name == "Carol");
+        }
+    }
+
+    [Fact]
+    public async Task GetPrivateCheeps_ReturnsOnlyOwnCheeps_WhenFollowingNobody()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com"); // follows nobody
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Alice cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, bob,   "Bob cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetPrivateCheeps(1, "Alice");
+
+            Assert.Single(result);
+            Assert.Equal("Alice", result[0].Author.Name);
+        }
+    }
+
+    [Fact]
+    public async Task GetPrivateCheeps_ReturnsEmptyList_WhenUserNotFound()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var result = await svc.GetPrivateCheeps(1, "GhostUser");
+            Assert.Empty(result);
+        }
+    }
 }
