@@ -38,4 +38,17 @@ public class AuthorServiceTests : IClassFixture<IntegrationFixture>
         Assert.Equal("Jack Sparrow", response[1].Author);
         Assert.Equal(1, response[1].Followers);
     }
+
+    [Fact]
+    public async Task GetFollowerStats_NormalRequest()
+    {
+        await PrepareDatabase();
+
+        using var scope = _factory.Services.CreateScope();
+        var authorService = scope.ServiceProvider.GetRequiredService<IAuthorService>();
+
+        var response = await authorService.GetFollowerStats();
+        Assert.Equal(1.5, response.Average);
+        Assert.Equal(1.5, response.Median);
+    }
 }

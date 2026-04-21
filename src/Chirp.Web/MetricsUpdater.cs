@@ -49,7 +49,7 @@ public class MetricsUpdater : BackgroundService
                 }
                 _previousAuthors = currentAuthors;
 
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
             }
             catch (Exception ex) when (!stoppingToken.IsCancellationRequested)
             {

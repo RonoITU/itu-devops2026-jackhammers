@@ -335,12 +335,20 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         public async Task<(double Average, double Median)> GetFollowerStats()
         {
-            var authors = await _dbContext.Authors.ToListAsync();
+            var query =
+                from follower in _dbContext.Authors
+                from followed in follower.AuthorsFollowed
+                group follower by followed into g
+                orderby g.Count()
+                select new
+                {
+                    Author = g.Key,
+                    Followers = g.Count()
+                };
 
-            var counts = authors
-                .Select(a => authors.Count(other => other.AuthorsFollowed.Contains(a.Name)))
-                .OrderBy(c => c)
-                .ToList();
+            var counts = await query
+                .Select(x => x.Followers)
+                .ToListAsync();
 
             if (!counts.Any())
                 return (0, 0);
