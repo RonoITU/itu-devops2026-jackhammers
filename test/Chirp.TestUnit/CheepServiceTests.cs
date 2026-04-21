@@ -427,4 +427,72 @@ public class CheepServiceTests
             Assert.Equal("😢", reactions[0].Emoji);
         }
     }
+    
+    // GetPopularCheeps
+
+    [Fact]
+    public async Task GetPopularCheeps_ReturnsOnlyCheepsWithAtLeastOneLike()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Liked cheep"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Unliked cheep")); // no likes
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null);
+
+            var result = await svc.GetPopularCheeps(1);
+
+            Assert.Single(result);
+            Assert.Equal(1, result[0].CheepId);
+        }
+    }
+
+    [Fact]
+    public async Task GetPopularCheeps_ReturnsCheepsSortedByLikeCountDescending()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var author1 = MakeAuthor(1, "Author1", "a1@test.com");
+            var author2 = MakeAuthor(2, "Author2", "a2@test.com");
+            var author3 = MakeAuthor(3, "Author3", "a3@test.com");
+            ctx.Authors.AddRange(author1, author2, author3);
+            ctx.Cheeps.Add(MakeCheep(1, author1, "One like"));
+            ctx.Cheeps.Add(MakeCheep(2, author1, "Two likes"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Author2", 1, null);           // cheep 1 → 1 like
+            await svc.HandleLike("Author2", 2, null);           // cheep 2 → 2 likes
+            await svc.HandleLike("Author3", 2, null);
+
+            var result = await svc.GetPopularCheeps(1);
+
+            Assert.Equal(2, result.Count);
+            Assert.Equal(2, result[0].CheepId); // most liked first
+            Assert.Equal(1, result[1].CheepId);
+        }
+    }
+
+    [Fact]
+    public async Task GetPopularCheeps_ReturnsEmpty_WhenNoCheepsHaveLikes()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "An unloved cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetPopularCheeps(1);
+
+            Assert.Empty(result);
+        }
+    }
+
 }
