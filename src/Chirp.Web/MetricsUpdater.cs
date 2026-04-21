@@ -13,7 +13,7 @@ public class MetricsUpdater : BackgroundService
         _logger = logger;
     }
 
-    private static HashSet<string> _previousAuthors = [];
+    private HashSet<string> _previousAuthors = [];
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
