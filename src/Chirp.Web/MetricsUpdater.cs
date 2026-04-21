@@ -1,4 +1,5 @@
 ﻿using Chirp.Core.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Chirp.Web;
 
@@ -6,11 +7,17 @@ public class MetricsUpdater : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<MetricsUpdater> _logger;
+    private readonly MetricsUpdaterOptions _options;
 
-    public MetricsUpdater(IServiceScopeFactory scopeFactory, ILogger<MetricsUpdater> logger)
+    public MetricsUpdater(
+        IServiceScopeFactory scopeFactory, 
+        ILogger<MetricsUpdater> logger,
+        IOptions<MetricsUpdaterOptions> options
+        )
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _options = options.Value;
     }
 
     private HashSet<string> _previousAuthors = [];
@@ -21,7 +28,7 @@ public class MetricsUpdater : BackgroundService
         {
             try
             {
-                var delay = Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                var delay = Task.Delay(_options.Interval, stoppingToken);
 
                 using var scope = _scopeFactory.CreateScope();
                 var authorService = scope.ServiceProvider.GetRequiredService<IAuthorService>();

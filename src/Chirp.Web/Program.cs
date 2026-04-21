@@ -69,7 +69,6 @@ namespace Chirp.Web
 
             // Build the application
             var app = builder.Build();
-
             
             using (var scope = app.Services.CreateScope())
             {
