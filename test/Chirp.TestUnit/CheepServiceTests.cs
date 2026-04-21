@@ -347,4 +347,84 @@ public class CheepServiceTests
         }
     }
     
+    // HandleDislike
+
+    [Fact]
+    public async Task HandleDislike_AddsDislike_WhenAuthorHasNotDislikedBefore()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleDislike("Bob", 1, null);
+
+            Assert.Single(ctx.Dislikes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleDislike_RemovesDislike_WhenAuthorAlreadyDisliked()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleDislike("Bob", 1, null); // dislike
+            await svc.HandleDislike("Bob", 1, null); // un-dislike (toggle)
+
+            Assert.Empty(ctx.Dislikes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleDislike_SwitchesFromLikeToDislike()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleLike("Bob", 1, null);
+            Assert.Single(ctx.Likes.ToList());
+
+            await svc.HandleDislike("Bob", 1, null);
+
+            Assert.Empty(ctx.Likes.ToList());
+            Assert.Single(ctx.Dislikes.ToList());
+        }
+    }
+
+    [Fact]
+    public async Task HandleDislike_AddsEmojiReaction_WhenEmojiProvided()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            await ctx.SaveChangesAsync();
+
+            await svc.HandleDislike("Bob", 1, "😢");
+
+            var reactions = ctx.Reaction.ToList();
+            Assert.Single(reactions);
+            Assert.Equal("😢", reactions[0].Emoji);
+        }
+    }
 }
