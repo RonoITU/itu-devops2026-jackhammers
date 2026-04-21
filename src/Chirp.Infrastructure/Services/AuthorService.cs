@@ -85,7 +85,7 @@ public class AuthorService : IAuthorService
         return await _authorRepository.GetFollowingAuthors(userName);
     }
     /// <summary>
-    /// This methods returns the amount of karma a specific user has
+    /// This method returns the amount of karma a specific user has
     /// </summary>
     /// <param name="authorName"></param>
     /// <returns>Karma</returns>
