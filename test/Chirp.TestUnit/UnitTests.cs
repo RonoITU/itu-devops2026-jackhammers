@@ -4,57 +4,16 @@ using Xunit.Abstractions;
 namespace Chirp.TestUnit;
 
 /// <summary>
-/// General unit tests that do not belong to a specific repository class.
-/// Covers utility helpers (Shared page methods) and the AuthorRepository.
+/// General unit tests that do not belong to a specific repository or service class.
+/// Covers utility helpers on the Shared Razor page.
 ///
-/// CheepRepository tests live in CheepRepositoryTests.cs.
-/// CheepService tests live in CheepServiceTests.cs.
+/// AuthorRepository tests live in AuthorRepositoryTests.cs.
+/// AuthorService    tests live in AuthorServiceTests.cs.
+/// CheepRepository  tests live in CheepRepositoryTests.cs.
+/// CheepService     tests live in CheepServiceTests.cs.
 /// </summary>
 public class UnitTests(ITestOutputHelper testOutputHelper)
 {
-    // ── AuthorRepository ────────────────────────────────────────────────────────
-
-    [Fact]
-    public async Task AddFollowersToList()
-    {
-        // Arrange
-        await using var connection = new SqliteConnection("Filename=:memory:");
-        await connection.OpenAsync();
-        var builder = new DbContextOptionsBuilder<CheepDBContext>().UseSqlite(connection);
-
-        await using var context = new CheepDBContext(builder.Options);
-        await context.Database.EnsureCreatedAsync();
-
-        var author1 = new Author() { AuthorId = 1, Cheeps = new List<Cheep>(), Email = "helge@hotmail", Name = "Helge", AuthorsFollowed = new List<string>() };
-        var author2 = new Author() { AuthorId = 2, Cheeps = new List<Cheep>(), Email = "",              Name = "Adrian", AuthorsFollowed = new List<string>() };
-
-        var cheep1 = new Cheep
-        {
-            CheepId   = 1,
-            Author    = author1,
-            AuthorId  = author1.AuthorId,
-            Text      = "Sådan!",
-            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(1690892208).UtcDateTime
-        };
-
-        context.Authors.Add(author1);
-        context.Authors.Add(author2);
-        context.Cheeps.Add(cheep1);
-
-        await context.SaveChangesAsync();
-
-        IAuthorRepository repository = new AuthorRepository(context);
-
-        // Act
-        await repository.FollowAuthor(author2.Name, cheep1.Author.Name);
-
-        testOutputHelper.WriteLine(author2.AuthorsFollowed.ToString());
-
-        // Assert
-        Assert.True(author2.AuthorsFollowed.Count != 0);
-        Assert.True(author2.AuthorsFollowed.Contains(author1.Name));
-    }
-
     // ── Shared page helpers ─────────────────────────────────────────────────────
 
     [Theory]

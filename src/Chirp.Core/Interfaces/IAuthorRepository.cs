@@ -5,7 +5,7 @@ namespace Chirp.Core.Interfaces;
 
 public interface IAuthorRepository
 {
-    Task<AuthorDTO?> FindAuthorByNameDTO(String name);
+    Task<AuthorDTO?> FindAuthorByNameDto(String name);
     Task<Author?> FindAuthorByName(String name);
     Task CreateAuthor(string authorName, string authorEmail, string? profilePicture);
     Task DeleteUser(AuthorDTO author);

@@ -7,7 +7,7 @@ public interface IAuthorService
 {
     public Task<AuthorDTO?> FindAuthorByName(String name);
     public Task CreateAuthor(string authorName, string authorEmail, string? profilePicture);
-    public Task DeleteUser(AuthorDTO Author);
+    public Task DeleteUser(AuthorDTO author);
     public Task FollowAuthor(string userAuthorName, string followedAuthorName);
     public Task UnfollowAuthor(string userAuthor, string authorToBeRemoved);
     public Task RemovedAuthorFromFollowingList(string authorName);
