@@ -13,6 +13,8 @@ public class MetricsUpdater : BackgroundService
         _logger = logger;
     }
 
+    private static HashSet<string> _previousAuthors = [];
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
@@ -23,11 +25,9 @@ public class MetricsUpdater : BackgroundService
                 var authorService = scope.ServiceProvider.GetRequiredService<IAuthorService>();
                 var cheepService = scope.ServiceProvider.GetRequiredService<ICheepService>();
 
-                var count = await authorService.TotalAuthorCount();
-                MetricsRegistry.TotalUsers.Set(count);
+                MetricsRegistry.TotalUsers.Set(await authorService.TotalAuthorCount());
 
-                var count2 = await cheepService.TotalCheepsPosted();
-                MetricsRegistry.TotalCheepsPosted.Set(count2);
+                MetricsRegistry.TotalCheepsPosted.Set(await cheepService.TotalCheepsPosted());
 
                 MetricsRegistry.ActiveUsers.Set(await authorService.GetActiveUsers());
 
@@ -36,12 +36,18 @@ public class MetricsUpdater : BackgroundService
                 MetricsRegistry.MedianFollowers.Set(median);
 
                 var mostFollowed = await authorService.GetMostFollowed();
+                var currentAuthors = mostFollowed.Select(x => x.Author).ToHashSet();
+                foreach (var oldAuthor in _previousAuthors.Except(currentAuthors))
+                {
+                    MetricsRegistry.MostFollowed.RemoveLabelled(oldAuthor);
+                }
                 foreach (var (author, followers) in mostFollowed)
                 {
                     MetricsRegistry.MostFollowed
                         .WithLabels(author)
                         .Set(followers);
                 }
+                _previousAuthors = currentAuthors;
 
                 await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
             }
