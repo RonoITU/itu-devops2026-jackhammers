@@ -597,4 +597,80 @@ public class CheepServiceTests
         }
     }
 
+    // GetCommentsByCheepId
+
+    [Fact]
+    public async Task GetCommentsByCheepId_ReturnsOnlyCommentsForSpecifiedCheep()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "Cheep 1"));
+            ctx.Cheeps.Add(MakeCheep(2, alice, "Cheep 2"));
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 1, CheepId = 1, Author = alice, AuthorId = 1,
+                Text = "Comment on cheep 1", TimeStamp = DateTime.UtcNow
+            });
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 2, CheepId = 2, Author = alice, AuthorId = 1,
+                Text = "Comment on cheep 2", TimeStamp = DateTime.UtcNow
+            });
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetCommentsByCheepId(1);
+
+            Assert.Single(result);
+            Assert.Equal("Comment on cheep 1", result[0].Text);
+        }
+    }
+
+    [Fact]
+    public async Task GetCommentsByCheepId_ReturnsAllComments_WhenMultipleExist()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            var bob   = MakeAuthor(2, "Bob",   "bob@test.com");
+            ctx.Authors.AddRange(alice, bob);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A cheep"));
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 1, CheepId = 1, Author = alice, AuthorId = 1,
+                Text = "Alice's comment", TimeStamp = DateTime.UtcNow
+            });
+            ctx.Comment.Add(new Comment
+            {
+                CommentId = 2, CheepId = 1, Author = bob, AuthorId = 2,
+                Text = "Bob's comment", TimeStamp = DateTime.UtcNow
+            });
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetCommentsByCheepId(1);
+
+            Assert.Equal(2, result.Count);
+        }
+    }
+
+    [Fact]
+    public async Task GetCommentsByCheepId_ReturnsEmpty_WhenCheepHasNoComments()
+    {
+        var (conn, ctx, svc) = await SetupAsync();
+        await using (conn)
+        {
+            var alice = MakeAuthor(1, "Alice", "alice@test.com");
+            ctx.Authors.Add(alice);
+            ctx.Cheeps.Add(MakeCheep(1, alice, "A quiet cheep"));
+            await ctx.SaveChangesAsync();
+
+            var result = await svc.GetCommentsByCheepId(1);
+
+            Assert.Empty(result);
+        }
+    }
+
 }
