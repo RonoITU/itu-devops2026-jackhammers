@@ -27,9 +27,9 @@ def main():
         application_version="v1.0.0"
     )
 
-    locationResponse = client.locations.get_all()
+    location_response = client.locations.get_all()
     print("*** Locations:")
-    for l in locationResponse:
+    for l in location_response:
         print(l.name)
 
 if __name__ == "__main__":

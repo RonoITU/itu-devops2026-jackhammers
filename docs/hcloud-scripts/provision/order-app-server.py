@@ -46,7 +46,7 @@ def main():
         print("Failed to read cloud-init file.")
         sys.exit(1)
 
-    serverResponse = client.servers.create( # Creates a server with Docker CE image
+    server_response = client.servers.create( # Creates a server with Docker CE image
         name=args.servername,
         server_type=ServerType(name="cpx22"),          # Product name to provision. 
         image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
@@ -55,10 +55,10 @@ def main():
         user_data=cloud_init
     )
 
-    server = serverResponse.server
+    server = server_response.server
     print("*** New server being created:")
     print(f"{server.id=} {server.name=} {server.status=}")
-    print(f"root password: {serverResponse.root_password}") # Only relevant if we did not set any SSH keys. 
+    print(f"root password: {server_response.root_password}") # Only relevant if we did not set any SSH keys. 
 
     # List your servers
     servers = client.servers.get_all()
