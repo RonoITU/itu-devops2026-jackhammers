@@ -1,5 +1,4 @@
 using Chirp.Web;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Chirp.TestIntegration;
 
@@ -33,7 +32,7 @@ public class MetricsTests : IClassFixture<MetricsTestFixture>
         for (int i = 0; i < 20; i++)
         {
             await Task.Delay(1000);
-            if (MetricsRegistry.TotalUsers.Value == 12) break;
+            if (MetricsRegistry.MedianFollowers.Value == 1.5) break;
         }
 
         Assert.Equal(12, MetricsRegistry.TotalUsers.Value);
@@ -52,7 +51,7 @@ public class MetricsTests : IClassFixture<MetricsTestFixture>
             await Task.Delay(1000);
             var check = await _client.GetAsync("/metrics");
             var control = await check.Content.ReadAsStringAsync();
-            if (control.Contains("minitwit_total_users 12")) break;
+            if (control.Contains("minitwit_median_followers 1.5")) break;
         }
 
         var response = await _client.GetAsync("/metrics");
