@@ -197,7 +197,7 @@ namespace Chirp.Infrastructure.Repositories
         /// <param name="imageUrl">The URL of the image to download.</param>
         /// <returns>A Base64 string representation of the downloaded image.</returns>
         /// <exception cref="Exception">Thrown when there is an error downloading or converting the image.</exception>
-        private static async Task<string> DownloadAndConvertToBase64Async(string imageUrl)
+        public static async Task<string> DownloadAndConvertToBase64Async(string imageUrl)
         {
             // Create an HTTP client
             using var httpClient = new HttpClient();
@@ -237,7 +237,7 @@ namespace Chirp.Infrastructure.Repositories
         /// </summary>
         /// <param name="image">The image file to compress.</param>
         /// <returns>The byte array of the compressed image.</returns>
-        private static async Task<byte[]> CompressImage(IFormFile image)
+        public static async Task<byte[]> CompressImage(IFormFile image)
         {
             if (image.Length == 0)
             {
