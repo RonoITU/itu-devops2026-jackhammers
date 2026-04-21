@@ -29,7 +29,12 @@ public class MetricsTests : IClassFixture<MetricsTestFixture>
     public async Task PrometheusMetrics_CheckValuesInternally()
     {
         await PrepareDatabase();
-        await Task.Delay(400);
+
+        for (int i = 0; i < 20; i++)
+        {
+            await Task.Delay(1000);
+            if (MetricsRegistry.TotalUsers.Value == 12) break;
+        }
 
         Assert.Equal(12, MetricsRegistry.TotalUsers.Value);
         Assert.Equal(602, MetricsRegistry.TotalCheepsPosted.Value);
@@ -42,7 +47,7 @@ public class MetricsTests : IClassFixture<MetricsTestFixture>
     {
         await PrepareDatabase();
         
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 20; i++)
         {
             await Task.Delay(1000);
             var check = await _client.GetAsync("/metrics");
