@@ -52,11 +52,9 @@ public class PublicModel : PageModel
             var currentUserName = User.Identity.Name;
             if (currentUserName != null) UserAuthor = await _authorService.FindAuthorByName(currentUserName);
         }
-        
-        foreach (var cheep in Cheeps)
-        {
-            TopReactions[cheep.CheepId] = await _cheepService.GetTopReactions(cheep.CheepId);
-        }
+
+        var cheepIds = Cheeps.Select(c => c.CheepId).ToArray();
+        TopReactions = await _cheepService.GetTopReactionsDictionary(cheepIds);
         
         return Page();
     }

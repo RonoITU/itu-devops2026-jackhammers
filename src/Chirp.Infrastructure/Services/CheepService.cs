@@ -200,6 +200,11 @@ public class CheepService : ICheepService
     {
         return await _cheepRepository.GetTopReactions(cheepId);
     }
+
+    public async Task<Dictionary<int, List<string>>> GetTopReactionsDictionary (int[] cheepIds)
+    {
+        return await _cheepRepository.GetTopReactionsDictionary(cheepIds);
+    }
     
     /// <summary>
     /// Retrieves all comments from a specific author.
