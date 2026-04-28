@@ -75,11 +75,9 @@ public class UserTimelineModel : PageModel
         // FollowList = followAuthorDto.AuthorsFollowed as List<string>;
         FollowingList = await _authorService.GetFollowedAuthors(author);
         FollowingMeList = await _authorService.GetFollowingAuthors(author);
-        
-        foreach (var cheep in Cheeps)
-        {
-            TopReactions[cheep.CheepId] = await _cheepService.GetTopReactions(cheep.CheepId);
-        }
+
+        var cheepIds = Cheeps.Select(c => c.CheepId).ToArray();
+        TopReactions = await _cheepService.GetTopReactionsDictionary(cheepIds);
         
         return Page();
     }

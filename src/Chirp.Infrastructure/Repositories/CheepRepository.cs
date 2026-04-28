@@ -654,7 +654,7 @@ namespace Chirp.Infrastructure.Repositories
         /// <param name="cheepId">The ID of the cheep.</param>
         /// <param name="topN">The number of top reactions to retrieve.</param>
         /// <returns>A list of top emoji reactions.</returns>
-        public async Task<List<String>> GetTopReactions(int cheepId, int topN = 3)
+        public async Task<List<string>> GetTopReactions(int cheepId, int topN = 3)
         {
             return await _dbContext.Reaction
                 .Where(r => r.CheepId == cheepId)
@@ -663,6 +663,32 @@ namespace Chirp.Infrastructure.Repositories
                 .Take(topN)
                 .Select(g => g.First().Emoji)
                 .ToListAsync();
+        }
+
+        public async Task<Dictionary<int, List<string>>> GetTopReactionsDictionary(int[] cheepIds, int topN = 3)
+        {
+            var grouped =
+            from r in _dbContext.Reaction
+            where cheepIds.Contains(r.CheepId)
+            group r by new { r.CheepId, r.Emoji } into g
+            select new
+            {
+                g.Key.CheepId,
+                g.Key.Emoji,
+                Count = g.Count()
+            };
+
+            var rows = await grouped
+                .OrderBy(g => g.CheepId)
+                .ThenByDescending(g => g.Count)
+                .ToListAsync();
+
+            return rows
+                .GroupBy(g => g.CheepId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Take(topN).Select(x => x.Emoji).ToList()
+                );
         }
         
         /// <summary>
