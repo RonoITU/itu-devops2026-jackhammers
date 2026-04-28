@@ -25,7 +25,8 @@ public interface ICheepRepository
     Task<List<CommentDTO>> GetCommentsByCheepId(int cheepId);
     Task AddCommentToCheep(CheepDTO cheepDto, string text, string author);
     Task<CheepDTO> GetCheepFromId(int cheepId);
-    Task<List<String>> GetTopReactions(int cheepId, int topN = 3);
+    Task<List<string>> GetTopReactions(int cheepId, int topN = 3);
+    Task<Dictionary<int, List<string>>> GetTopReactionsDictionary(int[] cheepIds, int topN = 3);
     Task<List<CommentDTO>> RetriveAllCommentsFromAnAuthor(string Username);
     Task<long> TotalCheepsPosted();
 }

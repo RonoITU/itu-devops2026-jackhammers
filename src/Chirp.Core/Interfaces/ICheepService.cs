@@ -30,7 +30,8 @@ public interface ICheepService
     Task AddCommentToCheep(CheepDTO cheepDto, string text, string author);
     Task DeleteComment(int commentId);
     Task<List<CheepDTO>> GetPrivateCheeps(int page, string username);
-    Task<List<String>> GetTopReactions(int cheepId);
+    Task<List<string>> GetTopReactions(int cheepId);
+    Task<Dictionary<int, List<string>>> GetTopReactionsDictionary(int[] cheepIds);
     Task DeleteCheep(int cheepId);
     Task<List<CommentDTO>> RetrieveAllCommentsFromAnAuthor(string authorName);
     Task<long> TotalCheepsPosted();
