@@ -83,4 +83,24 @@ public class CheepServiceTests : IClassFixture<IntegrationFixture>
         var updatedCheeps = await cheepService.RetrieveAllCheepsFromAnAuthor("Tony Stark");
         Assert.DoesNotContain(someCheep, updatedCheeps);
     }
+
+    [Fact]
+    public async Task GetTopReactionsDictionary_NormalCall()
+    {
+        // Arrange
+        await PrepareDatabase();
+
+        using var scope = _factory.Services.CreateScope();
+        var cheepService = scope.ServiceProvider.GetRequiredService<ICheepService>();
+
+        await cheepService.HandleLike("Tony Stark", 1, "🤮");
+        await cheepService.HandleLike("Tony Stark", 5, "🤮");
+        await cheepService.HandleLike("Jack Sparrow", 1, "🤮");
+        await cheepService.HandleLike("Linus Torvalds", 1, "👻");
+
+        var dict = await cheepService.GetTopReactionsDictionary([1, 5]);
+
+        Assert.Equal(["🤮", "👻"], dict[1]);
+        Assert.Equal(["🤮"], dict[5]);
+    }
 }
