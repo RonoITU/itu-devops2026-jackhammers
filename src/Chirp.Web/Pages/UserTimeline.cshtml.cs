@@ -1,10 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Chirp.Core;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Chirp.Core.DTOs;
 using Chirp.Core.Interfaces;
-using Chirp.Infrastructure.Services;
 using Chirp.Web.Pages.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -50,8 +47,6 @@ public class UserTimelineModel : PageModel
         {
             return RedirectToPage("Public", new { page = 1 });
         }
-        
-        PageAuthor = await _authorService.FindAuthorByName(author);
         
         PageNumber = page;
         AuthorKarma = await _authorService.GetKarmaForAuthor(author);
