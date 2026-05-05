@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - 'report/3.1-report-structure-and-ci-build'
     paths:
       - 'report/**'
   pull_request:
