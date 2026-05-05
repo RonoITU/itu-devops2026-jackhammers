@@ -42,10 +42,21 @@ jobs:
           path: report/build/BSc_group_j.pdf
           retention-days: 90
 
-      - name: Commit built PDF to repository
-        if: github.event_name == 'push'
+  commit_pdf:
+    needs: build_pdf
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download built PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: BSc_group_j
+          path: report/build
+
+      - name: Commit PDF to repository
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add report/build/BSc_group_j.pdf
