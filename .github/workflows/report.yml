@@ -15,14 +15,10 @@ on:
 jobs:
   build_pdf:
     runs-on: ubuntu-latest
+    container:
+      image: pandoc/latex:latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install pandoc and LaTeX (cached)
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: pandoc texlive-xetex texlive-fonts-recommended texlive-latex-extra
-          version: 1.0
 
       - name: Build PDF
         run: |
@@ -49,6 +45,7 @@ jobs:
       - name: Commit built PDF to repository
         if: github.event_name == 'push'
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add report/build/BSc_group_j.pdf
