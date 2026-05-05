@@ -18,10 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pandoc and LaTeX
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y pandoc texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+      - name: Install pandoc and LaTeX (cached)
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: pandoc texlive-xetex texlive-fonts-recommended texlive-latex-extra
+          version: 1.0
 
       - name: Build PDF
         run: |
