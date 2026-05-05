@@ -26,7 +26,7 @@ jobs:
           pandoc report/report.md \
             --from markdown \
             --to pdf \
-            --output report/build/BSc_group_j.pdf \
+            --output report/build/BSc_group_m.pdf \
             --pdf-engine=xelatex \
             --resource-path=report \
             -V geometry:margin=2.5cm \
@@ -38,8 +38,8 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BSc_group_j
-          path: report/build/BSc_group_j.pdf
+          name: BSc_group_m
+          path: report/build/BSc_group_m.pdf
           retention-days: 90
 
   commit_pdf:
@@ -54,13 +54,13 @@ jobs:
       - name: Download built PDF
         uses: actions/download-artifact@v4
         with:
-          name: BSc_group_j
+          name: BSc_group_m
           path: report/build
 
       - name: Commit PDF to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add report/build/BSc_group_j.pdf
-          git diff --staged --quiet || git commit -m "ci: rebuild report PDF [skip ci]"
+          git add report/build/BSc_group_m.pdf
+          git diff --staged --quiet || git commit -m "ci: rebuild report PDF"
           git push
