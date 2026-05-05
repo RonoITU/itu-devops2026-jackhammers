@@ -1,0 +1,55 @@
+name: Build Report PDF
+
+on:
+  push:
+    branches:
+      - main
+      - 'report/3.1-report-structure-and-ci-build'
+    paths:
+      - 'report/**'
+  pull_request:
+    paths:
+      - 'report/**'
+  workflow_dispatch:
+
+jobs:
+  build_pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc and LaTeX
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y pandoc texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+
+      - name: Build PDF
+        run: |
+          mkdir -p report/build
+          pandoc report/report.md \
+            --from markdown \
+            --to pdf \
+            --output report/build/BSc_group_j.pdf \
+            --pdf-engine=xelatex \
+            --resource-path=report \
+            -V geometry:margin=2.5cm \
+            -V fontsize=11pt \
+            -V colorlinks=true \
+            -V linkcolor=blue \
+            -V urlcolor=blue
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BSc_group_j
+          path: report/build/BSc_group_j.pdf
+          retention-days: 90
+
+      - name: Commit built PDF to repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add report/build/BSc_group_j.pdf
+          git diff --staged --quiet || git commit -m "ci: rebuild report PDF [skip ci]"
+          git push
