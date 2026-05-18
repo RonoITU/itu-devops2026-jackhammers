@@ -1,5 +1,5 @@
 # Windy Squirrels - Minitwit
-
+![WindySquirrels.png](docs/img/WindySquirrels.png)
 ## Preface
 
 This project, officially called Minitwit, is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
@@ -70,6 +70,13 @@ The compose instructions for real production deployments are setup differently.
 1. An actual server volume is mounted for Postgres. The port to access Postgres is not exposed to The Web.
 2. Paths to SSL certificates should be setup for single app deployment, or a reverse proxy should be configured for multi-app deployment.
 3. Need to use the standard ports for HTTP and HTTPS, which normally take privileged access to bind. 
+
+## Our MIT license
+[LICENSE](LICENSE)
+
+## Contributing
+
+
 
 ## More relevant documentation
 
