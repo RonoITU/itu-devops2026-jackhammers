@@ -89,7 +89,25 @@ The compose instructions for real production deployments are setup differently.
 
 ## Contributing
 
+We welcome contributions to Windy Squirrels – Minitwit. To keep the project stable and maintainable, please follow this lightweight workflow.
 
+Development Workflow
+Fork the repository and create a feature branch:
+
+bash
+`git checkout -b feature/my-change`
+Develop using the local setup:
+
+Database via docker-compose.db.yml
+
+Hot reload via dotnet watch
+
+Run the tests prior to opening a pull-request to the `develop` branch. The open PR will also trigger a GitHub Actions workflow that checks for this and potential code quality issues.
+
+bash
+`dotnet test`
+
+If further work is needed on your open pull-request, then please keep the PR in draft mode, or temporarily close it, to avoid flooding the maintainers with status emails. :)
 
 ## More relevant documentation
 
