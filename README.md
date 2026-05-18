@@ -14,7 +14,20 @@ Minitwit is a homemade Twitter-like system, allowing users to post and interact 
 We are hosting the project [here](https://windysquirrels.dk/). We use [Hetzner](https://www.hetzner.com/) for the VPS and [Dandomain](https://dandomain.dk/) for domain name services. 
 
 ## Local development, testing and deployment
-These are methods to run the project locally:
+
+We have used docker to compose the build process.
+There are 3 different dockerfiles:
+
+- docker-compose.db.yml which runs a progressdatabase for local testning and debugging.
+
+- docker-compose.dev.yml which runs the deployment and starts the application and the database together for local testning and debugging.
+
+- docker-compose.dev.yml which runs a monitor framework for the solution, based on Grafana, Prometheus and Loki.
+
+These are not intended and not safe to use for a production enviroment.
+We have another set of docker-compose files for production in the prod-compose directory.
+
+These are step-by-step methods to run the project locally:
 
 ### Development with .NET 10 and Docker
 
