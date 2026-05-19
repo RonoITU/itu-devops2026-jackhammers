@@ -109,17 +109,15 @@
 ---
 
 ## 4. Use of Generative AI
-*Author(s): *
+*Author(s):* Rasmus
 
-<!-- State which generative AI tools were used and for which tasks in the project.
-     Describe *how* they were used and briefly reflect on how they supported or
-     hindered your work process. Follow ITU's guidelines on generative AI use:
-     https://itustudent.itu.dk/Study%20Administration/Generative%20AI#Guidelines -->
+**GitHub Copilot** was used to assist with boilerplate code generation throughout development. It provided inline auto-completion that often matched the intended behavior being implemented, and helped untangle unfamiliar functionality across the broader codebase. This sped up the coding process significantly, particularly for repetitive or structurally predictable code.
 
-| Tool | Tasks used for | How it was used |
-|------|---------------|-----------------|
-| <!-- e.g. ChatGPT --> | <!-- e.g. boilerplate code, debugging --> | <!-- brief description --> |
-| <!-- ... --> | | |
+**Microsoft Copilot** was used for general consultation when extending the infrastructure, serving as a quick reference for exploring options and approaches before committing to a direction.
 
-<!-- Reflection: Did the tools speed up your work? Did they introduce errors or bad
+**Claude** was used for more in-depth technical discussions, typically involving specific code examples. It helped provide clarity on complex topics and was particularly useful when a concept required more thorough explanation than a quick search could offer.
+
+<!-- Reflection if word count allows: -->
+ 
+<!-- Did the tools speed up your work? Did they introduce errors or bad
      practices that you had to fix? What would you do differently? -->
