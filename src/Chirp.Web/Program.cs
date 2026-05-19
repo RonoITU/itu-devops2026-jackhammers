@@ -137,6 +137,8 @@ namespace Chirp.Web
             // Map Controllers (Used for Simulator API endpoints)
             app.MapControllers();
             
+            app.MapGet("/health", () => Results.Ok("Healthy"));
+
             app.MapGet("/cheeps", async (ICheepService cheepService) =>
             {
                 var cheeps = await cheepService.RetrieveAllCheeps();
