@@ -65,11 +65,10 @@ def main():
             location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
             user_data=appCloudInit
         )
-
-    appServer = appServerResponse.server
-    print("*** App server scheduled for creation:")
-    print(f"{appServer.id=} {appServer.name=} {appServer.status=}")
-    print(f"root password: {appServerResponse.root_password}") # Only relevant if we did not set any SSH keys. 
+        appServer = appServerResponse.server
+        print("*** App server scheduled for creation:")
+        print(f"{appServer.id=} {appServer.name=} {appServer.status=}")
+        print(f"root password: {appServerResponse.root_password}") # Only relevant if we did not set any SSH keys. 
 
     existing_monitor = client.servers.get_by_name("ITU-Minitwit-Monitor-Server")
     if existing_monitor:
@@ -82,11 +81,10 @@ def main():
             location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
             user_data=monitorCloudInit
         )
-
-    monitorServer = monitorServerResponse.server
-    print("*** Monitor server scheduled for creation:")
-    print(f"{monitorServer.id=} {monitorServer.name=} {monitorServer.status=}")
-    print(f"root password: {monitorServerResponse.root_password}") # Only relevant if we did not set any SSH keys. 
+        monitorServer = monitorServerResponse.server
+        print("*** Monitor server scheduled for creation:")
+        print(f"{monitorServer.id=} {monitorServer.name=} {monitorServer.status=}")
+        print(f"root password: {monitorServerResponse.root_password}") # Only relevant if we did not set any SSH keys. 
 
     # List your servers
     servers = client.servers.get_all()
