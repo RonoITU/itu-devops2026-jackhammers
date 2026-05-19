@@ -20,7 +20,9 @@ header-includes: |
 | Ronas Jacob Coban Olsen | rono@itu.dk |
 | Rasmus Alexander Christiansen | ralc@itu.dk |
 
----
+```{=latex}
+\newpage
+```
 
 ## 1. System's Perspective
 
