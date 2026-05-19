@@ -54,26 +54,34 @@ def main():
 
     servers = client.servers.get_all()
 
-    appServerResponse = client.servers.create( # Creates a server with Docker CE image
-        name="ITU-Minitwit-App-Server",
-        server_type=ServerType(name="cpx22"),          # Product name to provision. CPX22 is a 10€/month x86_64 server at a reliably available tier. 
-        image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
-        location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
-        user_data=appCloudInit
-    )
+    existing_app = client.servers.get_by_name("ITU-Minitwit-App-Server")
+    if existing_app:
+        print("App server already exists, skipping creation.")
+    else:
+        appServerResponse = client.servers.create( # Creates a server with Docker CE image
+            name="ITU-Minitwit-App-Server",
+            server_type=ServerType(name="cpx22"),          # Product name to provision. CPX22 is a 10€/month x86_64 server at a reliably available tier. 
+            image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
+            location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
+            user_data=appCloudInit
+        )
 
     appServer = appServerResponse.server
     print("*** App server scheduled for creation:")
     print(f"{appServer.id=} {appServer.name=} {appServer.status=}")
     print(f"root password: {appServerResponse.root_password}") # Only relevant if we did not set any SSH keys. 
 
-    monitorServerResponse = client.servers.create( # Creates a server with Docker CE image
-        name="ITU-Minitwit-Monitor-Server",
-        server_type=ServerType(name="cpx22"),          # Product name to provision. CPX22 is a 10€/month x86_64 server at a reliably available tier. 
-        image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
-        location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
-        user_data=monitorCloudInit
-    )
+    existing_monitor = client.servers.get_by_name("ITU-Minitwit-Monitor-Server")
+    if existing_monitor:
+        print("Monitor server already exists, skipping creation.")
+    else:
+        monitorServerResponse = client.servers.create( # Creates a server with Docker CE image
+            name="ITU-Minitwit-Monitor-Server",
+            server_type=ServerType(name="cpx22"),          # Product name to provision. CPX22 is a 10€/month x86_64 server at a reliably available tier. 
+            image=Image(name="docker-ce"),                 # Use the default Ubuntu image with Docker installed. 
+            location=client.locations.get_by_name("hel1"), # Provision in the Helsinki data center. 
+            user_data=monitorCloudInit
+        )
 
     monitorServer = monitorServerResponse.server
     print("*** Monitor server scheduled for creation:")
