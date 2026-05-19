@@ -66,9 +66,9 @@ def main():
         print(f"  {f.name}")
 
     APP_SERVER_NAME = "ITU-Minitwit-App-Server"
-    APP_CLOUD_URI = "provision/autodeploy-app-cloud-init.yml"
+    APP_CLOUD_URI = "provision/autoconfig-app-cloud-init.yml"
     MONITOR_SERVER_NAME = "ITU-Minitwit-Monitor-Server"
-    MONITOR_CLOUD_URI = "provision/autodeploy-monitoring-cloud-init.yml"
+    MONITOR_CLOUD_URI = "provision/autoconfig-monitoring-cloud-init.yml"
 
     appCloudInit = None
     with open(APP_CLOUD_URI) as f:
