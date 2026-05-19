@@ -21,7 +21,7 @@
 ### 1.1 Design and Architecture
 *Author(s):* Rasmus
 
-[Diagram of the system architecture](images/architecture-diagram.png)
+![Diagram of the system architecture](images/architecture-diagram.png)
 
 MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a private network (10.0.0.0/28).
 
