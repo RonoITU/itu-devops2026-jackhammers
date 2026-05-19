@@ -10,7 +10,7 @@ from hcloud.firewalls.domain import FirewallRule
 # ITU-Minitwit. (February 18th 2026)
 def main():
     parser = argparse.ArgumentParser(
-        description="Python script that creates a server on Hetzner for ITU-Minitwit."
+        description="Python script that configures infrastructure for ITU-Minitwit on Hetzner Cloud."
     )
 
     parser.add_argument(
@@ -29,7 +29,7 @@ def main():
 
     client = Client(
         token=args.apikey,
-        application_name="make-devops-serv.py",
+        application_name="Configure infrastructure for ITU-Minitwit on Hetzner Cloud",
         application_version="v1.0.0"
     )
 
