@@ -1,5 +1,5 @@
 # Windy Squirrels - Minitwit
-
+![WindySquirrels.png](docs/img/WindySquirrels.png)
 ## Preface
 
 This project, officially called Minitwit, is part of the course DevOps, Software Evolution and Software Maintenance at the IT University of Copenhagen.
@@ -14,7 +14,20 @@ Minitwit is a homemade Twitter-like system, allowing users to post and interact 
 We are hosting the project [here](https://windysquirrels.dk/). We use [Hetzner](https://www.hetzner.com/) for the VPS and [Dandomain](https://dandomain.dk/) for domain name services. 
 
 ## Local development, testing and deployment
-These are methods to run the project locally:
+
+We have used docker to compose the build process.
+There are 3 different dockerfiles:
+
+- docker-compose.db.yml which runs a progressdatabase for local testning and debugging.
+
+- docker-compose.dev.yml which runs the deployment and starts the application and the database together for local testning and debugging.
+
+- docker-compose.dev.yml which runs a monitor framework for the solution, based on Grafana, Prometheus and Loki.
+
+These are not intended and not safe to use for a production enviroment.
+We have another set of docker-compose files for production in the prod-compose directory.
+
+These are step-by-step methods to run the project locally:
 
 ### Development with .NET 10 and Docker
 
@@ -70,6 +83,31 @@ The compose instructions for real production deployments are setup differently.
 1. An actual server volume is mounted for Postgres. The port to access Postgres is not exposed to The Web.
 2. Paths to SSL certificates should be setup for single app deployment, or a reverse proxy should be configured for multi-app deployment.
 3. Need to use the standard ports for HTTP and HTTPS, which normally take privileged access to bind. 
+
+## Our MIT license
+[LICENSE](LICENSE)
+
+## Contributing
+
+We welcome contributions to Windy Squirrels – Minitwit. To keep the project stable and maintainable, please follow this lightweight workflow.
+
+Development Workflow
+Fork the repository and create a feature branch:
+
+bash
+`git checkout -b feature/my-change`
+Develop using the local setup:
+
+Database via docker-compose.db.yml
+
+Hot reload via dotnet watch
+
+Run the tests prior to opening a pull-request to the `develop` branch. The open PR will also trigger a GitHub Actions workflow that checks for this and potential code quality issues.
+
+bash
+`dotnet test`
+
+If further work is needed on your open pull-request, then please keep the PR in draft mode, or temporarily close it, to avoid flooding the maintainers with status emails. :)
 
 ## More relevant documentation
 
