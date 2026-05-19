@@ -1,3 +1,9 @@
+---
+header-includes: |
+  \usepackage{float}
+  \floatplacement{figure}{H}
+---
+
 # ITU-MiniTwit — BSc DevOps, Software Evolution and Software Maintenance
 
 **Group:** `BSc_group_m`
