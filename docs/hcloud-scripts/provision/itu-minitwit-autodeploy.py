@@ -32,6 +32,7 @@ def main():
         application_version="v1.0.0"
     )
 
+    APP_SERVER_NAME = "ITU-Minitwit-App-Server"
     APP_CLOUD_URI = "provision/autodeploy-app-cloud-init.yml"
     MONITOR_CLOUD_URI = "provision/autodeploy-monitoring-cloud-init.yml"
 
@@ -50,6 +51,8 @@ def main():
     if monitorCloudInit is None or monitorCloudInit == "":
         print(f"Failed to read {MONITOR_CLOUD_URI} file.")
         sys.exit(1)
+
+    servers = client.servers.get_all()
 
     appServerResponse = client.servers.create( # Creates a server with Docker CE image
         name="ITU-Minitwit-App-Server",
