@@ -56,7 +56,7 @@ MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtua
 **devops-serv2 (10.0.0.2)** is dedicated to observability. Prometheus scrapes the /metrics endpoint on devops-serv1 every five seconds and stores the resulting time-series data. Loki aggregates the structured log streams pushed by the Promtail agents on devops-serv1 and app-node-3. Grafana provides dashboards over both data sources using PromQL for metrics and LogQL for logs.  
 
 ### 1.2 Dependencies
-*Author(s):* Rasmus  
+*Author(s):* Rasmus Alexander Christiansen
 
 The diagram below illustrates the relationships between the key technologies across all layers of the system. Not every dependency is shown - minor libraries and transitive dependencies are omitted for clarity. A full list with descriptions is provided in the tables below the diagram.
 
