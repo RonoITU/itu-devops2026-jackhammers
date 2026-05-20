@@ -25,16 +25,65 @@
      Example: ![Architecture Diagram](images/architecture.png) -->
 
 ### 1.2 Dependencies
-*Author(s): *
-<!-- List and briefly describe all technologies, frameworks, libraries, and tools your system
-     depends on at all levels of abstraction (runtime, build, infrastructure, CI/CD, etc.).
-     Example table: -->
+*Author(s):* Rasmus  
 
-| Technology / Tool | Version | Purpose |
-|-------------------|---------|---------|
-| <!-- e.g. Docker --> | <!-- 26.x --> | <!-- Containerisation --> |
-| <!-- e.g. PostgreSQL --> | <!-- 16 --> | <!-- Relational database --> |
-| <!-- ... --> | | |
+The diagram below illustrates the relationships between the key technologies across all layers of the system. Not every dependency is shown - minor libraries and transitive dependencies are omitted for clarity. A full list with descriptions is provided in the tables below the diagram.
+
+![Diagram of the system dependencies](images/dependencies-diagram.png)
+
+**Application**
+
+| Technology / Tool | Purpose |
+|---|---|
+| C# / .NET | Application language and runtime |
+| ASP.NET Core (Razor Pages) | Web UI framework |
+| ASP.NET Core (Controllers) | REST API for the ITU simulator |
+| Entity Framework Core | ORM and database migrations |
+| Npgsql EF Core Provider | PostgreSQL driver for EF Core |
+| ASP.NET Core Identity | User authentication and account management |
+| prometheus-net | Exposes application metrics to Prometheus |
+| Magick.NET | Profile image processing |
+| SixLabors.ImageSharp | Image resizing and encoding |
+
+**Infrastructure**
+
+| Technology / Tool | Purpose |
+|---|---|
+| Hetzner Cloud | VPS hosting for all three nodes |
+| Docker | Container runtime on all nodes |
+| Docker Compose | Service orchestration on each node |
+| Nginx | Reverse proxy, TLS termination, load balancing |
+| PostgreSQL | Relational database |
+| Let's Encrypt / Certbot | Automated TLS certificate provisioning |
+
+**Observability**
+
+| Technology / Tool | Purpose |
+|---|---|
+| Prometheus | Metrics scraping and time-series storage |
+| Grafana | Dashboards for metrics and logs |
+| Loki | Log aggregation and indexing |
+| Promtail | Log shipping agent (Docker container logs) |
+
+**CI/CD**
+
+| Technology / Tool | Purpose |
+|---|---|
+| GitHub Actions | CI/CD pipeline automation |
+| Docker Hub | Container image registry |
+| SonarQube (SonarCloud) | Static analysis and quality gate |
+| Codacy | Additional static analysis |
+| Pandoc + XeLaTeX | Report PDF generation |
+
+**Testing**
+
+| Technology / Tool | Purpose |
+|---|---|
+| xUnit | Unit and integration test framework |
+| NUnit + Playwright | End-to-end browser testing |
+| Testcontainers (PostgreSQL) | Spins up a real PostgreSQL instance for tests |
+| coverlet | Code coverage collection |
+
 
 ### 1.3 Current State of the System
 *Author(s): *
