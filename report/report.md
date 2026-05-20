@@ -29,9 +29,11 @@ header-includes: |
 ### 1.1 Design and Architecture
 *Author(s):* Rasmus
 
+This section describes the overall system architecture of MiniTwit, including how the application is structured, deployed, and monitored. The diagram above provides a visual overview of the components and their interactions across the infrastructure.
+
 ![Diagram of the system architecture](images/architecture-diagram.png)
 
-MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a private network (10.0.0.0/28).
+MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtual private network (10.0.0.0/28).
 
 **devops-serv1 (10.0.0.3)** is the primary node. Nginx runs here as the sole public entry point, handling TLS termination via Let's Encrypt, redirects HTTP traffic to HTTPS, and weighted load balancing across both app nodes. The primary application instance serves web UI and REST API traffic and exposes a /metrics endpoint for Prometheus. PostgreSQL 15 hosts the shared database for all application data. Promtail runs as a log shipping agent, collecting Docker container logs from this node and forwarding them to Loki on devops-serv2.  
 
