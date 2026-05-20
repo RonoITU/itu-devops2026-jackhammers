@@ -101,7 +101,7 @@ The diagram below illustrates the relationships between the key technologies acr
 |---|---|
 | xUnit | Unit and integration test framework |
 | NUnit + Playwright | End-to-end browser testing |
-| Testcontainers (PostgreSQL) | Spins up a real PostgreSQL instance for tests |
+| Testcontainers | Spins up a PostgreSQL instance for tests |
 | coverlet | Code coverage collection |
 
 
