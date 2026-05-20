@@ -47,17 +47,33 @@
 ## 2. Process' Perspective
 
 ### 2.1 CI/CD Pipeline
-*Author(s): *
+*Author(s): Ronas Jacob Coban Olsen and Jacob Sponholtz
 
 <!-- Describe and illustrate all stages and tools in your CI/CD pipeline, including how
      code is built, tested, and deployed/released to production.
      Include a diagram if helpful, e.g.: ![CI/CD Pipeline](images/cicd_pipeline.png) -->
 
-The source code is hosted on GitHub. We follow a modified GitFlow branching strategy: Feature development on a `develop` branch and feature branches, but without the use of release branches. Instead `develop` is merged directly to the main branch on release, and all QA is handled as part of the CI of features to the  `develop` branch. 
+The source code is hosted on GitHub.
+We follow a modified GitFlow branching strategy: Feature development on a `develop` branch and feature branches, but without the use of release branches.
+Instead `develop` is merged directly to the main branch on release, and all QA is handled as part of the CI of features to the  `develop` branch. 
 
-The main branch is the version currently in production. Versions are also tagged semi-automatically by the CD workflow with each new release. 
+The main branch is the version currently in production.
+Versions are also tagged semi-automatically by the CD workflow with each new release. 
 
-Any contributor can clone the repository, create a new feature branch, and work using their preferred tools. Simple instructions are provided in the README on how to build, run and test locally. To integrate a feature into the next release, the contributor opens a pull request towards `develop`. This triggers the CI GitHub Action to run our testing suite (Unit, Integration, E2E) and static analysis tools (SonarCube, Codacy) so that we will have concrete QA evidence alongside the changes to review. 
+Any contributor can clone the repository, create a new feature branch, and work using their preferred tools.
+Simple instructions are provided in the README on how to build, run and test locally.
+To integrate a feature into the next release, the contributor opens a pull request towards `develop`.
+This triggers the CI GitHub Action to run our testing suite (Unit, Integration, E2E) and static analysis tools (SonarCube, Codacy) so that we will have concrete QA evidence alongside the changes to review. 
+
+The contributor will also get immediate feedback from the analysis tool, indicating possibly issue and displaying sufficent testcoverage on new code.
+Once the contributor is happy with the new feature(s), we ask for the feature branch to be merged.
+For new release to take effect, firstly the developer must asset the new commits on develop and increment the version file acordning.
+
+Then a pull-request is open towards main, which first triggers the CI Github actions. When this action has been completed succesfully, the merge towards main happens.
+This merges triggers the CD actions, in which the docker image is built and uploaded to Dockerhub.
+Github then access the server via ssh to recreate and restart the containers, using the new release image.
+
+Finally the CD action will tag the release with version number, and create a release on Github.
 
 ### 2.2 Monitoring
 *Author(s): *
