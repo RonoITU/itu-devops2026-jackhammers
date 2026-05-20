@@ -177,7 +177,7 @@ Github then connects to the server via ssh to recreate and restart the container
 Finally the CD action will tag the release with version number, and create a new release on GitHub.
 
 ### 2.2 Monitoring
-*Author(s): Ronas Olsen and Jacob Sponholtz
+*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen
 
 System monitoring is based on Prometheus and Grafana. 
 Prometheus collects metrics from app containers over the VPN. 
@@ -192,7 +192,7 @@ In the BI dashboard, the hightlights are a top 10 most followed, total users ver
      (metrics, alerts, dashboards, tools used — e.g. Prometheus, Grafana). -->
 
 ### 2.3 Logging
-*Author(s): Ronas Olsen and Jacob Sponholtz
+*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen
 
 <!-- Describe what you log in your system, how logs are collected, aggregated,
      and queried (e.g. ELK stack, Loki/Grafana, Fluentd). -->
