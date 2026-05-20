@@ -51,7 +51,7 @@ The diagram below illustrates the relationships between the key technologies acr
 **Application**
 
 | Technology / Tool | Purpose |
-|---|---|
+|:---|:---|
 | C# / .NET | Application language and runtime |
 | ASP.NET Core (Razor Pages) | Web UI framework |
 | ASP.NET Core (Controllers) | REST API for the ITU simulator |
@@ -65,7 +65,7 @@ The diagram below illustrates the relationships between the key technologies acr
 **Infrastructure**
 
 | Technology / Tool | Purpose |
-|---|---|
+|:---|:---|
 | Hetzner Cloud | VPS hosting for all three nodes |
 | Docker | Container runtime on all nodes |
 | Docker Compose | Service orchestration on each node |
@@ -76,7 +76,7 @@ The diagram below illustrates the relationships between the key technologies acr
 **Observability**
 
 | Technology / Tool | Purpose |
-|---|---|
+|:---|:---|
 | Prometheus | Metrics scraping and time-series storage |
 | Grafana | Dashboards for metrics and logs |
 | Loki | Log aggregation and indexing |
@@ -85,7 +85,7 @@ The diagram below illustrates the relationships between the key technologies acr
 **CI/CD**
 
 | Technology / Tool | Purpose |
-|---|---|
+|:---|:---|
 | GitHub Actions | CI/CD pipeline automation |
 | Docker Hub | Container image registry |
 | SonarQube (SonarCloud) | Static analysis and quality gate |
@@ -95,7 +95,7 @@ The diagram below illustrates the relationships between the key technologies acr
 **Testing**
 
 | Technology / Tool | Purpose |
-|---|---|
+|:---|:---|
 | xUnit | Unit and integration test framework |
 | NUnit + Playwright | End-to-end browser testing |
 | Testcontainers (PostgreSQL) | Spins up a real PostgreSQL instance for tests |
