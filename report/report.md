@@ -47,11 +47,13 @@
 ## 2. Process' Perspective
 
 ### 2.1 CI/CD Pipeline
-*Author(s): Ronas Jacob Coban Olsen and Jacob Sponholtz
+*Author(s): Ronas Olsen and Jacob Sponholtz
 
 <!-- Describe and illustrate all stages and tools in your CI/CD pipeline, including how
      code is built, tested, and deployed/released to production.
      Include a diagram if helpful, e.g.: ![CI/CD Pipeline](images/cicd_pipeline.png) -->
+
+![Diagram of the CI/CD Pipeline (excalidraw.com)](images/ci-cd-diagram.png)
 
 The source code is hosted on GitHub.
 We follow a modified GitFlow branching strategy: Feature development on a `develop` branch and feature branches, but without the use of release branches.
