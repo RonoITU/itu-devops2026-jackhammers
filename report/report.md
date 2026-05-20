@@ -192,10 +192,12 @@ In the BI dashboard, the hightlights are a top 10 most followed, total users ver
      (metrics, alerts, dashboards, tools used — e.g. Prometheus, Grafana). -->
 
 ### 2.3 Logging
-*Author(s): *
+*Author(s): Ronas Olsen and Jacob Sponholtz
 
 <!-- Describe what you log in your system, how logs are collected, aggregated,
      and queried (e.g. ELK stack, Loki/Grafana, Fluentd). -->
+
+Logs are collected from Docker containers on each VPS using Loki and Prometheus. The standard outputs from each container are directed to an instance of Prometheus. Loki running on the monitoring server collects data from these for Grafana to access as needed for dashboards or for Drilldown. All log entries have a UTC timestamp appended automatically. (See [logging-dashboard.gif](images/logging-dashboard.gif) for reference.)
 
 ### 2.4 Security Hardening
 *Author(s): *
