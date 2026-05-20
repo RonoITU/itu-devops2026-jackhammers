@@ -177,13 +177,15 @@ Github then connects to the server via ssh to recreate and restart the container
 Finally the CD action will tag the release with version number, and create a new release on GitHub.
 
 ### 2.2 Monitoring
-*Author(s): Ronas Jacob Coban Olsen and Jacob Sponholtz
+*Author(s): Ronas Olsen and Jacob Sponholtz
 
-Monitoring the system is primarily based on Prometheus, this collects data for our monitoring.
-This foundation is then used by Grafana to create information on our app service.
-This is done on two dashboards, Monitoring and BI dashboard. 
+System monitoring is based on Prometheus and Grafana. 
+Prometheus collects metrics from app containers over the VPN. 
+Grafana is setup to poll for this data as needed for dashboard information on our app service. 
+This is done on a system monitoring dashboard and a business intelligence (BI) dashboard. 
+
 The most important metrics on the monitoring dashboard are HTTP traffic, error rate, request rate, latency, memory and CPU usage.
-In the BI dashoard the hightlighted metrics are top 10 most followed, user count, total users, total messages and avarage followers per user.
+In the BI dashboard, the hightlights are a top 10 most followed, total users versus active users, total messages and avarage followers per user. (See [logging-dashboard.gif](images/logging-dashboard.gif) and [monitoring-dashboard.gif](images/monitoring-dashboard.gif) for reference.)
 
 
 <!-- Describe how you monitor your system and what precisely you monitor
