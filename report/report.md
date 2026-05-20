@@ -237,6 +237,17 @@ This was solved in PR [#8](https://github.com/RonoITU/itu-devops2026-jackhammers
 <!-- Describe the biggest operational challenges and how they were resolved.
      Link to relevant incidents, runbooks, or monitoring alerts. -->
 
+**Running costs**
+
+With Hetzner Cloud we will have spent around € 75,- including the 25% VAT. Spanning from the beginning with a single cost-optimized VPS, until the end of the simulation with 3 VPS instances including slightly higher-tier instances. Apart from provisioning enough servers to demonstrate replication of the database and app service, we had to scale up our primary server (`devops-serv1`) as the combined load from clients and BI requests on the database increased. 
+
+| Feb    | Mar     | Apr     | May     |
+|--------|---------|---------|---------|
+| € 2.69 | € 14.71 | € 26.76 | € 30.63 |
+| Start of sim with 2 vCPU cost-optimal | Scale app to 4 vCPU, monitoring VPS 2 vCPU cost-optimal, floating IP | Replica instance with 2 vCPU regular tier, general price increases on Hetzner | Full month cloud cost |
+
+
+
 ### 3.3 Maintenance
 *Author(s):* Jakob Sønder
 
