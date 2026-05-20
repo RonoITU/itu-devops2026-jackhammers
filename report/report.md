@@ -65,15 +65,15 @@ Simple instructions are provided in the README on how to build, run and test loc
 To integrate a feature into the next release, the contributor opens a pull request towards `develop`.
 This triggers the CI GitHub Action to run our testing suite (Unit, Integration, E2E) and static analysis tools (SonarCube, Codacy) so that we will have concrete QA evidence alongside the changes to review. 
 
-The contributor will also get immediate feedback from the analysis tool, indicating possibly issue and displaying sufficent testcoverage on new code.
+The contributor will also get immediate feedback from the analysis tool, indicating any new issues and the test coverage on new code.
 Once the contributor is happy with the new feature(s), we ask for the feature branch to be merged.
-For new release to take effect, firstly the developer must asset the new commits on develop and increment the version file acordning.
 
-Then a pull-request is open towards main, which first triggers the CI Github actions. When this action has been completed succesfully, the merge towards main happens.
-This merges triggers the CD actions, in which the docker image is built and uploaded to Dockerhub.
-Github then access the server via ssh to recreate and restart the containers, using the new release image.
+To deploy a new release, the developer must first assert the new commits on `develop`, increment the VERSION file acordningly, and open a pull-request towards main.
+This pull-request first triggers the CI GitHub Action. When this action has been completed succesfully, the developer can merge towards main.
+The merge triggers the CD actions, in which a new Docker image is built and uploaded to Docker Hub.
+Github then connects to the server via ssh to recreate and restart the containers, using the new release image.
 
-Finally the CD action will tag the release with version number, and create a release on Github.
+Finally the CD action will tag the release with version number, and create a new release on GitHub.
 
 ### 2.2 Monitoring
 *Author(s): *
