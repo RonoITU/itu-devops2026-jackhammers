@@ -11,6 +11,10 @@ namespace Chirp.Web
 {
     public class Program
     {
+        // The constructor is protected to prevent instantiation of the Program class, which is not intended to be instantiated.
+        // Cannot be static because integration tests need to create an instance of the Program class to access the WebApplicationFactory.
+        protected Program() { }
+
         public static void Main(string[] args)
         {
             // Create the WebApplicationBuilder
