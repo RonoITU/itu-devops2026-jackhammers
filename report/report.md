@@ -15,6 +15,12 @@ header-includes: |
 **Monitoring dashboard:** `http://178.104.27.224:3000/d/chirp-aspnet-001/windysquirrels-monitoring-dashboard`  
 **Logging dashboard:** `http://178.104.27.224:3000/d/app-logging-dashboard/windysquirrels-logging-dashboard`  
 
+
+```{=latex}
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+```
+
 | Name | ITU ID |
 |:------|:--------|
 | Christian Philip Jørgensen | chpj@itu.dk |
@@ -22,6 +28,11 @@ header-includes: |
 | Jacob Sponholtz | spon@itu.dk |
 | Ronas Jacob Coban Olsen | rono@itu.dk |
 | Rasmus Alexander Christiansen | ralc@itu.dk |
+
+```{=latex}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{\fill}
+```
 
 ```{=latex}
 \newpage
