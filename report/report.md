@@ -205,10 +205,20 @@ Finally the CD action will tag the release with version number, and create a new
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-*Author(s): *
+*Author(s):* Jakob Sønder
 
 <!-- Describe the biggest challenges encountered when evolving and refactoring the system.
      How were they solved? Link to relevant commits, issues, or PRs. -->
+
+#### Migrating away from Python Flask:
+
+ This was solved in PR [#2](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/2) and [#3](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/3). A working ASP.NET application meeting similar requirements was utilized [^1]. All dependencies were upgraded to target the newest long-term ASP.NET version, .NET 10.
+
+  [^1]: link to ASP.NET project: https://github.com/ITU-BDSA2024-GROUP7/Chirp
+
+#### Switching from SQLite to PostgreSQL:
+
+This was solved in PR [#8](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/8). We wanted to prepare for the possibility of a production setup, where multiple containers or applications can connect to the same database over a network. The biggest challenge was that earlier EF Core migrations were created for SQLite specifically. This meant migrations had to start over. Since the switch was done before production, major issues were avoided (see [docs](https://github.com/RonoITU/itu-devops2026-jackhammers/blob/main/docs/Switch-to-postgres.md) for solution considerations, if we had been in production).
 
 ### 3.2 Operation
 *Author(s): *
@@ -217,11 +227,16 @@ Finally the CD action will tag the release with version number, and create a new
      Link to relevant incidents, runbooks, or monitoring alerts. -->
 
 ### 3.3 Maintenance
-*Author(s): *
+*Author(s):* Jakob Sønder
 
 <!-- Describe challenges related to maintaining the system over the term
      (dependency updates, technical debt, documentation, etc.).
      Link to relevant issues or commits. -->
+
+
+The biggest maintenance challenges encountered concerned surrounding systems intended to improve MiniTwit stability. An example was ensuring that coverage reports, integration tests and SonarCube agreed on where test results were generated and how they were reported (PR [#93](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/93), [#94](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/94), [#95](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/95)). 
+
+Another example, was maintenance challenges involving the move to a smaller Alpine-based runtime image for deployment (PR [#46](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/46)). This improved deployment size, but introduced maintenance issues around certificates, root access and timezone data (PR [#48](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/48)).
 
 ### 3.4 DevOps Reflection
 *Author(s): *
