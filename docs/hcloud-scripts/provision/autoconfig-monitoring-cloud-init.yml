@@ -1,0 +1,43 @@
+#cloud-config
+
+users:
+  - name: rono
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICiS3X+So0cGV1oyUuwuIQZ9x5mMTe22LTIwTJugr68E ronas@RonoVivo
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJQmWa1bC1sTbijYKrNHxxGzZ85yMAweBhocrGnpZuae rono@DESKTOP-OV81K77
+
+packages:
+  - fail2ban
+  - ufw
+package_update: true
+package_upgrade: true
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/ssh-hardening.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      Port 22
+      KbdInteractiveAuthentication no
+      ChallengeResponseAuthentication no
+      MaxAuthTries 2
+      AllowTcpForwarding no
+      X11Forwarding no
+      AllowAgentForwarding no
+      AuthorizedKeysFile .ssh/authorized_keys
+      AllowUsers rono ralc chris github
+
+runcmd:
+  - printf "[sshd]\nenabled = true\nport = ssh, 22\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+
+  - ufw allow 22
+  - ufw allow 3000
+  - ufw allow 3100
+  - ufw allow 9090
+  - ufw enable
+
+  - reboot

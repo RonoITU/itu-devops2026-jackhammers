@@ -85,3 +85,9 @@ In this case, we are only running a single application for a single domain.
 
 Start your containers up and check your website. 
 
+## 5. Manual certificate renewal
+
+> There is also the possibility to automate this. 
+
+The manual process can be repeated exactly to renew the certificate for another 3 months. You may need to restart your containers (app or Nginx) for the renewal to take effect. 
+
