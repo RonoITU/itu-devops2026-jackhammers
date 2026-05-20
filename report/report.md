@@ -119,11 +119,16 @@ This was solved in PR [#8](https://github.com/RonoITU/itu-devops2026-jackhammers
      Link to relevant incidents, runbooks, or monitoring alerts. -->
 
 ### 3.3 Maintenance
-*Author(s): *
+*Author(s): Jakob Sønder
 
 <!-- Describe challenges related to maintaining the system over the term
      (dependency updates, technical debt, documentation, etc.).
      Link to relevant issues or commits. -->
+
+
+The biggest maintenance challenges encountered over the term, related to surrounding systems intended to improve MiniTwit stability. An example was ensuring that coverage reports, integration tests and SonarCube agreed on where test results were generated and how they were reported (PR [#93](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/93), [#94](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/93), [#95](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/93)). 
+
+Another example, was maintenance challenges involving the move to a smaller Alpine-based runtime image for deployment (PR [#46](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/46)). This improved deployment size, but introduced maintenance issues around certificates, root access and timezone data (PR [#48](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/48)).
 
 ### 3.4 DevOps Reflection
 *Author(s): *
