@@ -99,10 +99,18 @@ MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtua
 ## 3. Reflection Perspective
 
 ### 3.1 Evolution and Refactoring
-*Author(s): *
+*Author(s): Jakob Sønder
 
 <!-- Describe the biggest challenges encountered when evolving and refactoring the system.
      How were they solved? Link to relevant commits, issues, or PRs. -->
+
+#### Migrating away from a the Python Flask framework:
+
+ This was solved in PR [#2](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/2) and [#3](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/3). A working ASP.NET application meeting similar requirements was utilized. All dependencies were upgraded to target the newest long-term ASP.NET version .NET 10.
+
+#### Switching from SQLite to PostgreSQL:
+
+This was solved in PR [#8](https://github.com/RonoITU/itu-devops2026-jackhammers/pull/8). We wanted to prepare for the possibility of a production setup, where multiple containers or applications can connect to the same database over a network. The biggest challenge was that earlier EF core migrations were created for SQLite specifically. Since the switch was done before production, this was not an issue (see [docs](https://github.com/RonoITU/itu-devops2026-jackhammers/blob/main/docs/Switch-to-postgres.md) for considerations).
 
 ### 3.2 Operation
 *Author(s): *
