@@ -71,7 +71,9 @@ MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtua
      Include a diagram if helpful, e.g.: ![CI/CD Pipeline](images/cicd_pipeline.png) -->
 
 ### 2.2 Monitoring
-*Author(s): *
+*Author(s): Ronas Jacob Coban Olsen and Jacob Sponholtz
+
+Monitoring the system is primarily based on Prometheus. And tool which provide the nesseary componets to build the monitoring.
 
 <!-- Describe how you monitor your system and what precisely you monitor
      (metrics, alerts, dashboards, tools used — e.g. Prometheus, Grafana). -->
