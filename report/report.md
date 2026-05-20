@@ -41,7 +41,7 @@ header-includes: |
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-*Author(s):* Rasmus Alexander Christiansen
+*Author(s): Rasmus Alexander Christiansen*
 
 This section describes the overall system architecture of MiniTwit, including how the application is structured, deployed, and monitored. The diagram above provides a visual overview of the components and their interactions across the infrastructure.
 
@@ -56,7 +56,7 @@ MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtua
 **devops-serv2 (10.0.0.2)** is dedicated to observability. Prometheus scrapes the /metrics endpoint on devops-serv1 every five seconds and stores the resulting time-series data. Loki aggregates the structured log streams pushed by the Promtail agents on devops-serv1 and app-node-3. Grafana provides dashboards over both data sources using PromQL for metrics and LogQL for logs.  
 
 ### 1.2 Dependencies
-*Author(s):* Rasmus Alexander Christiansen
+*Author(s): Rasmus Alexander Christiansen*
 
 The diagram below illustrates the relationships between the key technologies across all layers of the system. Not every dependency is shown - minor libraries and transitive dependencies are omitted for clarity. A full list with descriptions is provided in the tables below the diagram.
 
@@ -117,7 +117,7 @@ The diagram below illustrates the relationships between the key technologies acr
 
 
 ### 1.3 Current State of the System
-*Author(s):* Rasmus Alexander Christiansen
+*Author(s): Rasmus Alexander Christiansen*
 
 The current state of the system is assessed through two static analysis tools integrated into the CI pipeline: SonarCloud and Codacy. Both run automatically on every pull request. Rather than blocking merges on quality gate failure (`continue-on-error: true` in the pipeline), the team has deliberately prioritised visibility over enforcement - the goal being that issues are made transparent and trackable, not that velocity is sacrificed to a strict gate.
 
@@ -146,7 +146,7 @@ Codacy runs as a secondary static analysis tool in the CI pipeline alongside Son
 ## 2. Process' Perspective
 
 ### 2.1 CI/CD Pipeline
-*Author(s): Ronas Olsen and Jacob Sponholtz
+*Author(s): Ronas Olsen and Jacob Sponholtz*
 
 <!-- Describe and illustrate all stages and tools in your CI/CD pipeline, including how
      code is built, tested, and deployed/released to production.
@@ -177,7 +177,7 @@ Github then connects to the server via ssh to recreate and restart the container
 Finally the CD action will tag the release with version number, and create a new release on GitHub.
 
 ### 2.2 Monitoring
-*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen
+*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen*
 
 System monitoring is based on Prometheus and Grafana. 
 Prometheus collects metrics from app containers over the VPN. 
@@ -192,7 +192,7 @@ In the BI dashboard, the hightlights are a top 10 most followed, total users ver
      (metrics, alerts, dashboards, tools used — e.g. Prometheus, Grafana). -->
 
 ### 2.3 Logging
-*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen
+*Author(s): Ronas Olsen, Jacob Sponholtz and Rasmus Alexander Christiansen*
 
 <!-- Describe what you log in your system, how logs are collected, aggregated,
      and queried (e.g. ELK stack, Loki/Grafana, Fluentd). -->
