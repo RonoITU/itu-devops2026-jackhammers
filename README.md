@@ -9,6 +9,27 @@ This project, officially called Minitwit, is part of the course DevOps, Software
 Minitwit is a homemade Twitter-like system, allowing users to post and interact with short messages. The platform supports various features to enhance user engagement and account management.
 
 
+## Overview of our DevOps implementations
+### CI/CD pipeline
+This shows the CI/CD pipeline in GitHub Actions. It goes through the starting steps from building a feature on a feature branch, to merging into the develop branch, and finally merging into the main branch, which triggers the production deployment.
+![cicd-pipeline.gif](report/images/cicd-pipeline.gif)
+
+### Monitoring dashboard
+This shows the monitoring dashboard built on Grafana and Prometheus, displaying real-time performance metrics and health status across all applications and services.
+![monitoring-dashboard](report/images/monitoring-dashboard.gif)
+
+### Logging dashboard
+This shows the logging dashboard built on Grafana and Loki. It allows us to monitor the logs of our application in real-time, and to filter and search through them for debugging and analysis purposes.
+![logging-dashboard](report/images/logging-dashboard.gif)
+
+### Infrastructure as Code
+This shows the execution of our infrastructure provisioning script, which automates the creation of our Hetzner Cloud servers. The script creates two firewalls - one for the app server and one for the monitoring server - and then provisions both servers using `cloud-init` configurations that harden SSH, install `fail2ban` and `ufw`, and set up the appropriate firewall rules on the OS level.
+![infrastructure-as-code](report/images/infrastructure-as-code.gif)
+
+### Infrastructure as Code and Idempotency
+This shows that our provisioning script is idempotent: re-running it against an environment where the servers and firewalls already exist produces no duplicate resources. Instead, the script detects each existing resource and skips its creation, making it safe to run repeatedly without side effects.
+![iac-idempotency-script-test.gif](report/images/iac-idempotent-script-test.gif)
+
 ## Our live deployment
 
 We are hosting the project [here](https://windysquirrels.dk/). We use [Hetzner](https://www.hetzner.com/) for the VPS and [Dandomain](https://dandomain.dk/) for domain name services. 
