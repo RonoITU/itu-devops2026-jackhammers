@@ -68,7 +68,7 @@ The diagram below illustrates the relationships between the key technologies acr
 |---|---|
 | C# / .NET | Application language and runtime |
 | ASP.NET Core (Razor Pages) | Web UI framework |
-| ASP.NET Core (Controllers) | REST API for the ITU simulator |
+| ASP.NET Core (Controllers) | REST API for the simulator |
 | Entity Framework Core | ORM and database migrations |
 | Npgsql EF Core Provider | PostgreSQL driver for EF Core |
 | ASP.NET Core Identity | User authentication and account management |
