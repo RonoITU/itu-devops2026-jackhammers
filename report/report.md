@@ -73,11 +73,11 @@ MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtua
 ### 2.2 Monitoring
 *Author(s): Ronas Jacob Coban Olsen and Jacob Sponholtz
 
-Monitoring the system is primarily based on Prometheus. And tool which provide the nesseary componets to build the monitoring.
-This foundation is then used by Grafana to illustrated the diffentent data which our monitoring constist of.
+Monitoring the system is primarily based on Prometheus, this collects data for our monitoring.
+This foundation is then used by Grafana to create information on our app service.
 This is done on two dashboards, Monitoring and BI dashboard. 
-The most important metrics on the monitoring dashboard is HTTP trafic, error rate, request rate, lacenty, memory and CPU usage.
-In the BI dashoard the hightlighted metrics is top 10 most followed, usercount, total users, total chips and avarage followers per user.
+The most important metrics on the monitoring dashboard are HTTP traffic, error rate, request rate, latency, memory and CPU usage.
+In the BI dashoard the hightlighted metrics are top 10 most followed, user count, total users, total messages and avarage followers per user.
 
 
 <!-- Describe how you monitor your system and what precisely you monitor
