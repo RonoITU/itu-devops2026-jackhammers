@@ -53,6 +53,12 @@
      code is built, tested, and deployed/released to production.
      Include a diagram if helpful, e.g.: ![CI/CD Pipeline](images/cicd_pipeline.png) -->
 
+The source code is hosted on GitHub. We follow a modified GitFlow branching strategy: Feature development on a `develop` branch and feature branches, but without the use of release branches. Instead `develop` is merged directly to the main branch on release, and all QA is handled as part of the CI of features to the  `develop` branch. 
+
+The main branch is the version currently in production. Versions are also tagged semi-automatically by the CD workflow with each new release. 
+
+Any contributor can clone the repository, create a new feature branch, and work using their preferred tools. Simple instructions are provided in the README on how to build, run and test locally. To integrate a feature into the next release, the contributor opens a pull request towards `develop`. This triggers the CI GitHub Action to run our testing suite (Unit, Integration, E2E) and static analysis tools (SonarCube, Codacy) so that we will have concrete QA evidence alongside the changes to review. 
+
 ### 2.2 Monitoring
 *Author(s): *
 
