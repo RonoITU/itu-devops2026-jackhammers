@@ -1,10 +1,16 @@
+---
+header-includes: |
+  \usepackage{float}
+  \floatplacement{figure}{H}
+---
+
 # ITU-MiniTwit — BSc DevOps, Software Evolution and Software Maintenance
 
-**Group:** `BSc_group_m`
-**Repository:** `https://github.com/RonoITU/itu-devops2026-jackhammers`
-**Issue tracker:** `https://github.com/RonoITU/itu-devops2026-jackhammers/issues`
-**Monitoring dashboard:** `http://178.104.27.224:3000/d/chirp-aspnet-001/windysquirrels-monitoring-dashboard`
-**Logging dashboard:** `http://178.104.27.224:3000/d/app-logging-dashboard/windysquirrels-logging-dashboard`
+**Group:** `BSc_group_m`  
+**Repository:** `https://github.com/RonoITU/itu-devops2026-jackhammers`  
+**Issue tracker:** `https://github.com/RonoITU/itu-devops2026-jackhammers/issues`  
+**Monitoring dashboard:** `http://178.104.27.224:3000/d/chirp-aspnet-001/windysquirrels-monitoring-dashboard`  
+**Logging dashboard:** `http://178.104.27.224:3000/d/app-logging-dashboard/windysquirrels-logging-dashboard`  
 
 | Name | ITU ID |
 |------|--------|
@@ -14,15 +20,26 @@
 | Ronas Jacob Coban Olsen | rono@itu.dk |
 | Rasmus Alexander Christiansen | ralc@itu.dk |
 
----
+```{=latex}
+\newpage
+```
 
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-*Author(s): *
-<!-- Describe and illustrate the overall design and architecture of your ITU-MiniTwit system.
-     Include a diagram (e.g. a component or deployment diagram) stored in report/images/.
-     Example: ![Architecture Diagram](images/architecture.png) -->
+*Author(s):* Rasmus
+
+This section describes the overall system architecture of MiniTwit, including how the application is structured, deployed, and monitored. The diagram above provides a visual overview of the components and their interactions across the infrastructure.
+
+![Diagram of the system architecture](images/architecture-diagram.png)
+
+MiniTwit is deployed across three Hetzner Cloud VPS nodes connected via a virtual private network (10.0.0.0/28).
+
+**devops-serv1 (10.0.0.3)** is the primary node. Nginx runs here as the sole public entry point, handling TLS termination via Let's Encrypt, redirects HTTP traffic to HTTPS, and weighted load balancing across both app nodes. The primary application instance serves web UI and REST API traffic and exposes a /metrics endpoint for Prometheus. PostgreSQL 15 hosts the shared database for all application data. Promtail runs as a log shipping agent, collecting Docker container logs from this node and forwarding them to Loki on devops-serv2.  
+
+**app-node-3 (10.0.0.4)** is the secondary application node. It runs an application replica that receives the majority of traffic from Nginx (weight=2) and connects to the shared PostgreSQL database on devops-serv1. Promtail runs here as well, shipping container logs to Loki on devops-serv2.  
+
+**devops-serv2 (10.0.0.2)** is dedicated to observability. Prometheus scrapes the /metrics endpoint on devops-serv1 every five seconds and stores the resulting time-series data. Loki aggregates the structured log streams pushed by the Promtail agents on devops-serv1 and app-node-3. Grafana provides dashboards over both data sources using PromQL for metrics and LogQL for logs.  
 
 ### 1.2 Dependencies
 *Author(s):* Rasmus  
