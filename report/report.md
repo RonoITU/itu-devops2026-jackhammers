@@ -41,7 +41,7 @@ header-includes: |
 ## 1. System's Perspective
 
 ### 1.1 Design and Architecture
-*Author(s):* Rasmus
+*Author(s):* Rasmus Alexander Christiansen
 
 This section describes the overall system architecture of MiniTwit, including how the application is structured, deployed, and monitored. The diagram above provides a visual overview of the components and their interactions across the infrastructure.
 
@@ -117,10 +117,29 @@ The diagram below illustrates the relationships between the key technologies acr
 
 
 ### 1.3 Current State of the System
-*Author(s): *
-<!-- Describe the current state of the system. Include results from static analysis tools
-     (e.g. SonarQube, golangci-lint, ESLint) and any quality assessments you have run.
-     Reference specific metrics or screenshots where relevant. -->
+*Author(s):* Rasmus Alexander Christiansen
+
+The current state of the system is assessed through two static analysis tools integrated into the CI pipeline: SonarCloud and Codacy. Both run automatically on every pull request. Rather than blocking merges on quality gate failure (`continue-on-error: true` in the pipeline), the team has deliberately prioritised visibility over enforcement - the goal being that issues are made transparent and trackable, not that velocity is sacrificed to a strict gate.
+
+**SonarCloud**
+
+SonarCloud provides a continuous quality assessment of the codebase across security, reliability, maintainability, coverage, and duplications.
+
+![SonarCloud project summary](images/sonarcloud-summary.png)
+
+It is worth noting that the project was inherited from a 1.5 year old codebase originally written by students in the third-semester BDSA course. As a result, a significant portion of the issues identified by SonarCloud reflect legacy code rather than code introduced during this course. The team has primarily focused on resolving security issues and issues affecting performance, while reliability, maintainability, and code duplication issues in the inherited code have not been a priority.
+
+The overall results show 1 security issue, 41 reliability issues, 106 maintainability issues, 75.4% test coverage, and 8.7% code duplication. There are 0 security hotspots and all hotspots have been reviewed.
+
+The Issues view illustrates what this visibility looks like in practice:
+
+![SonarCloud issues](images/sonarcloud-issues.png)
+
+SonarCloud surfaces concrete, prioritised issues directly tied to source locations - for example, flagging that `AuthorDTO` in `src/Chirp.Core/DTOs/AuthorDTO.cs` should be renamed to `AuthorDto` to conform to Pascal case naming conventions. Before static analysis was introduced, issues like this existed in the codebase but were invisible. They are now explicit, categorised by severity, and can be worked through systematically.
+
+**Codacy**
+
+Codacy runs as a secondary static analysis tool in the CI pipeline alongside SonarCloud, providing an independent second opinion on code quality. It does not currently expose a public dashboard, but its results are available in the pipeline logs on every run.
 
 ---
 
